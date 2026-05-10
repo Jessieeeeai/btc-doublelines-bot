@@ -1,0 +1,314 @@
+//@version=6
+strategy("加密大漂亮双线反转 · S级会员 · v4",
+     overlay              = true,
+     initial_capital      = 10000,
+     default_qty_value    = 1,
+     default_qty_type     = strategy.percent_of_equity,
+     currency             = currency.NONE,
+     pyramiding           = 0,
+     calc_on_every_tick   = false,
+     process_orders_on_close = true,
+     max_lines_count      = 500,
+     max_boxes_count      = 500,
+     max_labels_count     = 500)
+
+// ========== 参数面板 ==========
+G0 = "⓪ 持仓行为"
+oppositeMode = input.string("立即反手", "持仓中遇反向信号",
+     options=["立即反手", "忽略反向信号"], group=G0,
+     tooltip="立即反手 = 平掉当前单同时开反向单。忽略 = 维持当前单不动，新信号丢弃。")
+
+G1 = "① 形态识别"
+minBodyToTotalRatio = input.float(0.5, "最小实体占比 m",
+     minval=0.1, maxval=1.0, step=0.05, group=G1)
+
+G2 = "② 入场设置"
+entryPriceType = input.string("最高/最低", "突破触发价类型",
+     options=["典型价", "最高/最低", "收盘价"], group=G2)
+patternMaxBarsValid = input.int(3, "形态有效根数",
+     minval=1, maxval=20, group=G2)
+
+G3 = "③ 止损"
+stopLossRatioLong = input.float(0.2, "多单止损缓冲倍数",
+     minval=0.0, maxval=2.0, step=0.1, group=G3,
+     tooltip="多单止损 = 近低 − (入场 − 近低) × 该倍数")
+stopLossRatioShort = input.float(0.2, "空单止损缓冲倍数",
+     minval=0.0, maxval=2.0, step=0.1, group=G3,
+     tooltip="空单止损 = 近高 + (近高 − 入场) × 该倍数")
+
+G4 = "④ 止盈"
+takeProfitMultiplier = input.float(2.0, "止盈振幅倍数",
+     minval=0.5, maxval=10.0, step=0.5, group=G4)
+
+G5 = "⑤ 显示"
+visMode = input.string("精简", "可视化模式",
+     options=["极简", "精简", "详细"], group=G5,
+     tooltip="极简：只画入场/出场小符号。精简：+ 浅色交易区 + 入场/止损/止盈细线。详细：+ 价格标签 + 形态识别标记 + 待突破虚线")
+showInfoPanel = input.bool(true, "显示右上角信息面板", group=G5)
+
+isMin   = visMode == "极简"
+isCpct  = visMode == "精简"
+isDtl   = visMode == "详细"
+showBox = isCpct or isDtl
+
+// ========== 工具函数 ==========
+typicalPrice(h, l, c) => (h + l + c) / 3
+bodyToTotalRatio(o, h, l, c) => math.abs(c - o) / math.max(math.abs(h - l), syminfo.mintick)
+isValidBody(o, h, l, c)      => bodyToTotalRatio(o, h, l, c) >= minBodyToTotalRatio
+typicalInRange(t, hi, lo)    => t >= lo and t <= hi
+
+getSelectedPrice(h, l, c, isBullish) =>
+    switch entryPriceType
+        "典型价"      => typicalPrice(h, l, c)
+        "最高/最低"   => isBullish ? h : l
+        "收盘价"      => c
+        => typicalPrice(h, l, c)
+
+// ========== 状态 ==========
+var bool  bullishPending     = false
+var bool  bearishPending     = false
+var float bullishEntryLevel  = na
+var float bearishEntryLevel  = na
+var float bullishStopRef     = na
+var float bearishStopRef     = na
+var float bullishTpRange     = na
+var float bearishTpRange     = na
+var int   bullishBar         = na
+var int   bearishBar         = na
+
+// ========== 形态识别 ==========
+if barstate.isconfirmed
+    tp2 = typicalPrice(high[1], low[1], close[1])
+    tp3 = typicalPrice(high[0], low[0], close[0])
+    validBodies   = isValidBody(open[1], high[1], low[1], close[1]) and isValidBody(open[0], high[0], low[0], close[0])
+    validTypicals = typicalInRange(tp2, high[0], low[0]) and typicalInRange(tp3, high[1], low[1])
+
+    if validBodies and validTypicals
+        if tp2 < low[2]
+            bullishPending    := true
+            p1                 = getSelectedPrice(high[1], low[1], close[1], true)
+            p2                 = getSelectedPrice(high[0], low[0], close[0], true)
+            bullishEntryLevel := math.max(p1, p2)
+            bullishStopRef    := math.min(low[1], low[0])
+            bullishTpRange    := math.max(high[1] - low[1], high[0] - low[0])
+            bullishBar        := bar_index
+        if tp2 > high[2]
+            bearishPending    := true
+            p1                 = getSelectedPrice(high[1], low[1], close[1], false)
+            p2                 = getSelectedPrice(high[0], low[0], close[0], false)
+            bearishEntryLevel := math.min(p1, p2)
+            bearishStopRef    := math.max(high[1], high[0])
+            bearishTpRange    := math.max(high[1] - low[1], high[0] - low[0])
+            bearishBar        := bar_index
+
+// ========== 形态过期 ==========
+if bullishPending and not na(bullishBar) and (bar_index - bullishBar) > patternMaxBarsValid
+    bullishPending := false
+if bearishPending and not na(bearishBar) and (bar_index - bearishBar) > patternMaxBarsValid
+    bearishPending := false
+
+// ========== 入场（含反向信号处理）==========
+if barstate.isconfirmed
+    bullGo = bullishPending and bar_index > bullishBar and high >= bullishEntryLevel
+    bearGo = bearishPending and bar_index > bearishBar and low <= bearishEntryLevel
+
+    if bullGo
+        if strategy.position_size == 0 or (strategy.position_size < 0 and oppositeMode == "立即反手")
+            strategy.entry("多", strategy.long)
+        bullishPending := false
+        bearishPending := false
+
+    if bearGo
+        if strategy.position_size == 0 or (strategy.position_size > 0 and oppositeMode == "立即反手")
+            strategy.entry("空", strategy.short)
+        bullishPending := false
+        bearishPending := false
+
+// ========== 出场 ==========
+var float curSL = na
+var float curTP = na
+
+if strategy.position_size > 0
+    avg = strategy.position_avg_price
+    curSL := bullishStopRef - (avg - bullishStopRef) * stopLossRatioLong
+    curTP := avg + bullishTpRange * takeProfitMultiplier
+    strategy.exit("多出", from_entry="多", stop=curSL, limit=curTP)
+
+if strategy.position_size < 0
+    avg = strategy.position_avg_price
+    curSL := bearishStopRef + (bearishStopRef - avg) * stopLossRatioShort
+    curTP := avg - bearishTpRange * takeProfitMultiplier
+    strategy.exit("空出", from_entry="空", stop=curSL, limit=curTP)
+
+// ========== 详细模式：形态标记 + 待突破点 ==========
+plotshape(isDtl and bullishPending and bar_index == bullishBar ? low : na,
+     "形态-多", shape.triangleup, location.belowbar,
+     color=color.new(color.green, 60), size=size.tiny)
+plotshape(isDtl and bearishPending and bar_index == bearishBar ? high : na,
+     "形态-空", shape.triangledown, location.abovebar,
+     color=color.new(color.red, 60), size=size.tiny)
+plot(isDtl and bullishPending ? bullishEntryLevel : na, "突破位-多",
+     color=color.new(color.green, 60), style=plot.style_circles, linewidth=1)
+plot(isDtl and bearishPending ? bearishEntryLevel : na, "突破位-空",
+     color=color.new(color.red, 60), style=plot.style_circles, linewidth=1)
+
+// ========== 交易可视化 ==========
+var int   prevClosed         = 0
+var int   prevOpenedEntryBar = na
+var line  lnE                = na
+var line  lnS                = na
+var line  lnT                = na
+var box   trBox              = na
+var label lblE               = na
+var label lblS               = na
+var label lblT               = na
+
+// —— 平仓优先处理（反手时同根 K 既平又开）——
+if strategy.closedtrades > prevClosed
+    prevClosed := strategy.closedtrades
+    idx = strategy.closedtrades - 1
+    xb  = strategy.closedtrades.exit_bar_index(idx)
+    xp  = strategy.closedtrades.exit_price(idx)
+    pnl = strategy.closedtrades.profit(idx)
+    isWin = pnl > 0
+
+    label.new(xb, na, isWin ? "✓" : "✗",
+         yloc=isWin ? yloc.abovebar : yloc.belowbar,
+         style=label.style_none,
+         textcolor=isWin ? color.new(color.lime, 0) : color.new(color.red, 0),
+         size=size.huge)
+
+    if isDtl
+        label.new(xb, na,
+             (pnl > 0 ? "+" : "") + str.tostring(pnl, "#.##"),
+             yloc=isWin ? yloc.abovebar : yloc.belowbar,
+             style=label.style_none,
+             textcolor=isWin ? color.new(color.lime, 0) : color.new(color.red, 0),
+             size=size.small)
+
+    if showBox
+        if not na(trBox)
+            box.set_right(trBox, xb)
+            box.set_bgcolor(trBox, color.new(isWin ? color.lime : color.red, 88))
+            box.set_border_color(trBox, color.new(isWin ? color.lime : color.red, 50))
+        if not na(lnE)
+            line.set_x2(lnE, xb)
+        if not na(lnS)
+            line.set_x2(lnS, xb)
+        if not na(lnT)
+            line.set_x2(lnT, xb)
+        if not na(lblE)
+            label.set_x(lblE, xb)
+        if not na(lblS)
+            label.set_x(lblS, xb)
+        if not na(lblT)
+            label.set_x(lblT, xb)
+
+    lnE := na
+    lnS := na
+    lnT := na
+    trBox := na
+    lblE := na
+    lblS := na
+    lblT := na
+
+// —— 开仓检测（用 entry_bar_index 比较，反手也能触发）——
+if strategy.opentrades > 0
+    idx = strategy.opentrades - 1
+    eb  = strategy.opentrades.entry_bar_index(idx)
+    if na(prevOpenedEntryBar) or eb != prevOpenedEntryBar
+        prevOpenedEntryBar := eb
+        ep = strategy.opentrades.entry_price(idx)
+        isLong = strategy.opentrades.size(idx) > 0
+
+        sl = isLong ? bullishStopRef - (ep - bullishStopRef) * stopLossRatioLong :
+                      bearishStopRef + (bearishStopRef - ep) * stopLossRatioShort
+        tp = isLong ? ep + bullishTpRange * takeProfitMultiplier :
+                      ep - bearishTpRange * takeProfitMultiplier
+
+        label.new(eb, na, isLong ? "▲" : "▼",
+             yloc=isLong ? yloc.belowbar : yloc.abovebar,
+             style=label.style_none,
+             textcolor=isLong ? color.new(color.lime, 0) : color.new(color.red, 0),
+             size=size.huge)
+
+        if showBox
+            trBox := box.new(eb, math.max(tp, sl, ep), bar_index, math.min(tp, sl, ep),
+                 border_color=color.new(color.gray, 80),
+                 bgcolor=color.new(isLong ? color.green : color.red, 95))
+            lnE := line.new(eb, ep, bar_index, ep,
+                 color=color.new(color.yellow, 20), width=1)
+            lnS := line.new(eb, sl, bar_index, sl,
+                 color=color.new(color.red, 20), width=1, style=line.style_dashed)
+            lnT := line.new(eb, tp, bar_index, tp,
+                 color=color.new(color.lime, 20), width=1, style=line.style_dashed)
+
+            if isDtl
+                lblE := label.new(bar_index, ep, str.tostring(ep, format.mintick),
+                     yloc=yloc.price, style=label.style_label_left,
+                     color=color.new(color.yellow, 30), textcolor=color.black, size=size.small)
+                lblS := label.new(bar_index, sl, "止损 " + str.tostring(sl, format.mintick),
+                     yloc=yloc.price, style=label.style_label_left,
+                     color=color.new(color.red, 30), textcolor=color.white, size=size.small)
+                lblT := label.new(bar_index, tp, "止盈 " + str.tostring(tp, format.mintick),
+                     yloc=yloc.price, style=label.style_label_left,
+                     color=color.new(color.lime, 30), textcolor=color.black, size=size.small)
+
+// —— 持仓中：延伸右端 ——
+if strategy.position_size != 0
+    if not na(lnE)
+        line.set_x2(lnE, bar_index)
+    if not na(lnS)
+        line.set_x2(lnS, bar_index)
+    if not na(lnT)
+        line.set_x2(lnT, bar_index)
+    if not na(trBox)
+        box.set_right(trBox, bar_index)
+    if not na(lblE)
+        label.set_x(lblE, bar_index)
+    if not na(lblS)
+        label.set_x(lblS, bar_index)
+    if not na(lblT)
+        label.set_x(lblT, bar_index)
+
+// —— 平仓后清理 ——
+if strategy.position_size == 0
+    bullishStopRef := na
+    bearishStopRef := na
+    bullishTpRange := na
+    bearishTpRange := na
+    curSL := na
+    curTP := na
+
+// ========== 右上角信息面板 ==========
+var table infoPanel = table.new(position.top_right, 2, 9,
+     bgcolor=color.new(color.black, 30), border_width=1, border_color=color.gray)
+
+f_row(row, label, val, valColor) =>
+    table.cell(infoPanel, 0, row, label, text_color=color.white,  text_size=size.small, bgcolor=color.new(color.black, 80))
+    table.cell(infoPanel, 1, row, val,   text_color=valColor,     text_size=size.small)
+
+if showInfoPanel and barstate.islast
+    posStr     = strategy.position_size > 0 ? "持多 " + str.tostring(strategy.position_size, "#.####") :
+                 strategy.position_size < 0 ? "持空 " + str.tostring(math.abs(strategy.position_size), "#.####") : "空仓"
+    posColor   = strategy.position_size > 0 ? color.lime : strategy.position_size < 0 ? color.red : color.gray
+    pendStr    = bullishPending ? "多头待突破 @ " + str.tostring(bullishEntryLevel, format.mintick) :
+                 bearishPending ? "空头待突破 @ " + str.tostring(bearishEntryLevel, format.mintick) : "无"
+    pendColor  = bullishPending ? color.lime : bearishPending ? color.red : color.gray
+    avgStr     = strategy.position_size != 0 ? str.tostring(strategy.position_avg_price, format.mintick) : "—"
+    slStr      = not na(curSL) ? str.tostring(curSL, format.mintick) : "—"
+    tpStr      = not na(curTP) ? str.tostring(curTP, format.mintick) : "—"
+    pnlStr     = strategy.position_size != 0 ? str.tostring(strategy.openprofit, "#.##") : "—"
+    pnlColor   = strategy.openprofit > 0 ? color.lime : strategy.openprofit < 0 ? color.red : color.gray
+    winRate    = strategy.closedtrades > 0 ? strategy.wintrades / strategy.closedtrades * 100 : 0
+
+    table.cell(infoPanel, 0, 0, "加密大漂亮策略", text_color=color.yellow, text_size=size.normal, bgcolor=color.new(color.black, 50))
+    table.cell(infoPanel, 1, 0, "v4", text_color=color.gray, text_size=size.small)
+    f_row(1, "当前仓位",  posStr,  posColor)
+    f_row(2, "待入场",    pendStr, pendColor)
+    f_row(3, "入场均价",  avgStr,  color.white)
+    f_row(4, "止损价",    slStr,   color.new(color.red, 0))
+    f_row(5, "止盈价",    tpStr,   color.new(color.lime, 0))
+    f_row(6, "浮动盈亏",  pnlStr,  pnlColor)
+    f_row(7, "总交易数",  str.tostring(strategy.closedtrades), color.white)
+    f_row(8, "胜率",      str.tostring(winRate, "#.#") + "%", winRate >= 50 ? color.lime : color.red)
