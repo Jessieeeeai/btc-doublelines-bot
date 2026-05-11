@@ -2,9 +2,11 @@ name: F6 信号机器人
 
 on:
   schedule:
-    # 每 5 分钟跑一次 (UTC 时间)。GitHub Actions cron 最快 5 分钟
-    - cron: '*/5 * * * *'
+    # 兜底: 每 30 分钟一次 (GitHub 实际可能延迟到 1-2h, 仅作 backup)
+    - cron: '*/30 * * * *'
   workflow_dispatch:  # 允许手动触发, 方便调试
+  repository_dispatch:
+    types: [check-signals]  # 外部触发器 (cron-job.org) 每 20 分钟调一次
 
 jobs:
   run-bot:
