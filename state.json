@@ -1,7 +1,7 @@
 {
-  "signals": [],
-  "first_signal_date": null,
-  "final_sent": false,
-  "anchor_ts": 1778454000,
-  "started": true
+    "signals": [],
+    "first_signal_date": null,
+    "final_sent": false,
+    "anchor_ts": 1777849200,
+    "started": true
 }
