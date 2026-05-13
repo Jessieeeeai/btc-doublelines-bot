@@ -1,3 +1,4 @@
+import os, sys; sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 """
 检查 R1 信号的重叠情况: 多少笔信号是在前一单还没平仓时触发的?
 """

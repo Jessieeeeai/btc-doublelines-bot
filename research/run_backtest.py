@@ -1,3 +1,4 @@
+import os, sys; sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 """
 主回测脚本: 加载本地CSV -> 跑10个变体 x 10币种 -> 输出报告
 用法: python3 run_backtest.py

@@ -1,3 +1,4 @@
+import os, sys; sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 """临时: 生成合成 BTCUSDT_1h 数据用于验证 pipeline。
 真实数据由 fetch_data.py 从 Coinglass 拉取后会覆盖此文件。"""
 import os

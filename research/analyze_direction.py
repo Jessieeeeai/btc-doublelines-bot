@@ -1,3 +1,4 @@
+import os, sys; sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 """
 拆分多/空方向的表现 - 看是否有一个方向是拖累
 读取 results/all_trades.csv, 按 variant x direction 分组统计

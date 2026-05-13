@@ -1,3 +1,4 @@
+import os, sys; sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 """
 仓位管理赛马: 固定使用 R1 (baseline body=0.5) 策略, PK 10 种仓位管理方式
 

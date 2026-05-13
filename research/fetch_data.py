@@ -1,3 +1,4 @@
+import os, sys; sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 """
 通过 Coinglass v4 API 拉取 BTC 1h K线 (近 1 年, 约 8760 根, 自动分页)
 API key 从环境变量 COINGLASS_API_KEY 或 .env 读取, 不要写死!

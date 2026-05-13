@@ -1,3 +1,4 @@
+import os, sys; sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 """
 找 Hedge + 5% 风险方案在 3 年里最深回撤发生的具体时间窗
 输出: 峰值日期/值 -> 谷底日期/值 -> 恢复日期, 中间发生了什么

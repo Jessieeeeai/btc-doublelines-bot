@@ -1,3 +1,4 @@
+import os, sys; sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 """
 读取 results/ 下的CSV, 生成漂亮的 xlsx 报告
 """

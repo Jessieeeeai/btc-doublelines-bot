@@ -1,3 +1,4 @@
+import os, sys; sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 """
 资金曲线模拟器 - 在R-Multiple回测出来的交易序列上, 加上杠杆 + 起始本金 + 复利。
 

@@ -1,3 +1,4 @@
+import os, sys; sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 """
 统计 3 年里每个 regime 状态各占多少时间, 各自的信号 / 胜率 / R 贡献
 """

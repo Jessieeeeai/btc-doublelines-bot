@@ -1,3 +1,4 @@
+import os, sys; sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 """
 Hedge 模式资金曲线模拟器 (符合币安/OKX 双向持仓实盘机制)
 

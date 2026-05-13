@@ -1,3 +1,4 @@
+import os, sys; sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 """
 分析最深回撤期 2024-03-20 到 2025-04-01 的具体情况:
 1) 比较 B2 (无趋势过滤) vs W4 (EMA200 过滤) 在该窗口的表现

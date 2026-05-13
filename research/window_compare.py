@@ -1,3 +1,4 @@
+import os, sys; sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 """
 横向对比10个变体在3年和"那12个月震荡期"的表现差异
 找出: (a) 谁在长跑赢, (b) 谁在震荡期不输
