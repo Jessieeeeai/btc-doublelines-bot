@@ -10,13 +10,14 @@
       "expires_at": "2026-05-13 04:00 UTC",
       "expires_ts": 1778644800,
       "pattern_desc": "çæ¶¨åè½¬ (æ¥è·ååºé¨ç¼ ç»)",
-      "status": "entered",
+      "status": "sl_hit",
       "entry_price": 80673.4,
       "entry_time": "2026-05-13 01:00 UTC",
-      "exit_price": null,
-      "exit_time": null,
-      "result_r": null,
-      "entry_ts": 1778634000
+      "exit_price": 78757.21,
+      "exit_time": "2026-05-13 15:00 UTC",
+      "result_r": -1.0,
+      "entry_ts": 1778634000,
+      "exit_ts": 1778684400
     },
     {
       "signal_time": "2026-05-12 17:00 UTC",
