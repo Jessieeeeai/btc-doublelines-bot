@@ -1,6 +1,25 @@
 {
-  "signals": [],
-  "first_signal_date": null,
+  "signals": [
+    {
+      "signal_time": "2026-05-13 00:00 UTC",
+      "signal_ts": 1778630400,
+      "direction": "long",
+      "trigger_price": 80673.4,
+      "sl": 78757.21,
+      "tp": 84505.78,
+      "expires_at": "2026-05-13 04:00 UTC",
+      "expires_ts": 1778644800,
+      "pattern_desc": "çæ¶¨åè½¬ (æ¥è·ååºé¨ç¼ ç»)",
+      "status": "entered",
+      "entry_price": 80673.4,
+      "entry_time": "2026-05-13 01:00 UTC",
+      "exit_price": null,
+      "exit_time": null,
+      "result_r": null,
+      "entry_ts": 1778634000
+    }
+  ],
+  "first_signal_date": "2026-05-13 00:00 UTC",
   "final_sent": false,
   "anchor_ts": 1778544000,
   "started": true
