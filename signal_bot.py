@@ -174,7 +174,7 @@ def detect_new_signals(bars, state):
     """扫描 bars 找 F6 信号, 跟 state 比对找新增。只要 anchor_ts 之后的"""
     anchor_ts = state.get("anchor_ts") or 0
     known_ts = {s["signal_ts"] for s in state["signals"]}
-    raw_signals = detect_signals(bars, CFG.body_ratio)
+    raw_signals = detect_signals(bars, CFG.body_ratio, CFG.entanglement_tolerance)
     new = []
     for sig in raw_signals:
         sig_bar = bars[sig["index"]]
