@@ -27,11 +27,15 @@ def body_overlap(b: Dict[str, float], c: Dict[str, float]):
     return lo, hi, hi - lo
 
 
-def detect_signals(bars: List[Dict[str, Any]], body_ratio_threshold: float = 0.5) -> List[Dict[str, Any]]:
+def detect_signals(bars: List[Dict[str, Any]],
+                    body_ratio_threshold: float = 0.5,
+                    entanglement_tolerance: float = 0.0) -> List[Dict[str, Any]]:
     """
     扫描K线序列, 输出所有反转信号。
     bars: 升序时间排列的K线列表, 每根含 date/open/high/low/close
-    返回: 信号列表, 每条含 index/date/direction/entry/B_low/B_high/C_low/C_high 等
+    body_ratio_threshold: 实体最小占比 (默认 50%)
+    entanglement_tolerance: 缠绕检查的容差 (默认 0%, 即严格)。
+                            tpB/tpC 可以超出对方实体上下沿这个百分比仍算通过
     """
     signals = []
     for i in range(2, len(bars)):
@@ -46,7 +50,12 @@ def detect_signals(bars: List[Dict[str, Any]], body_ratio_threshold: float = 0.5
 
         c_lo, c_hi = min(C["open"], C["close"]), max(C["open"], C["close"])
         b_lo, b_hi = min(B["open"], B["close"]), max(B["open"], B["close"])
-        in_range = (c_lo <= tp_B <= c_hi) and (b_lo <= tp_C <= b_hi)
+        # 容差版: 允许 tpB/tpC 超出对方实体上下沿 entanglement_tolerance 比例
+        tol = entanglement_tolerance
+        in_range = (
+            c_lo * (1 - tol) <= tp_B <= c_hi * (1 + tol) and
+            b_lo * (1 - tol) <= tp_C <= b_hi * (1 + tol)
+        )
         if not in_range:
             continue
 

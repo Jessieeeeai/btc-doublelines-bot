@@ -19,6 +19,7 @@ from signals import detect_signals
 class VariantConfig:
     name: str
     body_ratio: float = 0.5
+    entanglement_tolerance: float = 0.0  # 0 = 严格; 0.001 = 0.1% 容差
     r_multiple: float = 2.0         # 止盈倍数 (TP = entry ± r_multiple * R)
     sl_buffer_pct: float = 0.02     # 止损缓冲百分比, 默认 2%
     time_stop_bars: int = 0         # 0 = 不启用
@@ -277,7 +278,7 @@ def _compute_adx(bars, period=14):
 
 
 def run_backtest(bars: List[Dict[str, Any]], cfg: VariantConfig) -> Dict[str, Any]:
-    signals = detect_signals(bars, cfg.body_ratio)
+    signals = detect_signals(bars, cfg.body_ratio, cfg.entanglement_tolerance)
 
     # ============ Optimal Regime: 跳过强趋势, 其他用M2顺势 ============
     if cfg.regime_mode == "optimal":

@@ -1,16 +1,16 @@
 """
-F6 å®æ¶ä¿¡å·æºå¨äºº â æ¯æ¬¡è¿è¡:
-1) æææ° BTC 1h Kçº¿ (300 æ ¹è¶³å¤ ADX/EMA-200 è®¡ç®)
-2) åºç¨ F6 ç­ç¥æ£æµä¿¡å·
-3) è·è¸ªæ¯ä¸ªä¿¡å·ççå½å¨æ: waiting -> entered -> tp_hit/sl_hit/expired
-4) ç¶æååæ¶æ¨é TG
-5) 10 ä¸ªä¿¡å·å¨é¨å®æå,åææ¥
+F6 实时信号机器人 — 每次运行:
+1) 拉最新 BTC 1h K线 (300 根足够 ADX/EMA-200 计算)
+2) 应用 F6 策略检测信号
+3) 跟踪每个信号的生命周期: waiting -> entered -> tp_hit/sl_hit/expired
+4) 状态变化时推送 TG
+5) 10 个信号全部完成后,发战报
 
-ç¨æ³: python3 signal_bot.py
-ç¯å¢åé:
-  COINGLASS_API_KEY  - æ°æ® API key
+用法: python3 signal_bot.py
+环境变量:
+  COINGLASS_API_KEY  - 数据 API key
   TELEGRAM_BOT_TOKEN - TG bot token
-  TELEGRAM_CHAT_ID   - æ¥æ¶æ¶æ¯ç chat_id
+  TELEGRAM_CHAT_ID   - 接收消息的 chat_id
 """
 import os
 import sys
@@ -28,10 +28,11 @@ from tg_notify import (send_message, msg_signal_formed, msg_entered,
                         msg_invalidated_by_sl, msg_final_report)
 
 
-# F6 ç­ç¥éç½® (ä¸ variants.py ç F6 ä¸è´)
+# F6 策略配置 (与 variants.py 的 F6 一致)
 CFG = VariantConfig(
     name="F6_live",
     body_ratio=0.5,
+    entanglement_tolerance=0.005,  # T5: 0.5% 容差, 提升信号利用率
     r_multiple=2.0,
     sl_buffer_pct=0.02,
     entry_mode="breakout_confirm",
@@ -41,16 +42,16 @@ CFG = VariantConfig(
     regime_ema_dist_trend=0.02,
 )
 
-MAX_SIGNALS = 10  # æ¶ 10 ä¸ªå°±åºææ¥
+MAX_SIGNALS = 10  # 收 10 个就出战报
 STATE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "state.json")
-N_BARS = 720       # æå¤å°æ ¹ 1h Kçº¿ (>200 æè½ç® EMA-200)
+N_BARS = 300       # 拉多少根 1h K线 (>200 才能算 EMA-200)
 COINGLASS_BASE = "https://open-api-v4.coinglass.com"
 
 
-# ========== æ°æ®æå ==========
+# ========== 数据拉取 ==========
 
 def fetch_btc_1h_bars(api_key: str, n: int = 300):
-    """ææè¿ n æ ¹ BTC 1h Kçº¿"""
+    """拉最近 n 根 BTC 1h K线"""
     end_ms = int(time.time() * 1000)
     start_ms = end_ms - (n + 5) * 3600 * 1000
     params = {
@@ -89,7 +90,7 @@ def fetch_btc_1h_bars(api_key: str, n: int = 300):
     return bars
 
 
-# ========== ç¶æç®¡ç ==========
+# ========== 状态管理 ==========
 
 def load_state():
     if not os.path.exists(STATE_FILE):
@@ -104,20 +105,20 @@ def save_state(state):
         json.dump(state, f, indent=2, ensure_ascii=False)
 
 
-# ========== ä¿¡å·æ£æµ & è·è¸ª ==========
+# ========== 信号检测 & 跟踪 ==========
 
 def apply_f6_filter(bars, sig):
-    """å¯¹åä¸ªä¿¡å·å¤å® F6 æ¯å¦æ¥å (regime + é¡ºå¿ EMA-200)"""
+    """对单个信号判定 F6 是否接受 (regime + 顺势 EMA-200)"""
     idx = sig["index"]
     ema200 = _compute_ema(bars, 200)
     adx = _compute_adx(bars, 14)
     close = bars[idx]["close"]
     ev = ema200[idx]
     dist = abs(close - ev) / ev if ev > 0 else 0
-    # å¼ºè¶å¿æè·³è¿
+    # 强趋势期跳过
     if adx[idx] > CFG.regime_adx_high and dist > CFG.regime_ema_dist_trend:
         return False
-    # é¡ºå¿ EMA-200
+    # 顺势 EMA-200
     if sig["direction"] == "long" and close > ev:
         return True
     if sig["direction"] == "short" and close < ev:
@@ -126,17 +127,17 @@ def apply_f6_filter(bars, sig):
 
 
 def build_signal_record(bars, sig):
-    """ä» raw signal æé è·è¸ªè®°å½"""
+    """从 raw signal 构造跟踪记录"""
     direction = sig["direction"]
-    # SL: B/C æå¼ Â± ç¼å²
+    # SL: B/C 极值 ± 缓冲
     if direction == "long":
         extremity = min(sig["B_low"], sig["C_low"])
         sl = extremity * (1 - CFG.sl_buffer_pct)
-        trigger = max(sig["B_close"], sig["C_close"])  # çªç ´ä¸æ²¿
+        trigger = max(sig["B_close"], sig["C_close"])  # 突破上沿
     else:
         extremity = max(sig["B_high"], sig["C_high"])
         sl = extremity * (1 + CFG.sl_buffer_pct)
-        trigger = min(sig["B_close"], sig["C_close"])  # è·ç ´ä¸æ²¿
+        trigger = min(sig["B_close"], sig["C_close"])  # 跌破下沿
     r = abs(trigger - sl)
     if direction == "long":
         tp = trigger + CFG.r_multiple * r
@@ -144,11 +145,11 @@ def build_signal_record(bars, sig):
         tp = trigger - CFG.r_multiple * r
 
     sig_bar = bars[sig["index"]]
-    expires_ts = sig_bar["ts"] + (CFG.entry_wait_bars + 1) * 3600  # ä¿¡å·Kçº¿+3h
+    expires_ts = sig_bar["ts"] + (CFG.entry_wait_bars + 1) * 3600  # 信号K线+3h
     expires_str = datetime.utcfromtimestamp(expires_ts).strftime("%Y-%m-%d %H:%M UTC")
 
-    pattern = ("çæ¶¨åè½¬ (æ¥è·ååºé¨ç¼ ç»)" if direction == "long"
-               else "çè·åè½¬ (æ¥æ¶¨åé¡¶é¨ç¼ ç»)")
+    pattern = ("看涨反转 (急跌后底部缠绕)" if direction == "long"
+               else "看跌反转 (急涨后顶部缠绕)")
 
     return {
         "signal_time": sig_bar["date"] + " UTC",
@@ -170,7 +171,7 @@ def build_signal_record(bars, sig):
 
 
 def detect_new_signals(bars, state):
-    """æ«æ bars æ¾ F6 ä¿¡å·, è· state æ¯å¯¹æ¾æ°å¢ãåªè¦ anchor_ts ä¹åç"""
+    """扫描 bars 找 F6 信号, 跟 state 比对找新增。只要 anchor_ts 之后的"""
     anchor_ts = state.get("anchor_ts") or 0
     known_ts = {s["signal_ts"] for s in state["signals"]}
     raw_signals = detect_signals(bars, CFG.body_ratio)
@@ -179,10 +180,10 @@ def detect_new_signals(bars, state):
         sig_bar = bars[sig["index"]]
         if sig_bar["ts"] in known_ts:
             continue
-        # éç¹ä¹åçä¿¡å·å¿½ç¥ (é¿åé¦æ¬¡é¨ç½²æ¶æåå²ä¿¡å·å¨æ¨ä¸é)
+        # 锚点之前的信号忽略 (避免首次部署时把历史信号全推一遍)
         if sig_bar["ts"] <= anchor_ts:
             continue
-        # ä¿¡å· K çº¿å¿é¡»å·²æ¶ç
+        # 信号 K 线必须已收盘
         if sig["index"] >= len(bars) - 1:
             continue
         if not apply_f6_filter(bars, sig):
@@ -193,12 +194,12 @@ def detect_new_signals(bars, state):
 
 
 def update_signal_status(bars, sig_rec):
-    """å¯¹ä¸ä¸ª waiting/entered ä¿¡å·, çåç»­ K çº¿æ¨è¿å®çç¶æã"""
+    """对一个 waiting/entered 信号, 看后续 K 线推进它的状态。"""
     sig_ts = sig_rec["signal_ts"]
-    # æ¾ signal ä¹åç bars
+    # 找 signal 之后的 bars
     after = [b for b in bars if b["ts"] > sig_ts]
     if not after:
-        return False  # è¿æ²¡ä¸ä¸æ ¹
+        return False  # 还没下一根
 
     changed = False
     direction = sig_rec["direction"]
@@ -207,20 +208,20 @@ def update_signal_status(bars, sig_rec):
     tp = sig_rec["tp"]
 
     if sig_rec["status"] == "waiting":
-        # å¨ expires_ts ä¹åç­çªç ´æ SL ååè§¦å
+        # 在 expires_ts 之前等突破或 SL 反向触发
         for bar in after:
             if bar["ts"] > sig_rec["expires_ts"]:
-                # çªå£è¿äº, ä½åº
+                # 窗口过了, 作废
                 sig_rec["status"] = "expired"
                 changed = True
                 break
             if direction == "long":
-                # åå: ä»·æ ¼è§¦å SL (æ²¡å¥åºå°±åææ)
+                # 反向: 价格触及 SL (没入场就先挂掉)
                 if bar["low"] <= sl:
                     sig_rec["status"] = "invalidated"
                     changed = True
                     break
-                # çªç ´: ä»·æ ¼ä¸ç ´ trigger
+                # 突破: 价格上破 trigger
                 if bar["high"] >= trigger:
                     sig_rec["status"] = "entered"
                     sig_rec["entry_price"] = trigger
@@ -246,7 +247,7 @@ def update_signal_status(bars, sig_rec):
         for bar in after:
             if bar["ts"] <= entry_ts:
                 continue
-            # æ£æ¥ TP/SL (ä¿å®: åæ ¹ K çº¿åæ¶è§¦åæ SL)
+            # 检查 TP/SL (保守: 同根 K 线同时触发按 SL)
             if direction == "long":
                 if bar["low"] <= sl:
                     sig_rec["status"] = "sl_hit"
@@ -285,7 +286,7 @@ def update_signal_status(bars, sig_rec):
     return changed
 
 
-# ========== æç»©ç»è®¡ ==========
+# ========== 战绩统计 ==========
 
 def compute_stats(state):
     completed = [s for s in state["signals"] if s["status"] in ("tp_hit", "sl_hit")]
@@ -294,7 +295,7 @@ def compute_stats(state):
     losses = sum(1 for s in completed if s["status"] == "sl_hit")
     total_r = sum(s["result_r"] for s in completed if s["result_r"] is not None)
 
-    # è¿èè¿è´¥
+    # 连胜连败
     streak_win = streak_loss = max_win = max_loss = 0
     for s in completed:
         if s["status"] == "tp_hit":
@@ -317,7 +318,7 @@ def compute_stats(state):
     }
 
 
-# ========== ä¸»æµç¨ ==========
+# ========== 主流程 ==========
 
 def main():
     api_key = os.environ.get("COINGLASS_API_KEY")
@@ -330,45 +331,45 @@ def main():
                         api_key = line.split("=", 1)[1].strip().strip('"').strip("'")
                         break
     if not api_key:
-        print("ERROR: ç¼ºå° COINGLASS_API_KEY")
+        print("ERROR: 缺少 COINGLASS_API_KEY")
         sys.exit(1)
 
-    print(f"[{datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}] å¼å§æ£æ¥...")
+    print(f"[{datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}] 开始检查...")
     state = load_state()
 
-    # 1) ææ°æ®
+    # 1) 拉数据
     try:
         bars = fetch_btc_1h_bars(api_key, N_BARS)
     except Exception as e:
-        print(f"  ææ°æ®å¤±è´¥: {e}")
+        print(f"  拉数据失败: {e}")
         sys.exit(1)
     if len(bars) < 250:
-        print(f"  æ°æ®ä¸è¶³ {len(bars)} æ ¹, éåº")
+        print(f"  数据不足 {len(bars)} 根, 退出")
         sys.exit(1)
-    print(f"  æå° {len(bars)} æ ¹ 1h Kçº¿, ææ°: {bars[-1]['date']} = ${bars[-1]['close']:.2f}")
+    print(f"  拉到 {len(bars)} 根 1h K线, 最新: {bars[-1]['date']} = ${bars[-1]['close']:.2f}")
 
-    # 1.5) é¦æ¬¡è¿è¡: è®¾ç½®éç¹ + åæ¬¢è¿æ¶æ¯, ä¸å¤çä»»ä½åå²ä¿¡å·
+    # 1.5) 首次运行: 设置锚点 + 发欢迎消息, 不处理任何历史信号
     if not state.get("started"):
-        state["anchor_ts"] = bars[-2]["ts"]  # åæ°ç¬¬äºæ ¹ (ææ°è¿å¨ forming)
+        state["anchor_ts"] = bars[-2]["ts"]  # 倒数第二根 (最新还在 forming)
         state["started"] = True
         latest_close = bars[-1]["close"]
         welcome = (
-            f"ð¤ *F6 ä¿¡å·æºå¨äººå·²å¯å¨*\n"
-            f"âââââââââââââââ\n"
-            f"ç­ç¥: F6 (Regime + EMA-200 é¡ºå¿ + çªç ´å¥åº)\n"
-            f"æ ç: BTCUSDT 1h\n"
-            f"å½å BTC: `${latest_close:,.2f}`\n"
-            f"éç¹æ¶é´: `{bars[-2]['date']} UTC`\n\n"
-            f"â± æ¯ 5 åéæ£æ¥ä¸æ¬¡\n"
-            f"ð¯ æ¶æ»¡ 10 ä¸ªä¿¡å·èªå¨åææ¥\n\n"
-            f"_ç­å¾ç¬¬ä¸ä¸ª F6 ä¿¡å·..._"
+            f"🤖 *F6 信号机器人已启动*\n"
+            f"━━━━━━━━━━━━━━━\n"
+            f"策略: F6 (Regime + EMA-200 顺势 + 突破入场)\n"
+            f"标的: BTCUSDT 1h\n"
+            f"当前 BTC: `${latest_close:,.2f}`\n"
+            f"锚点时间: `{bars[-2]['date']} UTC`\n\n"
+            f"⏱ 每 5 分钟检查一次\n"
+            f"🎯 收满 10 个信号自动发战报\n\n"
+            f"_等待第一个 F6 信号..._"
         )
         send_message(welcome)
         save_state(state)
-        print(f"  é¦æ¬¡å¯å¨, éç¹ {bars[-2]['date']}, å·²åæ¬¢è¿æ¶æ¯")
+        print(f"  首次启动, 锚点 {bars[-2]['date']}, 已发欢迎消息")
         return
 
-    # 2) æ£æ¥ç°æä¿¡å·çç¶æåå
+    # 2) 检查现有信号的状态变化
     new_messages = []
     for i, sig in enumerate(state["signals"], 1):
         if sig["status"] in ("tp_hit", "sl_hit", "expired", "invalidated"):
@@ -376,7 +377,7 @@ def main():
         old_status = sig["status"]
         if update_signal_status(bars, sig):
             new_status = sig["status"]
-            print(f"  ä¿¡å· #{i:03d}: {old_status} -> {new_status}")
+            print(f"  信号 #{i:03d}: {old_status} -> {new_status}")
             stats = compute_stats(state)
             if new_status == "entered":
                 new_messages.append(msg_entered(i, sig, sig["entry_price"], sig["entry_time"]))
@@ -391,7 +392,7 @@ def main():
             elif new_status == "invalidated":
                 new_messages.append(msg_invalidated_by_sl(i, sig))
 
-    # 3) å¦æè¿æ²¡æ¶æ»¡ 10 ä¸ª, æ£æµæ°ä¿¡å·
+    # 3) 如果还没收满 10 个, 检测新信号
     if len(state["signals"]) < MAX_SIGNALS:
         new_sigs = detect_new_signals(bars, state)
         for sig_rec in new_sigs:
@@ -401,17 +402,17 @@ def main():
             if state["first_signal_date"] is None:
                 state["first_signal_date"] = sig_rec["signal_time"]
             n = len(state["signals"])
-            print(f"  æ°ä¿¡å· #{n:03d}: {sig_rec['direction']} @ {sig_rec['signal_time']}")
+            print(f"  新信号 #{n:03d}: {sig_rec['direction']} @ {sig_rec['signal_time']}")
             new_messages.append(msg_signal_formed(n, sig_rec))
-            # ç«å»å°è¯æ¨è¿å®çç¶æ (å¯è½ä¸ä¸ªå°æ¶å·²ç»çªç ´)
+            # 立刻尝试推进它的状态 (可能上个小时已经突破)
             update_signal_status(bars, sig_rec)
 
-    # 4) å TG
+    # 4) 发 TG
     for msg in new_messages:
         send_message(msg)
-        time.sleep(0.5)  # é¿å TG éæµ
+        time.sleep(0.5)  # 避免 TG 限流
 
-    # 5) ææ¥å¤å®
+    # 5) 战报判定
     stats = compute_stats(state)
     if (stats["completed"] + stats["expired"]) >= MAX_SIGNALS and not state["final_sent"]:
         period_end = datetime.utcnow().strftime("%Y-%m-%d")
@@ -419,11 +420,11 @@ def main():
         stats["period"] = period
         send_message(msg_final_report(stats))
         state["final_sent"] = True
-        print("  ææ¥å·²åé!")
+        print("  战报已发送!")
 
     save_state(state)
-    print(f"  done. å½å {len(state['signals'])} ä¿¡å·, "
-          f"{stats['wins']}è {stats['losses']}è´¥ {stats['expired']}ä½åº, R={stats['total_r']:+.2f}")
+    print(f"  done. 当前 {len(state['signals'])} 信号, "
+          f"{stats['wins']}胜 {stats['losses']}败 {stats['expired']}作废, R={stats['total_r']:+.2f}")
 
 
 if __name__ == "__main__":
