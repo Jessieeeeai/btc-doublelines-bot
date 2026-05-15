@@ -47,13 +47,14 @@
       "expires_at": "2026-05-15 04:00 UTC",
       "expires_ts": 1778817600,
       "pattern_desc": "看涨反转 (急跌后底部缠绕)",
-      "status": "entered",
+      "status": "sl_hit",
       "entry_price": 81478.4,
       "entry_time": "2026-05-15 01:00 UTC",
-      "exit_price": null,
-      "exit_time": null,
-      "result_r": null,
-      "entry_ts": 1778806800
+      "exit_price": 79387.74,
+      "exit_time": "2026-05-15 13:00 UTC",
+      "result_r": -1.0,
+      "entry_ts": 1778806800,
+      "exit_ts": 1778850000
     },
     {
       "signal_time": "2026-05-15 06:00 UTC",
