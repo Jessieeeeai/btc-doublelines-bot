@@ -54,6 +54,24 @@
       "exit_time": null,
       "result_r": null,
       "entry_ts": 1778806800
+    },
+    {
+      "signal_time": "2026-05-15 06:00 UTC",
+      "signal_ts": 1778824800,
+      "direction": "long",
+      "trigger_price": 80546.5,
+      "sl": 78661.46,
+      "tp": 84316.57,
+      "expires_at": "2026-05-15 10:00 UTC",
+      "expires_ts": 1778839200,
+      "pattern_desc": "看涨反转 (急跌后底部缠绕)",
+      "status": "entered",
+      "entry_price": 80546.5,
+      "entry_time": "2026-05-15 07:00 UTC",
+      "exit_price": null,
+      "exit_time": null,
+      "result_r": null,
+      "entry_ts": 1778828400
     }
   ],
   "first_signal_date": "2026-05-13 00:00 UTC",
