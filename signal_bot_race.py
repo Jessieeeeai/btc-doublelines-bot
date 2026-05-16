@@ -1,0 +1,641 @@
+"""
+3 策略赛马 bot
+A: baseline 2R (控制组)
+B: H 阶梯锁 + 连亏 2 停 24h (中庸 +840%)
+C: 终极 alpha - H + Kelly + 金字塔 + 单向冷却 (激进 +1785%)
+
+每个策略独立 state, TG 消息加 [A]/[B]/[C] 前缀。
+"""
+import os, sys, json, time
+import urllib.request, urllib.parse, urllib.error
+from datetime import datetime
+from dataclasses import dataclass, field
+from typing import List, Tuple, Optional
+
+from signals import detect_signals
+from backtest import _compute_ema, _compute_adx
+from tg_notify import send_message
+
+
+MAX_SIGNALS = 30  # 收 30 个就出战报 (3 策略共享, 实际每个最多 ~10 单)
+N_BARS = 300
+COINGLASS_BASE = "https://open-api-v4.coinglass.com"
+
+
+# 通用 F6 参数 (3 策略共用)
+COMMON_F6 = dict(
+    body_ratio=0.5,
+    entanglement_tolerance=0.005,
+    sl_buffer_pct=0.02,
+    entry_wait_bars=3,
+    regime_adx_high=25,
+    regime_ema_dist_trend=0.02,
+)
+
+
+@dataclass
+class StrategyConfig:
+    code: str          # "A" / "B" / "C"
+    name: str
+    state_file: str
+    tp_target_r: float = 2.0
+    use_stair: bool = False
+    stair_levels: List[Tuple[float, float]] = field(default_factory=list)
+    use_cooldown: bool = False
+    cd_loss_count: int = 0
+    cd_pause_hours: int = 0
+    cd_direction_aware: bool = False
+    use_kelly: bool = False
+    use_pyramid: bool = False
+
+
+STRATEGIES = [
+    StrategyConfig(
+        code="A", name="baseline 2R",
+        state_file="state_A.json",
+        tp_target_r=2.0,
+    ),
+    StrategyConfig(
+        code="B", name="H阶梯锁 + 连亏2停24h",
+        state_file="state_B.json",
+        tp_target_r=8.0, use_stair=True,
+        stair_levels=[(2.0, 1.0), (4.0, 2.0)],
+        use_cooldown=True, cd_loss_count=2, cd_pause_hours=24,
+    ),
+    StrategyConfig(
+        code="C", name="终极alpha Kelly+金字塔+单向冷却",
+        state_file="state_C.json",
+        tp_target_r=8.0, use_stair=True,
+        stair_levels=[(2.0, 1.0), (4.0, 2.0)],
+        use_cooldown=True, cd_loss_count=2, cd_pause_hours=24, cd_direction_aware=True,
+        use_kelly=True, use_pyramid=True,
+    ),
+]
+
+
+# ========== 数据 & 共用 ==========
+
+def fetch_btc_1h_bars(api_key, n=300):
+    end_ms = int(time.time() * 1000)
+    start_ms = end_ms - (n + 5) * 3600 * 1000
+    params = {
+        "exchange": "Binance", "symbol": "BTCUSDT",
+        "interval": "1h", "limit": 1000,
+        "start_time": start_ms, "end_time": end_ms,
+    }
+    url = f"{COINGLASS_BASE}/api/futures/price/history?{urllib.parse.urlencode(params)}"
+    req = urllib.request.Request(url, headers={"CG-API-KEY": api_key, "accept": "application/json"})
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        raw = json.loads(resp.read().decode())
+    items = raw.get("data") or raw.get("result") or []
+    bars = []
+    for it in items:
+        if isinstance(it, dict):
+            ts = int(it.get("time") or it.get("t") or it.get("timestamp"))
+            o = float(it.get("open") or it.get("o"))
+            h = float(it.get("high") or it.get("h"))
+            l = float(it.get("low") or it.get("l"))
+            c = float(it.get("close") or it.get("c"))
+        else:
+            ts, o, h, l, c = int(it[0]), float(it[1]), float(it[2]), float(it[3]), float(it[4])
+        if ts > 1e12: ts //= 1000
+        bars.append({
+            "date": datetime.utcfromtimestamp(ts).strftime("%Y-%m-%d %H:%M"),
+            "ts": ts, "open": o, "high": h, "low": l, "close": c,
+        })
+    bars.sort(key=lambda x: x["ts"])
+    return bars
+
+
+def load_state(path):
+    if not os.path.exists(path):
+        return {
+            "signals": [],
+            "first_signal_date": None,
+            "final_sent": False,
+            "anchor_ts": None,
+            "started": False,
+            "pause_until_ts": 0,
+            "pause_until_ts_long": 0,
+            "pause_until_ts_short": 0,
+        }
+    with open(path) as f:
+        return json.load(f)
+
+
+def save_state(state, path):
+    with open(path, "w") as f:
+        json.dump(state, f, indent=2, ensure_ascii=False)
+
+
+def labeled_send(code, text):
+    send_message(f"[{code}] {text}")
+
+
+def apply_f6_filter(bars, sig, ema200, adx):
+    idx = sig["index"]
+    close = bars[idx]["close"]
+    ev = ema200[idx]
+    if ev is None or ev <= 0:
+        return False
+    dist = abs(close - ev) / ev
+    if adx[idx] > COMMON_F6["regime_adx_high"] and dist > COMMON_F6["regime_ema_dist_trend"]:
+        return False
+    if sig["direction"] == "long" and close > ev:
+        return True
+    if sig["direction"] == "short" and close < ev:
+        return True
+    return False
+
+
+# ========== 策略相关 ==========
+
+def check_cooldown(strategy: StrategyConfig, state, direction, now_ts):
+    """返回 True 表示在冷却中, 应跳过"""
+    if not strategy.use_cooldown:
+        return False
+    if strategy.cd_direction_aware:
+        key = "pause_until_ts_long" if direction == "long" else "pause_until_ts_short"
+        return now_ts < state.get(key, 0)
+    return now_ts < state.get("pause_until_ts", 0)
+
+
+def get_kelly_size(strategy: StrategyConfig, state):
+    """根据最近完结交易计算下一单仓位"""
+    if not strategy.use_kelly:
+        return 1.0
+    completed = [s for s in state["signals"] if s["status"] in ("tp_hit", "sl_hit")]
+    if not completed:
+        return 1.0
+    # 看最近 3 笔
+    recent = completed[-3:]
+    # 净 R (考虑 size_multiplier 之前的原始 R, 用 result_r_raw)
+    if len(recent) >= 3 and all(t.get("result_r_raw", t.get("result_r", 0)) > 0 for t in recent):
+        return 2.0
+    if len(recent) >= 2 and all(t.get("result_r_raw", t.get("result_r", 0)) > 0 for t in recent[-2:]):
+        return 1.5
+    if recent[-1].get("result_r_raw", recent[-1].get("result_r", 0)) < 0:
+        return 0.7
+    return 1.0
+
+
+def build_signal_record(strategy: StrategyConfig, bars, sig, state):
+    """构造一笔交易的初始记录"""
+    direction = sig["direction"]
+    sl_buffer = COMMON_F6["sl_buffer_pct"]
+    if direction == "long":
+        extremity = min(sig["B_low"], sig["C_low"])
+        sl = extremity * (1 - sl_buffer)
+        trigger = max(sig["B_close"], sig["C_close"])
+    else:
+        extremity = max(sig["B_high"], sig["C_high"])
+        sl = extremity * (1 + sl_buffer)
+        trigger = min(sig["B_close"], sig["C_close"])
+    r = abs(trigger - sl)
+    if direction == "long":
+        tp = trigger + strategy.tp_target_r * r
+    else:
+        tp = trigger - strategy.tp_target_r * r
+
+    sig_bar = bars[sig["index"]]
+    expires_ts = sig_bar["ts"] + (COMMON_F6["entry_wait_bars"] + 1) * 3600
+    expires_str = datetime.utcfromtimestamp(expires_ts).strftime("%Y-%m-%d %H:%M UTC")
+    pattern = ("看涨反转 (急跌后底部缠绕)" if direction == "long"
+               else "看跌反转 (急涨后顶部缠绕)")
+
+    size_mult = get_kelly_size(strategy, state)
+
+    return {
+        "signal_time": sig_bar["date"] + " UTC",
+        "signal_ts": sig_bar["ts"],
+        "direction": direction,
+        "trigger_price": round(trigger, 2),
+        "sl0": round(sl, 2),          # 初始 SL (不变)
+        "current_sl": round(sl, 2),   # 实时 SL (B/C 会随阶梯调)
+        "tp": round(tp, 2),
+        "r_dollar": round(r, 2),
+        "expires_at": expires_str,
+        "expires_ts": expires_ts,
+        "pattern_desc": pattern,
+        "status": "waiting",
+        "entry_price": None,
+        "entry_time": None,
+        "entry_ts": None,
+        "exit_price": None,
+        "exit_time": None,
+        "exit_ts": None,
+        "result_r": None,
+        "result_r_raw": None,     # 不含 size_multiplier 的原始 R
+        "size_multiplier": size_mult,
+        # H 阶梯 & 金字塔状态
+        "stair_2r_locked": False,
+        "stair_4r_locked": False,
+        "pyramid_entered": False,
+        "pyramid_entry_price": None,
+    }
+
+
+def update_signal_status(strategy: StrategyConfig, bars, sig_rec):
+    """推进单个信号状态。返回 True 如果状态变化"""
+    if sig_rec["status"] in ("tp_hit", "sl_hit", "expired", "invalidated"):
+        return False
+
+    sig_ts = sig_rec["signal_ts"]
+    after = [b for b in bars if b["ts"] > sig_ts]
+    if not after:
+        return False
+
+    changed = False
+    direction = sig_rec["direction"]
+    trigger = sig_rec["trigger_price"]
+    tp = sig_rec["tp"]
+    r = sig_rec["r_dollar"]
+
+    # 等待入场
+    if sig_rec["status"] == "waiting":
+        sl = sig_rec["current_sl"]
+        for bar in after:
+            if bar["ts"] > sig_rec["expires_ts"]:
+                sig_rec["status"] = "expired"
+                changed = True
+                break
+            if direction == "long":
+                if bar["low"] <= sl:
+                    sig_rec["status"] = "invalidated"
+                    changed = True
+                    break
+                if bar["high"] >= trigger:
+                    sig_rec["status"] = "entered"
+                    sig_rec["entry_price"] = trigger
+                    sig_rec["entry_time"] = bar["date"] + " UTC"
+                    sig_rec["entry_ts"] = bar["ts"]
+                    changed = True
+                    break
+            else:
+                if bar["high"] >= sl:
+                    sig_rec["status"] = "invalidated"
+                    changed = True
+                    break
+                if bar["low"] <= trigger:
+                    sig_rec["status"] = "entered"
+                    sig_rec["entry_price"] = trigger
+                    sig_rec["entry_time"] = bar["date"] + " UTC"
+                    sig_rec["entry_ts"] = bar["ts"]
+                    changed = True
+                    break
+
+    # 持仓中: 走 H 阶梯锁 + 金字塔 + 出场
+    if sig_rec["status"] == "entered":
+        entry = sig_rec["entry_price"]
+        entry_ts = sig_rec.get("entry_ts", sig_ts)
+
+        for bar in after:
+            if bar["ts"] <= entry_ts:
+                continue
+            sl = sig_rec["current_sl"]
+
+            # H 阶梯锁: 多
+            if strategy.use_stair and direction == "long":
+                # 2R 阶梯
+                if not sig_rec["stair_2r_locked"] and bar["high"] >= entry + 2*r:
+                    new_sl = entry + 1*r
+                    if new_sl > sl:
+                        sig_rec["current_sl"] = round(new_sl, 2)
+                        sig_rec["stair_2r_locked"] = True
+                        sl = new_sl
+                        # 不算 status change, 静默移 SL
+                # 4R 阶梯
+                if not sig_rec["stair_4r_locked"] and bar["high"] >= entry + 4*r:
+                    new_sl = entry + 2*r
+                    if new_sl > sl:
+                        sig_rec["current_sl"] = round(new_sl, 2)
+                        sig_rec["stair_4r_locked"] = True
+                        sl = new_sl
+
+            # H 阶梯锁: 空
+            if strategy.use_stair and direction == "short":
+                if not sig_rec["stair_2r_locked"] and bar["low"] <= entry - 2*r:
+                    new_sl = entry - 1*r
+                    if new_sl < sl:
+                        sig_rec["current_sl"] = round(new_sl, 2)
+                        sig_rec["stair_2r_locked"] = True
+                        sl = new_sl
+                if not sig_rec["stair_4r_locked"] and bar["low"] <= entry - 4*r:
+                    new_sl = entry - 2*r
+                    if new_sl < sl:
+                        sig_rec["current_sl"] = round(new_sl, 2)
+                        sig_rec["stair_4r_locked"] = True
+                        sl = new_sl
+
+            # 金字塔加仓 (1R 时)
+            if strategy.use_pyramid and not sig_rec["pyramid_entered"]:
+                if direction == "long" and bar["high"] >= entry + 1*r:
+                    sig_rec["pyramid_entered"] = True
+                    sig_rec["pyramid_entry_price"] = round(entry + r, 2)
+                elif direction == "short" and bar["low"] <= entry - 1*r:
+                    sig_rec["pyramid_entered"] = True
+                    sig_rec["pyramid_entry_price"] = round(entry - r, 2)
+
+            # 出场检查
+            if direction == "long":
+                if bar["low"] <= sl:
+                    # 计算 R
+                    main_r = (sl - entry) / r
+                    pyramid_r = 0
+                    if sig_rec["pyramid_entered"]:
+                        pyramid_r = 0.5 * (sl - sig_rec["pyramid_entry_price"]) / r
+                    total_r = main_r + pyramid_r
+                    sig_rec["status"] = "sl_hit" if main_r < 0 else "tp_hit"
+                    sig_rec["exit_price"] = round(sl, 2)
+                    sig_rec["exit_time"] = bar["date"] + " UTC"
+                    sig_rec["exit_ts"] = bar["ts"]
+                    sig_rec["result_r_raw"] = round(total_r, 3)
+                    sig_rec["result_r"] = round(total_r * sig_rec["size_multiplier"], 3)
+                    changed = True
+                    break
+                if bar["high"] >= tp:
+                    main_r = (tp - entry) / r
+                    pyramid_r = 0
+                    if sig_rec["pyramid_entered"]:
+                        pyramid_r = 0.5 * (tp - sig_rec["pyramid_entry_price"]) / r
+                    total_r = main_r + pyramid_r
+                    sig_rec["status"] = "tp_hit"
+                    sig_rec["exit_price"] = round(tp, 2)
+                    sig_rec["exit_time"] = bar["date"] + " UTC"
+                    sig_rec["exit_ts"] = bar["ts"]
+                    sig_rec["result_r_raw"] = round(total_r, 3)
+                    sig_rec["result_r"] = round(total_r * sig_rec["size_multiplier"], 3)
+                    changed = True
+                    break
+            else:
+                if bar["high"] >= sl:
+                    main_r = (entry - sl) / r
+                    pyramid_r = 0
+                    if sig_rec["pyramid_entered"]:
+                        pyramid_r = 0.5 * (sig_rec["pyramid_entry_price"] - sl) / r
+                    total_r = main_r + pyramid_r
+                    sig_rec["status"] = "sl_hit" if main_r < 0 else "tp_hit"
+                    sig_rec["exit_price"] = round(sl, 2)
+                    sig_rec["exit_time"] = bar["date"] + " UTC"
+                    sig_rec["exit_ts"] = bar["ts"]
+                    sig_rec["result_r_raw"] = round(total_r, 3)
+                    sig_rec["result_r"] = round(total_r * sig_rec["size_multiplier"], 3)
+                    changed = True
+                    break
+                if bar["low"] <= tp:
+                    main_r = (entry - tp) / r
+                    pyramid_r = 0
+                    if sig_rec["pyramid_entered"]:
+                        pyramid_r = 0.5 * (sig_rec["pyramid_entry_price"] - tp) / r
+                    total_r = main_r + pyramid_r
+                    sig_rec["status"] = "tp_hit"
+                    sig_rec["exit_price"] = round(tp, 2)
+                    sig_rec["exit_time"] = bar["date"] + " UTC"
+                    sig_rec["exit_ts"] = bar["ts"]
+                    sig_rec["result_r_raw"] = round(total_r, 3)
+                    sig_rec["result_r"] = round(total_r * sig_rec["size_multiplier"], 3)
+                    changed = True
+                    break
+
+    return changed
+
+
+def update_cooldown(strategy: StrategyConfig, state):
+    """单笔 SL 之后, 检查是否触发冷却"""
+    if not strategy.use_cooldown:
+        return False
+    completed = [s for s in state["signals"] if s["status"] in ("tp_hit", "sl_hit")]
+    if len(completed) < strategy.cd_loss_count:
+        return False
+    recent = completed[-strategy.cd_loss_count:]
+    if not all((t.get("result_r_raw") or t.get("result_r", 0)) < 0 for t in recent):
+        return False
+    last_exit_ts = recent[-1]["exit_ts"]
+    pause_ts = last_exit_ts + strategy.cd_pause_hours * 3600
+    if strategy.cd_direction_aware:
+        direction = recent[-1]["direction"]
+        key = "pause_until_ts_long" if direction == "long" else "pause_until_ts_short"
+        if pause_ts > state.get(key, 0):
+            state[key] = pause_ts
+            return True
+    else:
+        if pause_ts > state.get("pause_until_ts", 0):
+            state["pause_until_ts"] = pause_ts
+            return True
+    return False
+
+
+# ========== 信号检测 & TG ==========
+
+def detect_new_signals(strategy: StrategyConfig, bars, state, ema200, adx):
+    anchor_ts = state.get("anchor_ts") or 0
+    known_ts = {s["signal_ts"] for s in state["signals"]}
+    raw_signals = detect_signals(bars, COMMON_F6["body_ratio"], COMMON_F6["entanglement_tolerance"])
+    new = []
+    now_ts = int(time.time())
+    for sig in raw_signals:
+        sig_bar = bars[sig["index"]]
+        if sig_bar["ts"] in known_ts:
+            continue
+        if sig_bar["ts"] <= anchor_ts:
+            continue
+        if sig["index"] >= len(bars) - 1:
+            continue
+        if not apply_f6_filter(bars, sig, ema200, adx):
+            continue
+        # 冷却检查
+        if check_cooldown(strategy, state, sig["direction"], sig_bar["ts"]):
+            continue
+        rec = build_signal_record(strategy, bars, sig, state)
+        new.append(rec)
+    return new
+
+
+def fmt_signal_formed(strategy, n, sig):
+    s = (f"🔔 <b>新信号 #{n:03d} — {strategy.name}</b>\n"
+         f"━━━━━━━━━━━━━━━\n"
+         f"方向: {'📈 做多' if sig['direction']=='long' else '📉 做空'} ({sig['direction'].upper()})\n"
+         f"形态: {sig['pattern_desc']}\n"
+         f"时间: <code>{sig['signal_time']}</code>\n\n"
+         f"📍 入场触发: <code>${sig['trigger_price']:,.2f}</code>\n"
+         f"🛑 止损 (初始): <code>${sig['sl0']:,.2f}</code>\n"
+         f"🎯 止盈目标: <code>${sig['tp']:,.2f}</code> ({strategy.tp_target_r}R)\n"
+         f"⚖️ 仓位倍数: <b>{sig['size_multiplier']}×</b>\n"
+         f"⏰ 突破窗口: {sig['expires_at']} 前有效")
+    return s
+
+
+def fmt_entered(strategy, n, sig):
+    return (f"✅ <b>#{n:03d} 已入场 — {strategy.name}</b>\n"
+            f"━━━━━━━━━━━━━━━\n"
+            f"入场价: <code>${sig['entry_price']:,.2f}</code>\n"
+            f"入场时间: {sig['entry_time']}\n"
+            f"当前 SL: <code>${sig['current_sl']:,.2f}</code>\n"
+            f"目标 TP: <code>${sig['tp']:,.2f}</code>\n"
+            f"仓位: <b>{sig['size_multiplier']}×</b>")
+
+
+def fmt_exit(strategy, n, sig, outcome):
+    """outcome = 'tp' / 'sl'"""
+    icon = "🟢 TP" if outcome == "tp" else "🔴 SL"
+    r_str = f"{sig['result_r']:+.2f}R" if sig['result_r'] is not None else "?"
+    extra = ""
+    if sig.get("pyramid_entered"):
+        extra = f"\n金字塔加仓: ${sig['pyramid_entry_price']:.2f}"
+    if sig.get("stair_4r_locked"):
+        extra += "\n阶梯锁: 达到 +4R, SL 已升到 +2R"
+    elif sig.get("stair_2r_locked"):
+        extra += "\n阶梯锁: 达到 +2R, SL 已升到 +1R"
+    return (f"{icon} <b>#{n:03d} 出场 — {strategy.name}</b>\n"
+            f"━━━━━━━━━━━━━━━\n"
+            f"出场价: <code>${sig['exit_price']:,.2f}</code>\n"
+            f"时间: {sig['exit_time']}\n"
+            f"结果: <b>{r_str}</b>\n"
+            f"原始 R (无加仓): {sig.get('result_r_raw', '?')}\n"
+            f"仓位倍数: {sig['size_multiplier']}×{extra}")
+
+
+def fmt_stair(strategy, n, sig, level):
+    """level = '2r' or '4r'"""
+    return (f"🪜 <b>#{n:03d} 阶梯锁升级 — {strategy.name}</b>\n"
+            f"━━━━━━━━━━━━━━━\n"
+            f"价格达到 +{level.upper()}, SL 已上移到 <code>${sig['current_sl']:,.2f}</code>\n"
+            f"现在 {'最少赚 +1R' if level == '2r' else '最少赚 +2R'}")
+
+
+def fmt_pyramid(strategy, n, sig):
+    return (f"🔺 <b>#{n:03d} 金字塔加仓 — {strategy.name}</b>\n"
+            f"━━━━━━━━━━━━━━━\n"
+            f"价格触及 +1R, 加 0.5× 仓位\n"
+            f"加仓入场价: <code>${sig['pyramid_entry_price']:,.2f}</code>\n"
+            f"总仓位: 1.5× ({sig['size_multiplier']}× 主仓 + 0.5× 加仓)")
+
+
+def fmt_cooldown(strategy, hours):
+    return (f"❄️ <b>触发冷却 — {strategy.name}</b>\n"
+            f"━━━━━━━━━━━━━━━\n"
+            f"连续 {strategy.cd_loss_count} 次止损, 暂停 {hours} 小时不接新单\n"
+            f"等市场情绪冷静后再战")
+
+
+# ========== 主流程 ==========
+
+def process_strategy(strategy: StrategyConfig, bars, ema200, adx):
+    state = load_state(strategy.state_file)
+
+    # 首次启动
+    if not state.get("started"):
+        state["anchor_ts"] = bars[-2]["ts"]
+        state["started"] = True
+        latest_close = bars[-1]["close"]
+        welcome = (
+            f"🤖 <b>{strategy.name} 已启动</b>\n"
+            f"━━━━━━━━━━━━━━━\n"
+            f"策略代号: <b>{strategy.code}</b>\n"
+            f"标的: BTCUSDT 1h\n"
+            f"当前 BTC: <code>${latest_close:,.2f}</code>\n"
+            f"锚点: <code>{bars[-2]['date']} UTC</code>\n\n"
+            f"<i>等待 F6 信号...</i>"
+        )
+        labeled_send(strategy.code, welcome)
+        save_state(state, strategy.state_file)
+        return
+
+    # 推进现有信号状态
+    for i, sig in enumerate(state["signals"], 1):
+        if sig["status"] in ("tp_hit", "sl_hit", "expired", "invalidated"):
+            continue
+        old_status = sig["status"]
+        old_stair_2r = sig.get("stair_2r_locked", False)
+        old_stair_4r = sig.get("stair_4r_locked", False)
+        old_pyramid = sig.get("pyramid_entered", False)
+
+        update_signal_status(strategy, bars, sig)
+
+        new_status = sig["status"]
+
+        # 状态变化通知
+        if old_status != new_status:
+            if new_status == "entered":
+                labeled_send(strategy.code, fmt_entered(strategy, i, sig))
+            elif new_status == "tp_hit":
+                labeled_send(strategy.code, fmt_exit(strategy, i, sig, "tp"))
+                cd_triggered = update_cooldown(strategy, state)  # 一般不会因为 TP 触发
+            elif new_status == "sl_hit":
+                labeled_send(strategy.code, fmt_exit(strategy, i, sig, "sl"))
+                cd_triggered = update_cooldown(strategy, state)
+                if cd_triggered:
+                    labeled_send(strategy.code, fmt_cooldown(strategy, strategy.cd_pause_hours))
+            elif new_status == "expired":
+                labeled_send(strategy.code, f"⏰ [#{i:03d}] 突破窗口已过, 信号作废 — {strategy.name}")
+            elif new_status == "invalidated":
+                labeled_send(strategy.code, f"❌ [#{i:03d}] 突破前先碰 SL, 信号作废 — {strategy.name}")
+
+        # 阶梯锁通知
+        if strategy.use_stair and sig["status"] == "entered":
+            if not old_stair_2r and sig.get("stair_2r_locked"):
+                labeled_send(strategy.code, fmt_stair(strategy, i, sig, "2r"))
+            if not old_stair_4r and sig.get("stair_4r_locked"):
+                labeled_send(strategy.code, fmt_stair(strategy, i, sig, "4r"))
+
+        # 金字塔通知
+        if strategy.use_pyramid and not old_pyramid and sig.get("pyramid_entered"):
+            labeled_send(strategy.code, fmt_pyramid(strategy, i, sig))
+        time.sleep(0.3)
+
+    # 检测新信号
+    if len(state["signals"]) < MAX_SIGNALS:
+        new_sigs = detect_new_signals(strategy, bars, state, ema200, adx)
+        for sig_rec in new_sigs:
+            if len(state["signals"]) >= MAX_SIGNALS:
+                break
+            state["signals"].append(sig_rec)
+            if state["first_signal_date"] is None:
+                state["first_signal_date"] = sig_rec["signal_time"]
+            n = len(state["signals"])
+            labeled_send(strategy.code, fmt_signal_formed(strategy, n, sig_rec))
+            time.sleep(0.3)
+            # 立刻推进一下 (可能上根 K 已突破)
+            update_signal_status(strategy, bars, sig_rec)
+            if sig_rec["status"] == "entered":
+                labeled_send(strategy.code, fmt_entered(strategy, n, sig_rec))
+                time.sleep(0.3)
+
+    save_state(state, strategy.state_file)
+
+
+def main():
+    api_key = os.environ.get("COINGLASS_API_KEY")
+    if not api_key:
+        env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+        if os.path.exists(env_path):
+            with open(env_path) as f:
+                for line in f:
+                    if line.startswith("COINGLASS_API_KEY="):
+                        api_key = line.split("=", 1)[1].strip().strip('"').strip("'")
+                        break
+    if not api_key:
+        print("ERROR: 缺少 COINGLASS_API_KEY")
+        sys.exit(1)
+
+    print(f"[{datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}] 赛马 bot 启动")
+    bars = fetch_btc_1h_bars(api_key, N_BARS)
+    if len(bars) < 250:
+        print(f"  数据不足 {len(bars)} 根")
+        sys.exit(1)
+    print(f"  拉到 {len(bars)} 根, 最新 {bars[-1]['date']} ${bars[-1]['close']:.2f}")
+
+    ema200 = _compute_ema(bars, 200)
+    adx = _compute_adx(bars, 14)
+
+    for strategy in STRATEGIES:
+        print(f"\n--- 策略 {strategy.code}: {strategy.name} ---")
+        try:
+            process_strategy(strategy, bars, ema200, adx)
+        except Exception as e:
+            print(f"  ERROR: {e}")
+            import traceback; traceback.print_exc()
+
+
+if __name__ == "__main__":
+    main()
