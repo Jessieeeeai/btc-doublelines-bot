@@ -294,8 +294,8 @@
       "size_multiplier": 1.0,
       "stair_2r_locked": false,
       "stair_4r_locked": false,
-      "pyramid_entered": false,
-      "pyramid_entry_price": null
+      "pyramid_entered": true,
+      "pyramid_entry_price": 75155.8
     },
     {
       "signal_time": "2026-05-27 01:00 UTC",
