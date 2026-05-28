@@ -276,7 +276,7 @@
       "direction": "short",
       "trigger_price": 77153.9,
       "sl0": 79152.0,
-      "current_sl": 79152.0,
+      "current_sl": 75155.8,
       "tp": 61169.1,
       "r_dollar": 1998.1,
       "expires_at": "2026-05-26 15:00 UTC",
@@ -292,7 +292,7 @@
       "result_r": null,
       "result_r_raw": null,
       "size_multiplier": 1.0,
-      "stair_2r_locked": false,
+      "stair_2r_locked": true,
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null
