@@ -732,6 +732,87 @@ def process_strategy(strategy: StrategyConfig, bars, ema200, adx):
     save_state(state, strategy.state_file)
 
 
+def build_summary_report(strategies_data, latest_btc, title="📊 战报"):
+    """生成 3 策略合并汇总文本"""
+    now_utc = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
+    parts = [
+        f"<b>{title}</b>",
+        f"<i>截至 {now_utc} · BTC ${latest_btc:,.0f}</i>",
+        "━━━━━━━━━━━━━━━",
+    ]
+
+    for strategy, state in strategies_data:
+        s = compute_strategy_stats(state)
+        signals = state.get("signals", [])
+        # 持仓详情 (按 entry_ts 时间顺序)
+        entered_sigs = [(i, sig) for i, sig in enumerate(signals, 1)
+                         if sig["status"] == "entered"]
+        entered_sigs.sort(key=lambda x: x[1].get("entry_ts") or 0)
+        pending_lines = []
+        for i, sig in entered_sigs:
+            dir_char = "📉空" if sig["direction"] == "short" else "📈多"
+            sig_time = sig["signal_time"].replace(" UTC", "")
+            pending_lines.append(
+                f"  <code>#{i:03d}</code> {sig_time} {dir_char} "
+                f"@${sig['entry_price']:,.0f} → "
+                f"SL ${sig['current_sl']:,.0f} | TP ${sig['tp']:,.0f}"
+            )
+
+        wr_str = f"{s['win_rate']*100:.1f}%" if s["n_completed"] > 0 else "—"
+        r_str = f"{s['total_r_net']:+.2f}R"
+        if strategy.use_kelly or strategy.use_pyramid:
+            r_str = f"{s['total_r_net']:+.2f}R (原始 {s['total_r_raw']:+.2f}R)"
+
+        section_lines = [
+            f"<b>[{strategy.code}] {strategy.name}</b>",
+            f"总信号 {s['n_total']} 单 · 完成 {s['n_completed']} ({s['wins']}胜 {s['losses']}败) · 持仓 {s['n_pending']} · 作废 {s['n_expired']}",
+            f"胜率 <b>{wr_str}</b> · 累计 <b>{r_str}</b>",
+        ]
+        if pending_lines:
+            section_lines.append("持仓明细:")
+            section_lines.extend(pending_lines)
+        parts.append("\n".join(section_lines))
+        parts.append("━━━━━━━━━━━━━━━")
+
+    parts.append("⏰ 下次汇总: 每周日 12:00 PT (北京周一 03:00)")
+    return "\n\n".join(parts)
+
+
+def maybe_send_summary_report(strategies_data, latest_btc):
+    """首次跑发校对; 之后每周日 12:00 PT 自动推汇总"""
+    now_ts = int(time.time())
+    SECONDS_PER_DAY = 86400
+
+    # 首次跑 (state 都没有 last_weekly_report_ts 字段)
+    first_run = all(s.get("last_weekly_report_ts", 0) == 0
+                     for _, s in strategies_data)
+    if first_run:
+        text = build_summary_report(strategies_data, latest_btc, title="📋 校对报告")
+        send_message(text)
+        for _, state in strategies_data:
+            state["last_weekly_report_ts"] = now_ts
+        return True
+
+    # 周日 12:00 PT 检查
+    # PDT (3-11 月) = UTC-7 → 周日 12:00 PT = 周日 19:00 UTC
+    # PST (11-3 月) = UTC-8 → 周日 12:00 PT = 周日 20:00 UTC
+    # 简化: 19-20 UTC 周日发, 距上次 ≥ 6 天
+    now_dt = datetime.utcfromtimestamp(now_ts)
+    is_sunday = now_dt.weekday() == 6  # Mon=0 ... Sun=6
+    is_noon_window = 19 <= now_dt.hour <= 20
+
+    last_ts = min(s.get("last_weekly_report_ts", 0) for _, s in strategies_data)
+    elapsed_days = (now_ts - last_ts) / SECONDS_PER_DAY
+
+    if is_sunday and is_noon_window and elapsed_days >= 6:
+        text = build_summary_report(strategies_data, latest_btc, title="📊 每周战报")
+        send_message(text)
+        for _, state in strategies_data:
+            state["last_weekly_report_ts"] = now_ts
+        return True
+    return False
+
+
 def main():
     api_key = os.environ.get("COINGLASS_API_KEY")
     if not api_key:
@@ -763,6 +844,17 @@ def main():
         except Exception as e:
             print(f"  ERROR: {e}")
             import traceback; traceback.print_exc()
+
+    # 处理完所有策略后, 检查是否需要发汇总报告 (校对 / 每周战报)
+    try:
+        strategies_data = [(s, load_state(s.state_file)) for s in STRATEGIES]
+        if maybe_send_summary_report(strategies_data, bars[-1]["close"]):
+            for strategy, state in strategies_data:
+                save_state(state, strategy.state_file)
+            print("  汇总报告已推送")
+    except Exception as e:
+        print(f"  汇总报告 ERROR: {e}")
+        import traceback; traceback.print_exc()
 
 
 if __name__ == "__main__":
