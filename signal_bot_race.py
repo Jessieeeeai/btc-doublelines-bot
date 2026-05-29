@@ -428,6 +428,8 @@ def update_cooldown(strategy: StrategyConfig, state):
 # ========== 信号检测 & TG ==========
 
 def detect_new_signals(strategy: StrategyConfig, bars, state, ema200, adx):
+    """返回原始 signal dict 列表 (不调用 build_signal_record).
+    build 推到 process_strategy 里逐个调用, 这样 Kelly 仓位能看到刚 append 的上一单状态."""
     anchor_ts = state.get("anchor_ts") or 0
     known_ts = {s["signal_ts"] for s in state["signals"]}
     raw_signals = detect_signals(bars, COMMON_F6["body_ratio"], COMMON_F6["entanglement_tolerance"])
@@ -435,9 +437,6 @@ def detect_new_signals(strategy: StrategyConfig, bars, state, ema200, adx):
     now_ts = int(time.time())
     # 突破窗口长度 (秒) - 信号 K + entry_wait_bars 后过期
     expire_window_sec = (COMMON_F6["entry_wait_bars"] + 1) * 3600
-    # 信号陈旧度容差 - 信号 K 收完到现在不能超过这个时间
-    # 等于"突破窗口完整剩余" → 只推还在等突破的新信号
-    max_signal_age_sec = expire_window_sec
     for sig in raw_signals:
         sig_bar = bars[sig["index"]]
         if sig_bar["ts"] in known_ts:
@@ -447,7 +446,6 @@ def detect_new_signals(strategy: StrategyConfig, bars, state, ema200, adx):
         if sig["index"] >= len(bars) - 1:
             continue
         # 跳过陈旧信号 — 突破窗口已过期就不再推送
-        # (e.g. bot 离线一段后恢复, 不要把几天前已过期的信号当"新信号"刷出来)
         if sig_bar["ts"] + expire_window_sec < now_ts:
             continue
         if not apply_f6_filter(bars, sig, ema200, adx):
@@ -455,8 +453,7 @@ def detect_new_signals(strategy: StrategyConfig, bars, state, ema200, adx):
         # 冷却检查
         if check_cooldown(strategy, state, sig["direction"], sig_bar["ts"]):
             continue
-        rec = build_signal_record(strategy, bars, sig, state)
-        new.append(rec)
+        new.append(sig)  # 返回原始 sig, build 推到调用方
     return new
 
 
@@ -709,23 +706,28 @@ def process_strategy(strategy: StrategyConfig, bars, ema200, adx):
             labeled_send(strategy.code, fmt_pyramid(strategy, i, sig, state))
         time.sleep(0.3)
 
-    # 检测新信号
+    # 检测新信号 (返回原始 sig, 逐个 build + append + 更新状态, 让 Kelly 能看到刚处理完的上一单)
     if len(state["signals"]) < MAX_SIGNALS:
-        new_sigs = detect_new_signals(strategy, bars, state, ema200, adx)
-        for sig_rec in new_sigs:
+        new_raw_sigs = detect_new_signals(strategy, bars, state, ema200, adx)
+        for raw_sig in new_raw_sigs:
             if len(state["signals"]) >= MAX_SIGNALS:
                 break
+            # ⭐ build_signal_record 在每个信号被处理时调用, 而不是一次性 build
+            #     这样 Kelly 看到的 completed 列表包含本批前面已 append 且已更新状态的信号
+            sig_rec = build_signal_record(strategy, bars, raw_sig, state)
             state["signals"].append(sig_rec)
             if state["first_signal_date"] is None:
                 state["first_signal_date"] = sig_rec["signal_time"]
             n = len(state["signals"])
             labeled_send(strategy.code, fmt_signal_formed(strategy, n, sig_rec, state))
             time.sleep(0.3)
-            # 立刻推进一下 (可能上根 K 已突破)
+            # 立刻推进状态 — 若上根 K 已突破或已 TP/SL, 立刻更新
             update_signal_status(strategy, bars, sig_rec)
             if sig_rec["status"] == "entered":
                 labeled_send(strategy.code, fmt_entered(strategy, n, sig_rec, state))
                 time.sleep(0.3)
+            # 注意: 若 sig_rec 立刻 tp_hit/sl_hit, status 已更新, 但本轮不发出场消息
+            #       (出场消息由下一轮 process 时检测 old_status != new_status 触发)
 
     save_state(state, strategy.state_file)
 
