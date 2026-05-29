@@ -451,7 +451,107 @@ def detect_new_signals(strategy: StrategyConfig, bars, state, ema200, adx):
     return new
 
 
-def fmt_signal_formed(strategy, n, sig):
+def compute_strategy_stats(state):
+    """计算策略当前累计战绩"""
+    signals = state.get("signals", [])
+    completed = [s for s in signals if s["status"] in ("tp_hit", "sl_hit")]
+    n_total = len(signals)
+    n_completed = len(completed)
+    n_pending = sum(1 for s in signals if s["status"] in ("waiting", "entered"))
+    n_expired = sum(1 for s in signals if s["status"] in ("expired", "invalidated"))
+    wins = sum(1 for s in completed if (s.get("result_r_raw") or s.get("result_r") or 0) > 0)
+    losses = n_completed - wins
+    total_r_raw = sum((s.get("result_r_raw") or 0) for s in completed)
+    total_r_net = sum((s.get("result_r") or 0) for s in completed)
+    # 连胜连败
+    cur_streak = 0; streak_type = None
+    for s in reversed(completed):
+        r = s.get("result_r_raw") or s.get("result_r") or 0
+        if streak_type is None:
+            streak_type = "win" if r > 0 else "loss"
+            cur_streak = 1
+        elif (streak_type == "win" and r > 0) or (streak_type == "loss" and r < 0):
+            cur_streak += 1
+        else:
+            break
+    # 最长连胜/连败
+    max_win_streak = max_loss_streak = 0
+    w_run = l_run = 0
+    for s in completed:
+        r = s.get("result_r_raw") or s.get("result_r") or 0
+        if r > 0:
+            w_run += 1; l_run = 0
+            max_win_streak = max(max_win_streak, w_run)
+        else:
+            l_run += 1; w_run = 0
+            max_loss_streak = max(max_loss_streak, l_run)
+    win_rate = wins / n_completed if n_completed else 0
+    return {
+        "n_total": n_total, "n_completed": n_completed,
+        "n_pending": n_pending, "n_expired": n_expired,
+        "wins": wins, "losses": losses, "win_rate": win_rate,
+        "total_r_raw": total_r_raw, "total_r_net": total_r_net,
+        "cur_streak": cur_streak, "streak_type": streak_type,
+        "max_win_streak": max_win_streak, "max_loss_streak": max_loss_streak,
+    }
+
+
+def fmt_stats_footer(strategy, state):
+    """生成策略统计 footer, 加在每条消息底部"""
+    s = compute_strategy_stats(state)
+    if s["n_completed"] == 0 and s["n_pending"] == 0:
+        return ""  # 没数据不显示
+
+    # 连胜连败标识
+    streak_emoji = ""
+    if s["cur_streak"] > 0 and s["streak_type"]:
+        if s["streak_type"] == "win":
+            streak_emoji = f"🔥 连胜 {s['cur_streak']}"
+        else:
+            streak_emoji = f"❄️ 连败 {s['cur_streak']}"
+
+    # 胜率显示
+    wr_str = f"{s['win_rate']*100:.1f}%" if s["n_completed"] > 0 else "—"
+
+    # 累计 R
+    r_display = f"{s['total_r_net']:+.2f}R"
+    if strategy.use_kelly or strategy.use_pyramid:
+        # 策略 C: 显示净 R (含 Kelly 加仓) + 原始 R
+        r_display = f"{s['total_r_net']:+.2f}R (原始 {s['total_r_raw']:+.2f}R)"
+
+    # 冷却状态 (B/C 才有)
+    cd_info = ""
+    if strategy.use_cooldown:
+        now_ts = int(time.time())
+        if strategy.cd_direction_aware:
+            until_long = state.get("pause_until_ts_long", 0)
+            until_short = state.get("pause_until_ts_short", 0)
+            if now_ts < until_long:
+                hours_left = (until_long - now_ts) / 3600
+                cd_info = f"\n❄️ 多单冷却中 ({hours_left:.1f}h 剩)"
+            if now_ts < until_short:
+                hours_left = (until_short - now_ts) / 3600
+                cd_info += f"\n❄️ 空单冷却中 ({hours_left:.1f}h 剩)"
+        else:
+            until = state.get("pause_until_ts", 0)
+            if now_ts < until:
+                hours_left = (until - now_ts) / 3600
+                cd_info = f"\n❄️ 冷却中 ({hours_left:.1f}h 剩)"
+
+    footer = (
+        f"\n━━━━━━━━━━━━━━━\n"
+        f"📊 <b>[{strategy.code}] 累计战绩</b>\n"
+        f"已完成 {s['n_completed']} 单 ({s['wins']}胜 {s['losses']}败, 胜率 {wr_str})\n"
+        f"累计 R: <b>{r_display}</b>\n"
+        f"持仓中: {s['n_pending']} 单 · 作废: {s['n_expired']} 单"
+    )
+    if streak_emoji:
+        footer += f"\n{streak_emoji} (历史最长 {s['max_win_streak']}胜 / {s['max_loss_streak']}败)"
+    footer += cd_info
+    return footer
+
+
+def fmt_signal_formed(strategy, n, sig, state=None):
     s = (f"🔔 <b>新信号 #{n:03d} — {strategy.name}</b>\n"
          f"━━━━━━━━━━━━━━━\n"
          f"方向: {'📈 做多' if sig['direction']=='long' else '📉 做空'} ({sig['direction'].upper()})\n"
@@ -462,20 +562,25 @@ def fmt_signal_formed(strategy, n, sig):
          f"🎯 止盈目标: <code>${sig['tp']:,.2f}</code> ({strategy.tp_target_r}R)\n"
          f"⚖️ 仓位倍数: <b>{sig['size_multiplier']}×</b>\n"
          f"⏰ 突破窗口: {sig['expires_at']} 前有效")
+    if state is not None:
+        s += fmt_stats_footer(strategy, state)
     return s
 
 
-def fmt_entered(strategy, n, sig):
-    return (f"✅ <b>#{n:03d} 已入场 — {strategy.name}</b>\n"
-            f"━━━━━━━━━━━━━━━\n"
-            f"入场价: <code>${sig['entry_price']:,.2f}</code>\n"
-            f"入场时间: {sig['entry_time']}\n"
-            f"当前 SL: <code>${sig['current_sl']:,.2f}</code>\n"
-            f"目标 TP: <code>${sig['tp']:,.2f}</code>\n"
-            f"仓位: <b>{sig['size_multiplier']}×</b>")
+def fmt_entered(strategy, n, sig, state=None):
+    s = (f"✅ <b>#{n:03d} 已入场 — {strategy.name}</b>\n"
+         f"━━━━━━━━━━━━━━━\n"
+         f"入场价: <code>${sig['entry_price']:,.2f}</code>\n"
+         f"入场时间: {sig['entry_time']}\n"
+         f"当前 SL: <code>${sig['current_sl']:,.2f}</code>\n"
+         f"目标 TP: <code>${sig['tp']:,.2f}</code>\n"
+         f"仓位: <b>{sig['size_multiplier']}×</b>")
+    if state is not None:
+        s += fmt_stats_footer(strategy, state)
+    return s
 
 
-def fmt_exit(strategy, n, sig, outcome):
+def fmt_exit(strategy, n, sig, outcome, state=None):
     """outcome = 'tp' / 'sl'"""
     icon = "🟢 TP" if outcome == "tp" else "🔴 SL"
     r_str = f"{sig['result_r']:+.2f}R" if sig['result_r'] is not None else "?"
@@ -486,36 +591,48 @@ def fmt_exit(strategy, n, sig, outcome):
         extra += "\n阶梯锁: 达到 +4R, SL 已升到 +2R"
     elif sig.get("stair_2r_locked"):
         extra += "\n阶梯锁: 达到 +2R, SL 已升到 +1R"
-    return (f"{icon} <b>#{n:03d} 出场 — {strategy.name}</b>\n"
-            f"━━━━━━━━━━━━━━━\n"
-            f"出场价: <code>${sig['exit_price']:,.2f}</code>\n"
-            f"时间: {sig['exit_time']}\n"
-            f"结果: <b>{r_str}</b>\n"
-            f"原始 R (无加仓): {sig.get('result_r_raw', '?')}\n"
-            f"仓位倍数: {sig['size_multiplier']}×{extra}")
+    s = (f"{icon} <b>#{n:03d} 出场 — {strategy.name}</b>\n"
+         f"━━━━━━━━━━━━━━━\n"
+         f"出场价: <code>${sig['exit_price']:,.2f}</code>\n"
+         f"时间: {sig['exit_time']}\n"
+         f"结果: <b>{r_str}</b>\n"
+         f"原始 R (无加仓): {sig.get('result_r_raw', '?')}\n"
+         f"仓位倍数: {sig['size_multiplier']}×{extra}")
+    if state is not None:
+        s += fmt_stats_footer(strategy, state)
+    return s
 
 
-def fmt_stair(strategy, n, sig, level):
+def fmt_stair(strategy, n, sig, level, state=None):
     """level = '2r' or '4r'"""
-    return (f"🪜 <b>#{n:03d} 阶梯锁升级 — {strategy.name}</b>\n"
-            f"━━━━━━━━━━━━━━━\n"
-            f"价格达到 +{level.upper()}, SL 已上移到 <code>${sig['current_sl']:,.2f}</code>\n"
-            f"现在 {'最少赚 +1R' if level == '2r' else '最少赚 +2R'}")
+    s = (f"🪜 <b>#{n:03d} 阶梯锁升级 — {strategy.name}</b>\n"
+         f"━━━━━━━━━━━━━━━\n"
+         f"价格达到 +{level.upper()}, SL 已上移到 <code>${sig['current_sl']:,.2f}</code>\n"
+         f"现在 {'最少赚 +1R' if level == '2r' else '最少赚 +2R'}")
+    if state is not None:
+        s += fmt_stats_footer(strategy, state)
+    return s
 
 
-def fmt_pyramid(strategy, n, sig):
-    return (f"🔺 <b>#{n:03d} 金字塔加仓 — {strategy.name}</b>\n"
-            f"━━━━━━━━━━━━━━━\n"
-            f"价格触及 +1R, 加 0.5× 仓位\n"
-            f"加仓入场价: <code>${sig['pyramid_entry_price']:,.2f}</code>\n"
-            f"总仓位: 1.5× ({sig['size_multiplier']}× 主仓 + 0.5× 加仓)")
+def fmt_pyramid(strategy, n, sig, state=None):
+    s = (f"🔺 <b>#{n:03d} 金字塔加仓 — {strategy.name}</b>\n"
+         f"━━━━━━━━━━━━━━━\n"
+         f"价格触及 +1R, 加 0.5× 仓位\n"
+         f"加仓入场价: <code>${sig['pyramid_entry_price']:,.2f}</code>\n"
+         f"总仓位: 1.5× ({sig['size_multiplier']}× 主仓 + 0.5× 加仓)")
+    if state is not None:
+        s += fmt_stats_footer(strategy, state)
+    return s
 
 
-def fmt_cooldown(strategy, hours):
-    return (f"❄️ <b>触发冷却 — {strategy.name}</b>\n"
-            f"━━━━━━━━━━━━━━━\n"
-            f"连续 {strategy.cd_loss_count} 次止损, 暂停 {hours} 小时不接新单\n"
-            f"等市场情绪冷静后再战")
+def fmt_cooldown(strategy, hours, state=None):
+    s = (f"❄️ <b>触发冷却 — {strategy.name}</b>\n"
+         f"━━━━━━━━━━━━━━━\n"
+         f"连续 {strategy.cd_loss_count} 次止损, 暂停 {hours} 小时不接新单\n"
+         f"等市场情绪冷静后再战")
+    if state is not None:
+        s += fmt_stats_footer(strategy, state)
+    return s
 
 
 # ========== 主流程 ==========
@@ -554,33 +671,33 @@ def process_strategy(strategy: StrategyConfig, bars, ema200, adx):
 
         new_status = sig["status"]
 
-        # 状态变化通知
+        # 状态变化通知 (传 state 以便加策略统计 footer)
         if old_status != new_status:
             if new_status == "entered":
-                labeled_send(strategy.code, fmt_entered(strategy, i, sig))
+                labeled_send(strategy.code, fmt_entered(strategy, i, sig, state))
             elif new_status == "tp_hit":
-                labeled_send(strategy.code, fmt_exit(strategy, i, sig, "tp"))
-                cd_triggered = update_cooldown(strategy, state)  # 一般不会因为 TP 触发
+                labeled_send(strategy.code, fmt_exit(strategy, i, sig, "tp", state))
+                cd_triggered = update_cooldown(strategy, state)
             elif new_status == "sl_hit":
-                labeled_send(strategy.code, fmt_exit(strategy, i, sig, "sl"))
+                labeled_send(strategy.code, fmt_exit(strategy, i, sig, "sl", state))
                 cd_triggered = update_cooldown(strategy, state)
                 if cd_triggered:
-                    labeled_send(strategy.code, fmt_cooldown(strategy, strategy.cd_pause_hours))
+                    labeled_send(strategy.code, fmt_cooldown(strategy, strategy.cd_pause_hours, state))
             elif new_status == "expired":
-                labeled_send(strategy.code, f"⏰ [#{i:03d}] 突破窗口已过, 信号作废 — {strategy.name}")
+                labeled_send(strategy.code, f"⏰ [#{i:03d}] 突破窗口已过, 信号作废 — {strategy.name}" + fmt_stats_footer(strategy, state))
             elif new_status == "invalidated":
-                labeled_send(strategy.code, f"❌ [#{i:03d}] 突破前先碰 SL, 信号作废 — {strategy.name}")
+                labeled_send(strategy.code, f"❌ [#{i:03d}] 突破前先碰 SL, 信号作废 — {strategy.name}" + fmt_stats_footer(strategy, state))
 
         # 阶梯锁通知
         if strategy.use_stair and sig["status"] == "entered":
             if not old_stair_2r and sig.get("stair_2r_locked"):
-                labeled_send(strategy.code, fmt_stair(strategy, i, sig, "2r"))
+                labeled_send(strategy.code, fmt_stair(strategy, i, sig, "2r", state))
             if not old_stair_4r and sig.get("stair_4r_locked"):
-                labeled_send(strategy.code, fmt_stair(strategy, i, sig, "4r"))
+                labeled_send(strategy.code, fmt_stair(strategy, i, sig, "4r", state))
 
         # 金字塔通知
         if strategy.use_pyramid and not old_pyramid and sig.get("pyramid_entered"):
-            labeled_send(strategy.code, fmt_pyramid(strategy, i, sig))
+            labeled_send(strategy.code, fmt_pyramid(strategy, i, sig, state))
         time.sleep(0.3)
 
     # 检测新信号
@@ -593,12 +710,12 @@ def process_strategy(strategy: StrategyConfig, bars, ema200, adx):
             if state["first_signal_date"] is None:
                 state["first_signal_date"] = sig_rec["signal_time"]
             n = len(state["signals"])
-            labeled_send(strategy.code, fmt_signal_formed(strategy, n, sig_rec))
+            labeled_send(strategy.code, fmt_signal_formed(strategy, n, sig_rec, state))
             time.sleep(0.3)
             # 立刻推进一下 (可能上根 K 已突破)
             update_signal_status(strategy, bars, sig_rec)
             if sig_rec["status"] == "entered":
-                labeled_send(strategy.code, fmt_entered(strategy, n, sig_rec))
+                labeled_send(strategy.code, fmt_entered(strategy, n, sig_rec, state))
                 time.sleep(0.3)
 
     save_state(state, strategy.state_file)
