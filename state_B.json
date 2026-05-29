@@ -332,5 +332,6 @@
   "pause_until_ts": 1779937200,
   "pause_until_ts_long": 0,
   "pause_until_ts_short": 0,
-  "last_weekly_report_ts": 1780042345
+  "last_weekly_report_ts": 1780043129,
+  "report_format_v": 2
 }
