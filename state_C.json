@@ -358,5 +358,6 @@
   "started": true,
   "pause_until_ts": 0,
   "pause_until_ts_long": 1779937200,
-  "pause_until_ts_short": 0
+  "pause_until_ts_short": 0,
+  "last_weekly_report_ts": 1780042345
 }
