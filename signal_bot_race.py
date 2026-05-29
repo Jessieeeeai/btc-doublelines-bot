@@ -744,20 +744,23 @@ def build_summary_report(strategies_data, latest_btc, title="📊 战报"):
     for strategy, state in strategies_data:
         s = compute_strategy_stats(state)
         signals = state.get("signals", [])
-        # 持仓详情 (按 entry_ts 时间顺序)
-        entered_sigs = [(i, sig) for i, sig in enumerate(signals, 1)
-                         if sig["status"] == "entered"]
-        entered_sigs.sort(key=lambda x: x[1].get("entry_ts") or 0)
-        pending_lines = []
-        for i, sig in entered_sigs:
-            dir_char = "📉空" if sig["direction"] == "short" else "📈多"
-            sig_time = sig["signal_time"].replace(" UTC", "")
-            pending_lines.append(
-                f"  <code>#{i:03d}</code> {sig_time} {dir_char} "
-                f"@${sig['entry_price']:,.0f} → "
-                f"SL ${sig['current_sl']:,.0f} | TP ${sig['tp']:,.0f}"
-            )
 
+        # 把信号分 3 组并按时间排序
+        completed_sigs = []  # tp_hit / sl_hit
+        entered_sigs = []
+        expired_sigs = []
+        for i, sig in enumerate(signals, 1):
+            if sig["status"] in ("tp_hit", "sl_hit"):
+                completed_sigs.append((i, sig))
+            elif sig["status"] == "entered":
+                entered_sigs.append((i, sig))
+            elif sig["status"] in ("expired", "invalidated"):
+                expired_sigs.append((i, sig))
+        completed_sigs.sort(key=lambda x: x[1].get("exit_ts") or 0)
+        entered_sigs.sort(key=lambda x: x[1].get("entry_ts") or 0)
+        expired_sigs.sort(key=lambda x: x[1].get("signal_ts") or 0)
+
+        # Header 行
         wr_str = f"{s['win_rate']*100:.1f}%" if s["n_completed"] > 0 else "—"
         r_str = f"{s['total_r_net']:+.2f}R"
         if strategy.use_kelly or strategy.use_pyramid:
@@ -768,9 +771,43 @@ def build_summary_report(strategies_data, latest_btc, title="📊 战报"):
             f"总信号 {s['n_total']} 单 · 完成 {s['n_completed']} ({s['wins']}胜 {s['losses']}败) · 持仓 {s['n_pending']} · 作废 {s['n_expired']}",
             f"胜率 <b>{wr_str}</b> · 累计 <b>{r_str}</b>",
         ]
-        if pending_lines:
-            section_lines.append("持仓明细:")
-            section_lines.extend(pending_lines)
+
+        # 已完成明细
+        if completed_sigs:
+            section_lines.append("\n✅❌ 已完结:")
+            for i, sig in completed_sigs:
+                dir_char = "📉空" if sig["direction"] == "short" else "📈多"
+                sig_time = sig["signal_time"].replace(" UTC", "")
+                outcome_icon = "🟢" if sig["status"] == "tp_hit" else "🔴"
+                r_val = sig.get("result_r") or 0
+                r_raw = sig.get("result_r_raw") or 0
+                # Kelly / 金字塔: 显示原始 R 在括号
+                if (strategy.use_kelly or strategy.use_pyramid) and abs(r_val - r_raw) > 0.01:
+                    r_display = f"{r_val:+.2f}R (原始 {r_raw:+.2f}R)"
+                else:
+                    r_display = f"{r_val:+.2f}R"
+                section_lines.append(
+                    f"  {outcome_icon} <code>#{i:03d}</code> {sig_time} {dir_char} "
+                    f"@${sig['entry_price']:,.0f} → ${sig['exit_price']:,.0f} = {r_display}"
+                )
+
+        # 持仓明细
+        if entered_sigs:
+            section_lines.append("\n⏳ 持仓中:")
+            for i, sig in entered_sigs:
+                dir_char = "📉空" if sig["direction"] == "short" else "📈多"
+                sig_time = sig["signal_time"].replace(" UTC", "")
+                section_lines.append(
+                    f"  <code>#{i:03d}</code> {sig_time} {dir_char} "
+                    f"@${sig['entry_price']:,.0f} → "
+                    f"SL ${sig['current_sl']:,.0f} | TP ${sig['tp']:,.0f}"
+                )
+
+        # 作废明细 (简略, 只列编号)
+        if expired_sigs:
+            ids = ", ".join(f"#{i:03d}" for i, _ in expired_sigs)
+            section_lines.append(f"\n⚪ 作废: {ids}")
+
         parts.append("\n".join(section_lines))
         parts.append("━━━━━━━━━━━━━━━")
 
