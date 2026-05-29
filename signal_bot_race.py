@@ -433,6 +433,11 @@ def detect_new_signals(strategy: StrategyConfig, bars, state, ema200, adx):
     raw_signals = detect_signals(bars, COMMON_F6["body_ratio"], COMMON_F6["entanglement_tolerance"])
     new = []
     now_ts = int(time.time())
+    # 突破窗口长度 (秒) - 信号 K + entry_wait_bars 后过期
+    expire_window_sec = (COMMON_F6["entry_wait_bars"] + 1) * 3600
+    # 信号陈旧度容差 - 信号 K 收完到现在不能超过这个时间
+    # 等于"突破窗口完整剩余" → 只推还在等突破的新信号
+    max_signal_age_sec = expire_window_sec
     for sig in raw_signals:
         sig_bar = bars[sig["index"]]
         if sig_bar["ts"] in known_ts:
@@ -440,6 +445,10 @@ def detect_new_signals(strategy: StrategyConfig, bars, state, ema200, adx):
         if sig_bar["ts"] <= anchor_ts:
             continue
         if sig["index"] >= len(bars) - 1:
+            continue
+        # 跳过陈旧信号 — 突破窗口已过期就不再推送
+        # (e.g. bot 离线一段后恢复, 不要把几天前已过期的信号当"新信号"刷出来)
+        if sig_bar["ts"] + expire_window_sec < now_ts:
             continue
         if not apply_f6_filter(bars, sig, ema200, adx):
             continue
