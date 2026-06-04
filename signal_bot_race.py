@@ -519,11 +519,14 @@ def fmt_stats_footer(strategy, state):
     # 胜率显示
     wr_str = f"{s['win_rate']*100:.1f}%" if s["n_completed"] > 0 else "—"
 
-    # 累计 R
-    r_display = f"{s['total_r_net']:+.2f}R"
-    if strategy.use_kelly or strategy.use_pyramid:
-        # 策略 C: 显示净 R (含 Kelly 加仓) + 原始 R
-        r_display = f"{s['total_r_net']:+.2f}R (原始 {s['total_r_raw']:+.2f}R)"
+    # 累计 $ 盈亏 (按已完成单计算)
+    total_dollar = 0
+    for sig in state.get("signals", []):
+        if sig["status"] in ("tp_hit", "sl_hit"):
+            r_val = sig.get("result_r") or 0
+            size_mult = sig.get("size_multiplier", 1.0)
+            total_dollar += r_to_dollar(sig, r_val) * size_mult
+    dollar_display = f"${total_dollar:+,.2f}"
 
     # 冷却状态 (B/C 才有)
     cd_info = ""
@@ -548,7 +551,7 @@ def fmt_stats_footer(strategy, state):
         f"\n━━━━━━━━━━━━━━━\n"
         f"📊 <b>[{strategy.code}] 累计战绩</b>\n"
         f"已完成 {s['n_completed']} 单 ({s['wins']}胜 {s['losses']}败, 胜率 {wr_str})\n"
-        f"累计 R: <b>{r_display}</b>\n"
+        f"累计盈亏: <b>{dollar_display}</b>\n"
         f"持仓中: {s['n_pending']} 单 · 作废: {s['n_expired']} 单"
     )
     if streak_emoji:
@@ -557,16 +560,27 @@ def fmt_stats_footer(strategy, state):
     return footer
 
 
+def r_to_dollar(sig, r_value):
+    """把 R 倍数转成 $ 盈亏 (按 NOTIONAL_USD = $10,000 仓位算)"""
+    r_dollar = sig.get("r_dollar") or 0
+    entry = sig.get("entry_price") or sig.get("trigger_price") or 0
+    if entry == 0 or r_dollar == 0:
+        return 0
+    return r_value * (r_dollar / entry) * NOTIONAL_USD
+
+
 def fmt_signal_formed(strategy, n, sig, state=None):
+    tp_dollar = r_to_dollar(sig, strategy.tp_target_r)
+    sl_dollar = r_to_dollar(sig, -1.0)  # 1R 亏损
     s = (f"🔔 <b>新信号 #{n:03d} — {strategy.name}</b>\n"
          f"━━━━━━━━━━━━━━━\n"
          f"方向: {'📈 做多' if sig['direction']=='long' else '📉 做空'} ({sig['direction'].upper()})\n"
          f"形态: {sig['pattern_desc']}\n"
          f"时间: <code>{sig['signal_time']}</code>\n\n"
          f"📍 入场触发: <code>${sig['trigger_price']:,.2f}</code>\n"
-         f"🛑 止损 (初始): <code>${sig['sl0']:,.2f}</code>\n"
-         f"🎯 止盈目标: <code>${sig['tp']:,.2f}</code> ({strategy.tp_target_r}R)\n"
-         f"⚖️ 仓位倍数: <b>{sig['size_multiplier']}×</b>\n"
+         f"🛑 止损 (初始): <code>${sig['sl0']:,.2f}</code> · 输约 <b>${sl_dollar:+,.0f}</b>\n"
+         f"🎯 止盈目标: <code>${sig['tp']:,.2f}</code> · 赢约 <b>${tp_dollar:+,.0f}</b>\n"
+         f"⚖️ 仓位: <b>${NOTIONAL_USD * sig['size_multiplier']:,.0f}</b> ({sig['size_multiplier']}× × $10k)\n"
          f"⏰ 突破窗口: {sig['expires_at']} 前有效")
     if state is not None:
         s += fmt_stats_footer(strategy, state)
@@ -574,13 +588,15 @@ def fmt_signal_formed(strategy, n, sig, state=None):
 
 
 def fmt_entered(strategy, n, sig, state=None):
+    tp_dollar = r_to_dollar(sig, strategy.tp_target_r)
+    sl_dollar = r_to_dollar(sig, -1.0)
     s = (f"✅ <b>#{n:03d} 已入场 — {strategy.name}</b>\n"
          f"━━━━━━━━━━━━━━━\n"
          f"入场价: <code>${sig['entry_price']:,.2f}</code>\n"
          f"入场时间: {sig['entry_time']}\n"
-         f"当前 SL: <code>${sig['current_sl']:,.2f}</code>\n"
-         f"目标 TP: <code>${sig['tp']:,.2f}</code>\n"
-         f"仓位: <b>{sig['size_multiplier']}×</b>")
+         f"当前 SL: <code>${sig['current_sl']:,.2f}</code> · 输约 <b>${sl_dollar:+,.0f}</b>\n"
+         f"目标 TP: <code>${sig['tp']:,.2f}</code> · 赢约 <b>${tp_dollar:+,.0f}</b>\n"
+         f"仓位: <b>${NOTIONAL_USD * sig['size_multiplier']:,.0f}</b>")
     if state is not None:
         s += fmt_stats_footer(strategy, state)
     return s
@@ -589,7 +605,8 @@ def fmt_entered(strategy, n, sig, state=None):
 def fmt_exit(strategy, n, sig, outcome, state=None):
     """outcome = 'tp' / 'sl'"""
     icon = "🟢 TP" if outcome == "tp" else "🔴 SL"
-    r_str = f"{sig['result_r']:+.2f}R" if sig['result_r'] is not None else "?"
+    r_val = sig.get("result_r") or 0
+    exit_dollar = r_to_dollar(sig, r_val) * sig.get("size_multiplier", 1.0)
     extra = ""
     if sig.get("pyramid_entered"):
         extra = f"\n金字塔加仓: ${sig['pyramid_entry_price']:.2f}"
@@ -601,8 +618,7 @@ def fmt_exit(strategy, n, sig, outcome, state=None):
          f"━━━━━━━━━━━━━━━\n"
          f"出场价: <code>${sig['exit_price']:,.2f}</code>\n"
          f"时间: {sig['exit_time']}\n"
-         f"结果: <b>{r_str}</b>\n"
-         f"原始 R (无加仓): {sig.get('result_r_raw', '?')}\n"
+         f"结果: <b>${exit_dollar:+,.2f}</b> ({r_val:+.2f}R)\n"
          f"仓位倍数: {sig['size_multiplier']}×{extra}")
     if state is not None:
         s += fmt_stats_footer(strategy, state)
@@ -611,21 +627,24 @@ def fmt_exit(strategy, n, sig, outcome, state=None):
 
 def fmt_stair(strategy, n, sig, level, state=None):
     """level = '2r' or '4r'"""
+    locked_r = 1 if level == "2r" else 2
+    locked_dollar = r_to_dollar(sig, locked_r) * sig.get("size_multiplier", 1.0)
     s = (f"🪜 <b>#{n:03d} 阶梯锁升级 — {strategy.name}</b>\n"
          f"━━━━━━━━━━━━━━━\n"
          f"价格达到 +{level.upper()}, SL 已上移到 <code>${sig['current_sl']:,.2f}</code>\n"
-         f"现在 {'最少赚 +1R' if level == '2r' else '最少赚 +2R'}")
+         f"现在最少锁住: <b>${locked_dollar:+,.0f}</b>")
     if state is not None:
         s += fmt_stats_footer(strategy, state)
     return s
 
 
 def fmt_pyramid(strategy, n, sig, state=None):
+    pyramid_dollar = NOTIONAL_USD * 0.5
     s = (f"🔺 <b>#{n:03d} 金字塔加仓 — {strategy.name}</b>\n"
          f"━━━━━━━━━━━━━━━\n"
-         f"价格触及 +1R, 加 0.5× 仓位\n"
+         f"价格触及 +1R, 加 0.5× 仓位 (<b>+${pyramid_dollar:,.0f}</b>)\n"
          f"加仓入场价: <code>${sig['pyramid_entry_price']:,.2f}</code>\n"
-         f"总仓位: 1.5× ({sig['size_multiplier']}× 主仓 + 0.5× 加仓)")
+         f"总仓位: <b>${NOTIONAL_USD * sig['size_multiplier'] + pyramid_dollar:,.0f}</b>")
     if state is not None:
         s += fmt_stats_footer(strategy, state)
     return s
@@ -845,7 +864,7 @@ def build_summary_report(strategies_data, latest_btc, title="📊 战报"):
 def maybe_send_summary_report(strategies_data, latest_btc):
     """首次跑发校对; 之后每周日 12:00 PT 自动推汇总.
     REPORT_FORMAT_VERSION 升级时也会重发一次校对."""
-    REPORT_FORMAT_VERSION = 2  # 改成 $ 格式后, 重发一次校对
+    REPORT_FORMAT_VERSION = 3  # 信号 footer 也改成 $ 格式 → 重发校对
     now_ts = int(time.time())
     SECONDS_PER_DAY = 86400
 
