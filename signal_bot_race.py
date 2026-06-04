@@ -767,104 +767,104 @@ def signal_dollar_pl(sig):
     return r * r_pct * NOTIONAL_USD
 
 
-def build_summary_report(strategies_data, latest_btc, title="📊 战报"):
-    """生成 3 策略合并汇总文本 ($ 格式, 假设 $1000 保证金 + 10x 杠杆 = $10,000 仓位)"""
-    now_utc = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
-    parts = [
-        f"<b>{title}</b>",
-        f"<i>截至 {now_utc} · BTC ${latest_btc:,.0f}</i>",
-        f"<i>每单按 $1,000 保证金 + 10x 杠杆 = $10,000 仓位算</i>",
-        "━━━━━━━━━━━━━━━",
+def build_strategy_section(strategy, state, latest_btc):
+    """生成单个策略的汇总文本 (单条消息, 控制在 4000 字符内)"""
+    s = compute_strategy_stats(state)
+    signals = state.get("signals", [])
+
+    completed_sigs = []; entered_sigs = []; expired_sigs = []
+    for i, sig in enumerate(signals, 1):
+        if sig["status"] in ("tp_hit", "sl_hit"):
+            completed_sigs.append((i, sig))
+        elif sig["status"] == "entered":
+            entered_sigs.append((i, sig))
+        elif sig["status"] in ("expired", "invalidated"):
+            expired_sigs.append((i, sig))
+    completed_sigs.sort(key=lambda x: x[1].get("exit_ts") or 0)
+    entered_sigs.sort(key=lambda x: x[1].get("entry_ts") or 0)
+    expired_sigs.sort(key=lambda x: x[1].get("signal_ts") or 0)
+
+    total_pl = sum(signal_dollar_pl(sig) or 0 for _, sig in completed_sigs)
+    avg_pl = total_pl / len(completed_sigs) if completed_sigs else 0
+    wr_str = f"{s['win_rate']*100:.1f}%" if s["n_completed"] > 0 else "—"
+
+    lines = [
+        f"<b>[{strategy.code}] {strategy.name}</b>",
+        f"总信号 {s['n_total']} · 完成 {s['n_completed']} ({s['wins']}胜 {s['losses']}败) · 持仓 {s['n_pending']} · 作废 {s['n_expired']}",
+        f"胜率 <b>{wr_str}</b> · 累计盈亏 <b>${total_pl:+,.2f}</b> · 平均 <b>${avg_pl:+,.2f}</b>/单",
     ]
 
+    if entered_sigs:
+        lines.append("\n⏳ 持仓中:")
+        for i, sig in entered_sigs:
+            dir_char = "📉空" if sig["direction"] == "short" else "📈多"
+            sig_time = sig["signal_time"].replace(" UTC", "")
+            r_dollar = sig.get("r_dollar") or 0
+            entry = sig.get("entry_price") or 0
+            potential_loss = (r_dollar / entry) * NOTIONAL_USD if entry > 0 else 0
+            lines.append(
+                f"  <code>#{i:03d}</code> {sig_time} {dir_char} "
+                f"@${sig['entry_price']:,.0f} | SL ${sig['current_sl']:,.0f} (亏-${potential_loss:,.0f}) | TP ${sig['tp']:,.0f}"
+            )
+
+    if completed_sigs:
+        lines.append("\n✅❌ 已完结:")
+        for i, sig in completed_sigs:
+            dir_char = "📉空" if sig["direction"] == "short" else "📈多"
+            sig_time = sig["signal_time"].replace(" UTC", "")
+            outcome_icon = "🟢" if sig["status"] == "tp_hit" else "🔴"
+            dollar_pl = signal_dollar_pl(sig) or 0
+            lines.append(
+                f"  {outcome_icon} <code>#{i:03d}</code> {sig_time} {dir_char} "
+                f"@${sig['entry_price']:,.0f} → ${sig['exit_price']:,.0f} = <b>${dollar_pl:+,.2f}</b>"
+            )
+
+    if expired_sigs:
+        ids = ", ".join(f"#{i:03d}" for i, _ in expired_sigs)
+        lines.append(f"\n⚪ 作废: {ids}")
+
+    return "\n".join(lines), total_pl
+
+
+def send_summary_report(strategies_data, latest_btc, title="📊 战报"):
+    """发汇总报告: 拆成多条 TG 消息 (避免单条超 4096 字符限制)"""
+    now_utc = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
+
+    # 消息 1: 标题
+    header = (
+        f"<b>{title}</b>\n"
+        f"<i>截至 {now_utc} · BTC ${latest_btc:,.0f}</i>\n"
+        f"<i>每单按 $1,000 保证金 + 10x 杠杆 = $10,000 仓位算</i>\n"
+        f"━━━━━━━━━━━━━━━"
+    )
+    send_message(header)
+    time.sleep(0.5)
+
+    # 消息 2-4: 每个策略一条
     grand_total = {}
-
     for strategy, state in strategies_data:
-        s = compute_strategy_stats(state)
-        signals = state.get("signals", [])
+        section, pl = build_strategy_section(strategy, state, latest_btc)
+        grand_total[strategy.code] = pl
+        send_message(section + "\n━━━━━━━━━━━━━━━")
+        time.sleep(0.5)
 
-        # 把信号分 3 组并按时间排序
-        completed_sigs = []; entered_sigs = []; expired_sigs = []
-        for i, sig in enumerate(signals, 1):
-            if sig["status"] in ("tp_hit", "sl_hit"):
-                completed_sigs.append((i, sig))
-            elif sig["status"] == "entered":
-                entered_sigs.append((i, sig))
-            elif sig["status"] in ("expired", "invalidated"):
-                expired_sigs.append((i, sig))
-        completed_sigs.sort(key=lambda x: x[1].get("exit_ts") or 0)
-        entered_sigs.sort(key=lambda x: x[1].get("entry_ts") or 0)
-        expired_sigs.sort(key=lambda x: x[1].get("signal_ts") or 0)
-
-        # 累计 $ 盈亏
-        total_pl = sum(signal_dollar_pl(sig) or 0 for _, sig in completed_sigs)
-        avg_pl = total_pl / len(completed_sigs) if completed_sigs else 0
-        grand_total[strategy.code] = total_pl
-
-        # Header 行
-        wr_str = f"{s['win_rate']*100:.1f}%" if s["n_completed"] > 0 else "—"
-
-        section_lines = [
-            f"<b>[{strategy.code}] {strategy.name}</b>",
-            f"总信号 {s['n_total']} · 完成 {s['n_completed']} ({s['wins']}胜 {s['losses']}败) · 持仓 {s['n_pending']} · 作废 {s['n_expired']}",
-            f"胜率 <b>{wr_str}</b> · 累计盈亏 <b>${total_pl:+,.2f}</b> · 平均 <b>${avg_pl:+,.2f}</b>/单",
-        ]
-
-        # 已完成明细
-        if completed_sigs:
-            section_lines.append("\n✅❌ 已完结:")
-            for i, sig in completed_sigs:
-                dir_char = "📉空" if sig["direction"] == "short" else "📈多"
-                sig_time = sig["signal_time"].replace(" UTC", "")
-                outcome_icon = "🟢" if sig["status"] == "tp_hit" else "🔴"
-                dollar_pl = signal_dollar_pl(sig) or 0
-                section_lines.append(
-                    f"  {outcome_icon} <code>#{i:03d}</code> {sig_time} {dir_char} "
-                    f"@${sig['entry_price']:,.0f} → ${sig['exit_price']:,.0f} = <b>${dollar_pl:+,.2f}</b>"
-                )
-
-        # 持仓明细
-        if entered_sigs:
-            section_lines.append("\n⏳ 持仓中:")
-            for i, sig in entered_sigs:
-                dir_char = "📉空" if sig["direction"] == "short" else "📈多"
-                sig_time = sig["signal_time"].replace(" UTC", "")
-                # 算潜在亏损 ($ 单位)
-                r_dollar = sig.get("r_dollar") or 0
-                entry = sig.get("entry_price") or 0
-                potential_loss = (r_dollar / entry) * NOTIONAL_USD if entry > 0 else 0
-                section_lines.append(
-                    f"  <code>#{i:03d}</code> {sig_time} {dir_char} "
-                    f"@${sig['entry_price']:,.0f} | SL ${sig['current_sl']:,.0f} (亏-${potential_loss:,.0f}) | TP ${sig['tp']:,.0f}"
-                )
-
-        # 作废明细
-        if expired_sigs:
-            ids = ", ".join(f"#{i:03d}" for i, _ in expired_sigs)
-            section_lines.append(f"\n⚪ 作废: {ids}")
-
-        parts.append("\n".join(section_lines))
-        parts.append("━━━━━━━━━━━━━━━")
-
-    # 3 策略横向对比
+    # 消息 5: 横向对比 + 下次时间
     if grand_total:
-        compare_lines = ["<b>🏁 3 策略横向对比</b>"]
         sorted_strats = sorted(grand_total.items(), key=lambda x: -x[1])
         medals = ["🥇", "🥈", "🥉"]
+        compare_lines = ["<b>🏁 3 策略横向对比</b>"]
         for idx, (code, pl) in enumerate(sorted_strats):
             medal = medals[idx] if idx < 3 else "  "
             compare_lines.append(f"{medal} <b>[{code}]</b> 累计 <b>${pl:+,.2f}</b>")
-        parts.append("\n".join(compare_lines))
-        parts.append("━━━━━━━━━━━━━━━")
-
-    parts.append("⏰ 下次汇总: 每周日 12:00 PT (北京周一 03:00)")
-    return "\n\n".join(parts)
+        compare_lines.append("━━━━━━━━━━━━━━━")
+        compare_lines.append("⏰ 下次汇总: 每周日 12:00 PT (北京周一 03:00)")
+        send_message("\n".join(compare_lines))
 
 
 def maybe_send_summary_report(strategies_data, latest_btc):
     """首次跑发校对; 之后每周日 12:00 PT 自动推汇总.
     REPORT_FORMAT_VERSION 升级时也会重发一次校对."""
-    REPORT_FORMAT_VERSION = 3  # 信号 footer 也改成 $ 格式 → 重发校对
+    REPORT_FORMAT_VERSION = 4  # v4: 拆成多条消息发 (修复 TG 4096 字符截断)
     now_ts = int(time.time())
     SECONDS_PER_DAY = 86400
 
@@ -874,8 +874,7 @@ def maybe_send_summary_report(strategies_data, latest_btc):
         for _, s in strategies_data
     )
     if needs_correction:
-        text = build_summary_report(strategies_data, latest_btc, title="📋 校对报告 (v2 · $ 格式)")
-        send_message(text)
+        send_summary_report(strategies_data, latest_btc, title="📋 校对报告 (v4 · 分条发)")
         for _, state in strategies_data:
             state["last_weekly_report_ts"] = now_ts
             state["report_format_v"] = REPORT_FORMAT_VERSION
@@ -890,8 +889,7 @@ def maybe_send_summary_report(strategies_data, latest_btc):
     elapsed_days = (now_ts - last_ts) / SECONDS_PER_DAY
 
     if is_sunday and is_noon_window and elapsed_days >= 6:
-        text = build_summary_report(strategies_data, latest_btc, title="📊 每周战报")
-        send_message(text)
+        send_summary_report(strategies_data, latest_btc, title="📊 每周战报")
         for _, state in strategies_data:
             state["last_weekly_report_ts"] = now_ts
         return True
