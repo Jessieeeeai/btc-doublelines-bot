@@ -232,6 +232,8 @@ def build_signal_record(strategy: StrategyConfig, bars, sig, state):
         "stair_4r_locked": False,
         "pyramid_entered": False,
         "pyramid_entry_price": None,
+        # 出场检查推进到的收盘 K 线 ts (防跨轮重扫旧K线)
+        "last_checked_ts": None,
     }
 
 
@@ -288,9 +290,13 @@ def update_signal_status(strategy: StrategyConfig, bars, sig_rec):
     if sig_rec["status"] == "entered":
         entry = sig_rec["entry_price"]
         entry_ts = sig_rec.get("entry_ts", sig_ts)
+        # 修复时间穿越 bug: 阶梯锁移动 SL 后, 下一轮不能拿新 SL 去
+        # 重扫已检查过的旧 K 线 (否则会在旧 K 线上伪造出场)。
+        # 只从上次检查过的收盘 K 线之后继续推进。
+        start_ts = max(entry_ts, sig_rec.get("last_checked_ts") or 0)
 
         for bar in after:
-            if bar["ts"] <= entry_ts:
+            if bar["ts"] <= start_ts:
                 continue
             sl = sig_rec["current_sl"]
 
@@ -396,6 +402,11 @@ def update_signal_status(strategy: StrategyConfig, bars, sig_rec):
                     sig_rec["result_r"] = round(total_r * sig_rec["size_multiplier"], 3)
                     changed = True
                     break
+
+        # 标记已检查到的收盘 K 线 (最后一根可能未收盘, 留到下轮再查),
+        # 配合上面 start_ts 防止跨轮重扫旧 K 线
+        if sig_rec["status"] == "entered" and len(after) >= 2:
+            sig_rec["last_checked_ts"] = max(start_ts, after[-2]["ts"])
 
     return changed
 
@@ -812,11 +823,19 @@ def build_strategy_section(strategy, state, latest_btc):
         for i, sig in completed_sigs:
             dir_char = "📉空" if sig["direction"] == "short" else "📈多"
             sig_time = sig["signal_time"].replace(" UTC", "")
-            outcome_icon = "🟢" if sig["status"] == "tp_hit" else "🔴"
+            # 🟢 = 真打到 TP 目标价; 🔒 = 阶梯锁价出场 (赚但没吃满); 🔴 = 止损
+            exit_p = sig.get("exit_price") or 0
+            tp_p = sig.get("tp") or 0
+            if sig["status"] == "tp_hit" and abs(exit_p - tp_p) < 1:
+                outcome_icon, tag = "🟢", ""
+            elif sig["status"] == "tp_hit":
+                outcome_icon, tag = "🔒", " (锁价出场)"
+            else:
+                outcome_icon, tag = "🔴", ""
             dollar_pl = signal_dollar_pl(sig) or 0
             lines.append(
                 f"  {outcome_icon} <code>#{i:03d}</code> {sig_time} {dir_char} "
-                f"@${sig['entry_price']:,.0f} → ${sig['exit_price']:,.0f} = <b>${dollar_pl:+,.2f}</b>"
+                f"@${sig['entry_price']:,.0f} → ${sig['exit_price']:,.0f} = <b>${dollar_pl:+,.2f}</b>{tag}"
             )
 
     if expired_sigs:
@@ -864,7 +883,7 @@ def send_summary_report(strategies_data, latest_btc, title="📊 战报"):
 def maybe_send_summary_report(strategies_data, latest_btc):
     """首次跑发校对; 之后每周日 12:00 PT 自动推汇总.
     REPORT_FORMAT_VERSION 升级时也会重发一次校对."""
-    REPORT_FORMAT_VERSION = 4  # v4: 拆成多条消息发 (修复 TG 4096 字符截断)
+    REPORT_FORMAT_VERSION = 5  # v5: 修正阶梯锁时间穿越 bug 后的历史战绩 + 🔒锁价出场区分显示
     now_ts = int(time.time())
     SECONDS_PER_DAY = 86400
 
@@ -874,7 +893,7 @@ def maybe_send_summary_report(strategies_data, latest_btc):
         for _, s in strategies_data
     )
     if needs_correction:
-        send_summary_report(strategies_data, latest_btc, title="📋 校对报告 (v4 · 分条发)")
+        send_summary_report(strategies_data, latest_btc, title="📋 校对报告 (v5 · 修正历史战绩)")
         for _, state in strategies_data:
             state["last_weekly_report_ts"] = now_ts
             state["report_format_v"] = REPORT_FORMAT_VERSION
