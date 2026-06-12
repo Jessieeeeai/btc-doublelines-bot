@@ -484,7 +484,8 @@
       "stair_2r_locked": false,
       "stair_4r_locked": false,
       "pyramid_entered": false,
-      "pyramid_entry_price": null
+      "pyramid_entry_price": null,
+      "last_checked_ts": 1781247600
     }
   ],
   "first_signal_date": "2026-05-17 20:00 UTC",
@@ -494,6 +495,6 @@
   "pause_until_ts": 0,
   "pause_until_ts_long": 0,
   "pause_until_ts_short": 0,
-  "last_weekly_report_ts": 1780566317,
-  "report_format_v": 4
+  "last_weekly_report_ts": 1781253020,
+  "report_format_v": 5
 }
