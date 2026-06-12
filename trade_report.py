@@ -13,6 +13,38 @@ RED = "#E24B4A"
 TEAL = "#1D9E75"
 AMBER = "#BA7517"
 BLUE = "#378ADD"
+UP = "#1D9E75"      # 阳线 (绿涨红跌, 交易所默认)
+DOWN = "#E24B4A"    # 阴线
+SL_RED = "#A32D2D"  # SL 线用深红, 和阴线区分
+
+
+def _aggregate(bars, n):
+    """n 根 1h K 线聚合成 1 根"""
+    out = []
+    for i in range(0, len(bars), n):
+        chunk = bars[i:i + n]
+        out.append({
+            "ts": chunk[0]["ts"],
+            "open": chunk[0]["open"], "close": chunk[-1]["close"],
+            "high": max(b["high"] for b in chunk),
+            "low": min(b["low"] for b in chunk),
+        })
+    return out
+
+
+def _draw_candles(ax, win, bar_hours):
+    import matplotlib.dates as mdates
+    w = bar_hours / 24 * 0.65
+    for b in win:
+        x = mdates.date2num(_d(b["ts"]))
+        up = b["close"] >= b["open"]
+        c = UP if up else DOWN
+        ax.vlines(x, b["low"], b["high"], color=c, linewidth=0.7, alpha=0.9)
+        body = abs(b["close"] - b["open"])
+        if body < 1e-9:
+            body = (b["high"] - b["low"]) * 0.01 + 0.01
+        ax.bar(x, body, width=w, bottom=min(b["open"], b["close"]),
+               color=c, alpha=0.9 if up else 0.85, linewidth=0)
 
 
 def _d(ts):
@@ -86,11 +118,17 @@ def render_chart(code, sig_no, sig, bars, dollar_pl):
         raise ValueError(f"窗口内 K 线不足 ({len(win)})")
     ev = derive_events(sig, bars)
 
-    xs = [_d(b["ts"]) for b in win]
+    # 长持仓自动聚合, 避免蜡烛挤成毛刺: >240根→4h, >720根→12h
+    bar_hours = 1
+    if len(win) > 720:
+        bar_hours = 12
+    elif len(win) > 240:
+        bar_hours = 4
+    if bar_hours > 1:
+        win = _aggregate(win, bar_hours)
+
     fig, ax = plt.subplots(figsize=(8, 4.5), dpi=150)
-    ax.fill_between(xs, [b["low"] for b in win], [b["high"] for b in win],
-                    color=GRAY, alpha=0.18, linewidth=0)
-    ax.plot(xs, [b["close"] for b in win], color="#5F5E5A", linewidth=1.2)
+    _draw_candles(ax, win, bar_hours)
 
     x0, x1 = _d(entry_ts), _d(exit_ts)
     segs = _sl_path(sig, ev)
@@ -113,9 +151,9 @@ def render_chart(code, sig_no, sig, bars, dollar_pl):
                     color=TEAL, ha="left",
                     va="top" if sig["tp"] < lo else "bottom")
     for t0, t1, lvl in segs:
-        ax.hlines(lvl, _d(t0), _d(t1), color=RED, linewidth=1.6)
+        ax.hlines(lvl, _d(t0), _d(t1), color=SL_RED, linewidth=1.8)
     ax.annotate(f"SL0 {sig['sl0']:,.0f}", (x0, sig["sl0"]), fontsize=8,
-                color=RED, ha="left", va="bottom")
+                color=SL_RED, ha="left", va="bottom")
     ax.set_ylim(lo - 0.07 * rng, hi + 0.07 * rng)
 
     short = sig["direction"] == "short"
