@@ -23,6 +23,9 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install deps (matplotlib for 关单战报出图)
+        run: pip install --quiet matplotlib
+
       - name: Run signal bot (3 strategies race)
         env:
           COINGLASS_API_KEY: ${{ secrets.COINGLASS_API_KEY }}

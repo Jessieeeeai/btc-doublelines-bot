@@ -53,6 +53,56 @@ def send_message(text: str, bot_token: str = None, chat_id: str = None,
         return False
 
 
+def send_photo(photo_bytes: bytes, caption: str = "", bot_token: str = None,
+               chat_id: str = None, parse_mode: str = "HTML") -> bool:
+    """发一张图 (PNG bytes) + caption 到 TG。失败返回 False (调用方可降级发纯文字)。
+    TG caption 上限 1024 字符, 超出会被截断。"""
+    bot_token = bot_token or os.environ.get("TELEGRAM_BOT_TOKEN")
+    chat_id = chat_id or os.environ.get("TELEGRAM_CHAT_ID")
+    if not bot_token or not chat_id:
+        print(f"[WARN] 缺少 TG 配置, 图片未发, caption 转 stdout:\n{caption}\n")
+        return False
+
+    boundary = "----tgFormBoundary7d93a1c2e4"
+    parts = []
+    for k, v in (("chat_id", chat_id), ("caption", caption[:1024]),
+                 ("parse_mode", parse_mode)):
+        parts.append(
+            f"--{boundary}\r\nContent-Disposition: form-data; name=\"{k}\"\r\n\r\n{v}\r\n".encode()
+        )
+    parts.append(
+        (f"--{boundary}\r\nContent-Disposition: form-data; name=\"photo\"; "
+         f"filename=\"report.png\"\r\nContent-Type: image/png\r\n\r\n").encode()
+        + photo_bytes + b"\r\n"
+    )
+    parts.append(f"--{boundary}--\r\n".encode())
+    body = b"".join(parts)
+
+    url = f"https://api.telegram.org/bot{bot_token}/sendPhoto"
+    req = urllib.request.Request(url, data=body, headers={
+        "Content-Type": f"multipart/form-data; boundary={boundary}",
+        "Content-Length": str(len(body)),
+    })
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            result = json.loads(resp.read().decode())
+            if result.get("ok"):
+                return True
+            print(f"[TG PHOTO ERROR] {result}")
+            return False
+    except urllib.error.HTTPError as e:
+        body_txt = ""
+        try:
+            body_txt = e.read().decode()
+        except Exception:
+            pass
+        print(f"[TG PHOTO HTTP {e.code}] {body_txt[:200]}")
+        return False
+    except Exception as e:
+        print(f"[TG PHOTO FAIL] {type(e).__name__}: {e}")
+        return False
+
+
 # ============ 消息模板 (HTML 格式) ============
 
 def msg_signal_formed(signal_no: int, sig: dict, account_pct: float = 0.02) -> str:

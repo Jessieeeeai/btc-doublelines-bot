@@ -673,6 +673,29 @@ def fmt_cooldown(strategy, hours, state=None):
 
 # ========== 主流程 ==========
 
+def send_close_report(strategy, sig_no, sig, bars, state):
+    """关单图文战报: 单笔交易复盘图 + 时间线 (trade_report 模块)。
+    持仓超过当前 K 线窗口时自动拉长历史; 任何失败不影响主流程。"""
+    try:
+        from trade_report import send_trade_report
+        report_bars = bars
+        need_from = (sig.get("entry_ts") or 0) - 24 * 3600
+        if bars and need_from > 0 and bars[0]["ts"] > need_from:
+            api_key = os.environ.get("COINGLASS_API_KEY")
+            if api_key:
+                hours = int((bars[-1]["ts"] - need_from) // 3600) + 8
+                try:
+                    report_bars = fetch_btc_1h_bars(api_key, min(hours, 990))
+                except Exception as e:
+                    print(f"  [report] 拉长历史失败, 用现有K线: {e}")
+        send_trade_report(strategy.code, strategy.name, sig_no, sig, report_bars,
+                          dollar_pl=signal_dollar_pl(sig) or 0,
+                          footer=fmt_stats_footer(strategy, state))
+        time.sleep(0.5)
+    except Exception as e:
+        print(f"  [report] 关单战报失败: {e}")
+
+
 def process_strategy(strategy: StrategyConfig, bars, ema200, adx):
     state = load_state(strategy.state_file)
 
@@ -714,11 +737,13 @@ def process_strategy(strategy: StrategyConfig, bars, ema200, adx):
             elif new_status == "tp_hit":
                 labeled_send(strategy.code, fmt_exit(strategy, i, sig, "tp", state))
                 cd_triggered = update_cooldown(strategy, state)
+                send_close_report(strategy, i, sig, bars, state)
             elif new_status == "sl_hit":
                 labeled_send(strategy.code, fmt_exit(strategy, i, sig, "sl", state))
                 cd_triggered = update_cooldown(strategy, state)
                 if cd_triggered:
                     labeled_send(strategy.code, fmt_cooldown(strategy, strategy.cd_pause_hours, state))
+                send_close_report(strategy, i, sig, bars, state)
             elif new_status == "expired":
                 labeled_send(strategy.code, f"⏰ [#{i:03d}] 突破窗口已过, 信号作废 — {strategy.name}" + fmt_stats_footer(strategy, state))
             elif new_status == "invalidated":
@@ -928,6 +953,7 @@ def main():
     if not api_key:
         print("ERROR: 缺少 COINGLASS_API_KEY")
         sys.exit(1)
+    os.environ["COINGLASS_API_KEY"] = api_key  # 给关单战报拉长历史用
 
     print(f"[{datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}] 赛马 bot 启动")
     bars = fetch_btc_1h_bars(api_key, N_BARS)
