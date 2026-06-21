@@ -359,7 +359,7 @@
       "stair_4r_locked": true,
       "pyramid_entered": true,
       "pyramid_entry_price": 74515.35,
-      "last_checked_ts": 1782061200
+      "last_checked_ts": 1782064800
     },
     {
       "signal_time": "2026-05-30 03:00 UTC",
@@ -527,7 +527,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1782061200
+      "last_checked_ts": 1782064800
     },
     {
       "signal_time": "2026-06-19 21:00 UTC",
@@ -583,7 +583,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1782061200
+      "last_checked_ts": 1782064800
     }
   ],
   "first_signal_date": "2026-05-17 20:00 UTC",
@@ -593,6 +593,6 @@
   "pause_until_ts": 0,
   "pause_until_ts_long": 1779937200,
   "pause_until_ts_short": 1782100800,
-  "last_weekly_report_ts": 1781253020,
+  "last_weekly_report_ts": 1782068435,
   "report_format_v": 5
 }
