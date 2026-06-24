@@ -619,7 +619,7 @@
       "direction": "short",
       "trigger_price": 63960.7,
       "sl0": 65598.04,
-      "current_sl": 65598.04,
+      "current_sl": 62323.36,
       "tp": 50862.01,
       "r_dollar": 1637.34,
       "expires_at": "2026-06-22 10:00 UTC",
@@ -635,7 +635,7 @@
       "result_r": null,
       "result_r_raw": null,
       "size_multiplier": 0.7,
-      "stair_2r_locked": false,
+      "stair_2r_locked": true,
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 62323.36,
@@ -665,8 +665,8 @@
       "size_multiplier": 0.7,
       "stair_2r_locked": false,
       "stair_4r_locked": false,
-      "pyramid_entered": false,
-      "pyramid_entry_price": null,
+      "pyramid_entered": true,
+      "pyramid_entry_price": 60705.01,
       "last_checked_ts": 1782309600
     }
   ],
