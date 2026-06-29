@@ -14,23 +14,29 @@ def _esc(s) -> str:
     return html_module.escape(str(s), quote=False)
 
 
-def send_message(text: str, bot_token: str = None, chat_id: str = None,
-                  parse_mode: str = "HTML") -> bool:
-    """发一条消息到 TG。返回是否成功。"""
-    bot_token = bot_token or os.environ.get("TELEGRAM_BOT_TOKEN")
-    chat_id = chat_id or os.environ.get("TELEGRAM_CHAT_ID")
-    if not bot_token or not chat_id:
-        print(f"[WARN] 缺少 TELEGRAM_BOT_TOKEN 或 TELEGRAM_CHAT_ID, 转 stdout:\n{text}\n")
-        return False
+def _chat_ids(chat_id=None):
+    """解析目标 chat_id 列表。
+    TELEGRAM_CHAT_ID 支持逗号分隔多个; 另外可选 TELEGRAM_GROUP_CHAT_ID 追加群,
+    两者都支持逗号分隔, 自动去重。这样加群时只需新增 GROUP 密钥, 不动原私聊密钥。"""
+    raw = chat_id if chat_id is not None else os.environ.get("TELEGRAM_CHAT_ID") or ""
+    extra = "" if chat_id is not None else (os.environ.get("TELEGRAM_GROUP_CHAT_ID") or "")
+    ids, seen = [], set()
+    for part in str(raw).split(",") + str(extra).split(","):
+        c = part.strip()
+        if c and c not in seen:
+            seen.add(c)
+            ids.append(c)
+    return ids
 
+
+def _post_message(text, bot_token, one_chat_id, parse_mode):
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
     payload = json.dumps({
-        "chat_id": chat_id,
+        "chat_id": one_chat_id,
         "text": text,
         "parse_mode": parse_mode,
         "disable_web_page_preview": True,
     }).encode("utf-8")
-
     req = urllib.request.Request(url, data=payload,
                                   headers={"Content-Type": "application/json"})
     try:
@@ -38,7 +44,7 @@ def send_message(text: str, bot_token: str = None, chat_id: str = None,
             result = json.loads(resp.read().decode())
             if result.get("ok"):
                 return True
-            print(f"[TG ERROR] {result}")
+            print(f"[TG ERROR chat={one_chat_id}] {result}")
             return False
     except urllib.error.HTTPError as e:
         body = ""
@@ -46,26 +52,32 @@ def send_message(text: str, bot_token: str = None, chat_id: str = None,
             body = e.read().decode()
         except Exception:
             pass
-        print(f"[TG HTTP {e.code}] {body[:200]}")
+        print(f"[TG HTTP {e.code} chat={one_chat_id}] {body[:200]}")
         return False
     except Exception as e:
-        print(f"[TG FAIL] {type(e).__name__}: {e}")
+        print(f"[TG FAIL chat={one_chat_id}] {type(e).__name__}: {e}")
         return False
 
 
-def send_photo(photo_bytes: bytes, caption: str = "", bot_token: str = None,
-               chat_id: str = None, parse_mode: str = "HTML") -> bool:
-    """发一张图 (PNG bytes) + caption 到 TG。失败返回 False (调用方可降级发纯文字)。
-    TG caption 上限 1024 字符, 超出会被截断。"""
+def send_message(text: str, bot_token: str = None, chat_id: str = None,
+                  parse_mode: str = "HTML") -> bool:
+    """发一条消息到 TG 的一个或多个目标 (私聊/群, 逗号分隔)。任一成功即返回 True。"""
     bot_token = bot_token or os.environ.get("TELEGRAM_BOT_TOKEN")
-    chat_id = chat_id or os.environ.get("TELEGRAM_CHAT_ID")
-    if not bot_token or not chat_id:
-        print(f"[WARN] 缺少 TG 配置, 图片未发, caption 转 stdout:\n{caption}\n")
+    targets = _chat_ids(chat_id)
+    if not bot_token or not targets:
+        print(f"[WARN] 缺少 TELEGRAM_BOT_TOKEN 或 TELEGRAM_CHAT_ID, 转 stdout:\n{text}\n")
         return False
+    ok_any = False
+    for cid in targets:
+        if _post_message(text, bot_token, cid, parse_mode):
+            ok_any = True
+    return ok_any
 
+
+def _post_photo(photo_bytes, caption, bot_token, one_chat_id, parse_mode):
     boundary = "----tgFormBoundary7d93a1c2e4"
     parts = []
-    for k, v in (("chat_id", chat_id), ("caption", caption[:1024]),
+    for k, v in (("chat_id", one_chat_id), ("caption", caption[:1024]),
                  ("parse_mode", parse_mode)):
         parts.append(
             f"--{boundary}\r\nContent-Disposition: form-data; name=\"{k}\"\r\n\r\n{v}\r\n".encode()
@@ -88,7 +100,7 @@ def send_photo(photo_bytes: bytes, caption: str = "", bot_token: str = None,
             result = json.loads(resp.read().decode())
             if result.get("ok"):
                 return True
-            print(f"[TG PHOTO ERROR] {result}")
+            print(f"[TG PHOTO ERROR chat={one_chat_id}] {result}")
             return False
     except urllib.error.HTTPError as e:
         body_txt = ""
@@ -96,11 +108,27 @@ def send_photo(photo_bytes: bytes, caption: str = "", bot_token: str = None,
             body_txt = e.read().decode()
         except Exception:
             pass
-        print(f"[TG PHOTO HTTP {e.code}] {body_txt[:200]}")
+        print(f"[TG PHOTO HTTP {e.code} chat={one_chat_id}] {body_txt[:200]}")
         return False
     except Exception as e:
-        print(f"[TG PHOTO FAIL] {type(e).__name__}: {e}")
+        print(f"[TG PHOTO FAIL chat={one_chat_id}] {type(e).__name__}: {e}")
         return False
+
+
+def send_photo(photo_bytes: bytes, caption: str = "", bot_token: str = None,
+               chat_id: str = None, parse_mode: str = "HTML") -> bool:
+    """发一张图 + caption 到一个或多个 TG 目标 (私聊/群, 逗号分隔)。任一成功即 True。
+    TG caption 上限 1024 字符, 超出会被截断。"""
+    bot_token = bot_token or os.environ.get("TELEGRAM_BOT_TOKEN")
+    targets = _chat_ids(chat_id)
+    if not bot_token or not targets:
+        print(f"[WARN] 缺少 TG 配置, 图片未发, caption 转 stdout:\n{caption}\n")
+        return False
+    ok_any = False
+    for cid in targets:
+        if _post_photo(photo_bytes, caption, bot_token, cid, parse_mode):
+            ok_any = True
+    return ok_any
 
 
 # ============ 消息模板 (HTML 格式) ============
