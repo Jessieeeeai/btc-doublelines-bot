@@ -25,7 +25,8 @@
       "stair_2r_locked": false,
       "stair_4r_locked": false,
       "pyramid_entered": false,
-      "pyramid_entry_price": null
+      "pyramid_entry_price": null,
+      "close_notified": true
     },
     {
       "signal_time": "2026-05-19 08:00 UTC",
@@ -52,7 +53,8 @@
       "stair_2r_locked": false,
       "stair_4r_locked": false,
       "pyramid_entered": false,
-      "pyramid_entry_price": null
+      "pyramid_entry_price": null,
+      "close_notified": true
     },
     {
       "signal_time": "2026-05-20 06:00 UTC",
@@ -79,7 +81,8 @@
       "stair_2r_locked": false,
       "stair_4r_locked": false,
       "pyramid_entered": false,
-      "pyramid_entry_price": null
+      "pyramid_entry_price": null,
+      "close_notified": true
     },
     {
       "signal_time": "2026-05-20 07:00 UTC",
@@ -106,7 +109,8 @@
       "stair_2r_locked": false,
       "stair_4r_locked": false,
       "pyramid_entered": false,
-      "pyramid_entry_price": null
+      "pyramid_entry_price": null,
+      "close_notified": true
     },
     {
       "signal_time": "2026-05-20 13:00 UTC",
@@ -133,7 +137,8 @@
       "stair_2r_locked": false,
       "stair_4r_locked": false,
       "pyramid_entered": false,
-      "pyramid_entry_price": null
+      "pyramid_entry_price": null,
+      "close_notified": true
     },
     {
       "signal_time": "2026-05-21 18:00 UTC",
@@ -160,7 +165,8 @@
       "stair_2r_locked": false,
       "stair_4r_locked": false,
       "pyramid_entered": false,
-      "pyramid_entry_price": null
+      "pyramid_entry_price": null,
+      "close_notified": true
     },
     {
       "signal_time": "2026-05-23 21:00 UTC",
@@ -187,7 +193,8 @@
       "stair_2r_locked": false,
       "stair_4r_locked": false,
       "pyramid_entered": false,
-      "pyramid_entry_price": null
+      "pyramid_entry_price": null,
+      "close_notified": true
     },
     {
       "signal_time": "2026-05-25 21:00 UTC",
@@ -214,7 +221,8 @@
       "stair_2r_locked": false,
       "stair_4r_locked": false,
       "pyramid_entered": false,
-      "pyramid_entry_price": null
+      "pyramid_entry_price": null,
+      "close_notified": true
     },
     {
       "signal_time": "2026-05-25 23:00 UTC",
@@ -241,7 +249,8 @@
       "stair_2r_locked": false,
       "stair_4r_locked": false,
       "pyramid_entered": false,
-      "pyramid_entry_price": null
+      "pyramid_entry_price": null,
+      "close_notified": true
     },
     {
       "signal_time": "2026-05-25 20:00 UTC",
@@ -268,7 +277,8 @@
       "stair_2r_locked": false,
       "stair_4r_locked": false,
       "pyramid_entered": false,
-      "pyramid_entry_price": null
+      "pyramid_entry_price": null,
+      "close_notified": true
     },
     {
       "signal_time": "2026-05-26 11:00 UTC",
@@ -295,7 +305,8 @@
       "stair_2r_locked": false,
       "stair_4r_locked": false,
       "pyramid_entered": false,
-      "pyramid_entry_price": null
+      "pyramid_entry_price": null,
+      "close_notified": true
     },
     {
       "signal_time": "2026-05-27 01:00 UTC",
@@ -322,7 +333,8 @@
       "stair_2r_locked": false,
       "stair_4r_locked": false,
       "pyramid_entered": false,
-      "pyramid_entry_price": null
+      "pyramid_entry_price": null,
+      "close_notified": true
     },
     {
       "signal_time": "2026-05-18 13:00 UTC",
@@ -349,7 +361,8 @@
       "stair_2r_locked": false,
       "stair_4r_locked": false,
       "pyramid_entered": false,
-      "pyramid_entry_price": null
+      "pyramid_entry_price": null,
+      "close_notified": true
     },
     {
       "signal_time": "2026-05-21 07:00 UTC",
@@ -376,7 +389,8 @@
       "stair_2r_locked": false,
       "stair_4r_locked": false,
       "pyramid_entered": false,
-      "pyramid_entry_price": null
+      "pyramid_entry_price": null,
+      "close_notified": true
     },
     {
       "signal_time": "2026-05-20 12:00 UTC",
@@ -403,7 +417,8 @@
       "stair_2r_locked": false,
       "stair_4r_locked": false,
       "pyramid_entered": false,
-      "pyramid_entry_price": null
+      "pyramid_entry_price": null,
+      "close_notified": true
     },
     {
       "signal_time": "2026-05-22 01:00 UTC",
@@ -430,7 +445,8 @@
       "stair_2r_locked": false,
       "stair_4r_locked": false,
       "pyramid_entered": false,
-      "pyramid_entry_price": null
+      "pyramid_entry_price": null,
+      "close_notified": true
     },
     {
       "signal_time": "2026-05-30 03:00 UTC",
@@ -457,7 +473,8 @@
       "stair_2r_locked": false,
       "stair_4r_locked": false,
       "pyramid_entered": false,
-      "pyramid_entry_price": null
+      "pyramid_entry_price": null,
+      "close_notified": true
     },
     {
       "signal_time": "2026-06-08 22:00 UTC",
@@ -485,7 +502,8 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1781467200
+      "last_checked_ts": 1781467200,
+      "close_notified": true
     },
     {
       "signal_time": "2026-06-13 02:00 UTC",
@@ -513,7 +531,8 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1781467200
+      "last_checked_ts": 1781467200,
+      "close_notified": true
     },
     {
       "signal_time": "2026-06-14 18:00 UTC",
@@ -541,7 +560,8 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1781524800
+      "last_checked_ts": 1781524800,
+      "close_notified": true
     },
     {
       "signal_time": "2026-06-16 20:00 UTC",
@@ -569,7 +589,8 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1781719200
+      "last_checked_ts": 1781719200,
+      "close_notified": true
     },
     {
       "signal_time": "2026-06-18 13:00 UTC",
@@ -597,7 +618,8 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1782309600
+      "last_checked_ts": 1782309600,
+      "close_notified": true
     },
     {
       "signal_time": "2026-06-19 21:00 UTC",
@@ -625,7 +647,8 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1782010800
+      "last_checked_ts": 1782010800,
+      "close_notified": true
     },
     {
       "signal_time": "2026-06-21 09:00 UTC",
@@ -653,7 +676,8 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1782190800
+      "last_checked_ts": 1782190800,
+      "close_notified": true
     },
     {
       "signal_time": "2026-06-22 04:00 UTC",
@@ -681,7 +705,8 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1782190800
+      "last_checked_ts": 1782190800,
+      "close_notified": true
     },
     {
       "signal_time": "2026-06-22 06:00 UTC",
@@ -709,7 +734,8 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1782309600
+      "last_checked_ts": 1782309600,
+      "close_notified": true
     },
     {
       "signal_time": "2026-06-24 12:00 UTC",
@@ -737,7 +763,8 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1782388800
+      "last_checked_ts": 1782388800,
+      "close_notified": true
     }
   ],
   "first_signal_date": "2026-05-17 20:00 UTC",
