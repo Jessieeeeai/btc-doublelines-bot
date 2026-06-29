@@ -15,8 +15,10 @@ from typing import List, Tuple, Optional
 from signals import detect_signals
 from backtest import _compute_ema, _compute_adx
 from tg_notify import send_message
+import signal_feed
 
 
+SIGNAL_FEED_FILE = "signals_feed.json"  # 给外部执行端订阅的可执行信号源
 MAX_SIGNALS = 30  # 收 30 个就出战报 (3 策略共享, 实际每个最多 ~10 单)
 N_BARS = 300
 COINGLASS_BASE = "https://open-api-v4.coinglass.com"
@@ -234,6 +236,8 @@ def build_signal_record(strategy: StrategyConfig, bars, sig, state):
         "pyramid_entry_price": None,
         # 出场检查推进到的收盘 K 线 ts (防跨轮重扫旧K线)
         "last_checked_ts": None,
+        # 关单通知是否已发 (恰好一次去重, 跨轮/重跑不重不漏)
+        "close_notified": False,
     }
 
 
@@ -699,6 +703,13 @@ def send_close_report(strategy, sig_no, sig, bars, state):
 def process_strategy(strategy: StrategyConfig, bars, ema200, adx):
     state = load_state(strategy.state_file)
 
+    # 一次性迁移: 部署 close_notified 机制前就已平仓的历史单, 当时已通知过,
+    # 标记为已通知, 避免下一轮把几十笔旧单全部重新推送。
+    # (开放单不带此字段 → 平仓后正常触发首次通知)
+    for _sig in state.get("signals", []):
+        if _sig.get("status") in ("tp_hit", "sl_hit") and "close_notified" not in _sig:
+            _sig["close_notified"] = True
+
     # 首次启动
     if not state.get("started"):
         state["anchor_ts"] = bars[-2]["ts"]
@@ -719,7 +730,12 @@ def process_strategy(strategy: StrategyConfig, bars, ema200, adx):
 
     # 推进现有信号状态
     for i, sig in enumerate(state["signals"], 1):
-        if sig["status"] in ("tp_hit", "sl_hit", "expired", "invalidated"):
+        # 作废类不再处理; 已平仓但"已通知"才跳过 —
+        #  若某轮把平仓状态存进 state 却没发出通知 (push race 后重跑等),
+        #  下面 close_notified 兜底, 保证关单提醒恰好一次、不漏发。
+        if sig["status"] in ("expired", "invalidated"):
+            continue
+        if sig["status"] in ("tp_hit", "sl_hit") and sig.get("close_notified"):
             continue
         old_status = sig["status"]
         old_stair_2r = sig.get("stair_2r_locked", False)
@@ -734,31 +750,51 @@ def process_strategy(strategy: StrategyConfig, bars, ema200, adx):
         if old_status != new_status:
             if new_status == "entered":
                 labeled_send(strategy.code, fmt_entered(strategy, i, sig, state))
-            elif new_status == "tp_hit":
-                labeled_send(strategy.code, fmt_exit(strategy, i, sig, "tp", state))
-                cd_triggered = update_cooldown(strategy, state)
-                send_close_report(strategy, i, sig, bars, state)
-            elif new_status == "sl_hit":
-                labeled_send(strategy.code, fmt_exit(strategy, i, sig, "sl", state))
-                cd_triggered = update_cooldown(strategy, state)
-                if cd_triggered:
-                    labeled_send(strategy.code, fmt_cooldown(strategy, strategy.cd_pause_hours, state))
-                send_close_report(strategy, i, sig, bars, state)
+                signal_feed.emit(strategy.code, i,
+                                 "open_long" if sig["direction"] == "long" else "open_short",
+                                 sig, NOTIONAL_USD)
             elif new_status == "expired":
                 labeled_send(strategy.code, f"⏰ [#{i:03d}] 突破窗口已过, 信号作废 — {strategy.name}" + fmt_stats_footer(strategy, state))
             elif new_status == "invalidated":
                 labeled_send(strategy.code, f"❌ [#{i:03d}] 突破前先碰 SL, 信号作废 — {strategy.name}" + fmt_stats_footer(strategy, state))
 
+        # 关单通知 — 恰好一次 (按 close_notified 去重, 跨轮/重跑都不重不漏)
+        if new_status in ("tp_hit", "sl_hit") and not sig.get("close_notified"):
+            kind = "tp" if new_status == "tp_hit" else "sl"
+            labeled_send(strategy.code, fmt_exit(strategy, i, sig, kind, state))
+            cd_triggered = update_cooldown(strategy, state)
+            if new_status == "sl_hit" and cd_triggered:
+                labeled_send(strategy.code, fmt_cooldown(strategy, strategy.cd_pause_hours, state))
+            send_close_report(strategy, i, sig, bars, state)
+            # 平仓原因: 真打到TP / 阶梯锁价出场 / 止损
+            if new_status == "sl_hit":
+                reason = "sl"
+            elif abs((sig.get("exit_price") or 0) - (sig.get("tp") or 0)) < 1:
+                reason = "tp"
+            else:
+                reason = "lock"
+            signal_feed.emit(strategy.code, i, "close", sig, NOTIONAL_USD,
+                             reason=reason, exit_price=sig.get("exit_price"),
+                             result_r=sig.get("result_r"),
+                             dollar_pl=round(signal_dollar_pl(sig) or 0, 2))
+            sig["close_notified"] = True
+
         # 阶梯锁通知
         if strategy.use_stair and sig["status"] == "entered":
             if not old_stair_2r and sig.get("stair_2r_locked"):
                 labeled_send(strategy.code, fmt_stair(strategy, i, sig, "2r", state))
+                signal_feed.emit(strategy.code, i, "move_stop", sig, NOTIONAL_USD,
+                                 sl=sig.get("current_sl"), lock="+1R")
             if not old_stair_4r and sig.get("stair_4r_locked"):
                 labeled_send(strategy.code, fmt_stair(strategy, i, sig, "4r", state))
+                signal_feed.emit(strategy.code, i, "move_stop", sig, NOTIONAL_USD,
+                                 sl=sig.get("current_sl"), lock="+2R")
 
         # 金字塔通知
         if strategy.use_pyramid and not old_pyramid and sig.get("pyramid_entered"):
             labeled_send(strategy.code, fmt_pyramid(strategy, i, sig, state))
+            signal_feed.emit(strategy.code, i, "pyramid_add", sig, NOTIONAL_USD,
+                             add_price=sig.get("pyramid_entry_price"), add_size=0.5)
         time.sleep(0.3)
 
     # 检测新信号 (返回原始 sig, 逐个 build + append + 更新状态, 让 Kelly 能看到刚处理完的上一单)
@@ -780,6 +816,9 @@ def process_strategy(strategy: StrategyConfig, bars, ema200, adx):
             update_signal_status(strategy, bars, sig_rec)
             if sig_rec["status"] == "entered":
                 labeled_send(strategy.code, fmt_entered(strategy, n, sig_rec, state))
+                signal_feed.emit(strategy.code, n,
+                                 "open_long" if sig_rec["direction"] == "long" else "open_short",
+                                 sig_rec, NOTIONAL_USD)
                 time.sleep(0.3)
             # 注意: 若 sig_rec 立刻 tp_hit/sl_hit, status 已更新, 但本轮不发出场消息
             #       (出场消息由下一轮 process 时检测 old_status != new_status 触发)
@@ -982,6 +1021,15 @@ def main():
             print("  汇总报告已推送")
     except Exception as e:
         print(f"  汇总报告 ERROR: {e}")
+        import traceback; traceback.print_exc()
+
+    # 落盘外部信号源 feed (本轮事件去重追加 + 重建持仓快照)
+    try:
+        states_by_code = [(s.code, load_state(s.state_file)) for s in STRATEGIES]
+        added = signal_feed.flush(SIGNAL_FEED_FILE, states_by_code, NOTIONAL_USD)
+        print(f"  信号源 feed 已更新 (+{added} 事件)")
+    except Exception as e:
+        print(f"  信号源 feed ERROR: {e}")
         import traceback; traceback.print_exc()
 
 

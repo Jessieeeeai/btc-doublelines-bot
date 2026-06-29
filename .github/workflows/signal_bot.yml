@@ -36,12 +36,22 @@ jobs:
 
       - name: Commit state files if changed
         run: |
-          if [ -n "$(git status --porcelain state_A.json state_B.json state_C.json 2>/dev/null)" ]; then
+          if [ -n "$(git status --porcelain state_A.json state_B.json state_C.json signals_feed.json 2>/dev/null)" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add state_A.json state_B.json state_C.json 2>/dev/null || true
+            git add state_A.json state_B.json state_C.json signals_feed.json 2>/dev/null || true
             git commit -m "update race states $(date -u +'%Y-%m-%d %H:%M UTC')"
-            git push
+            # 防 push race (并发触发导致 non-fast-forward): pull --rebase 后重试
+            pushed=0
+            for attempt in 1 2 3 4 5; do
+              if git push; then pushed=1; break; fi
+              echo "push 被拒 (第 $attempt 次), pull --rebase 后重试..."
+              git pull --rebase --autostash origin main || true
+              sleep $((RANDOM % 5 + 2))
+            done
+            if [ "$pushed" != "1" ]; then
+              echo "::warning::5 次重试后仍无法 push state, 本轮放弃 (下轮会重新检测)"
+            fi
           else
             echo "state files unchanged, no commit needed"
           fi
