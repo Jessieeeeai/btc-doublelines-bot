@@ -714,8 +714,8 @@
       "size_multiplier": 1.0,
       "stair_2r_locked": false,
       "stair_4r_locked": false,
-      "pyramid_entered": false,
-      "pyramid_entry_price": null,
+      "pyramid_entered": true,
+      "pyramid_entry_price": 62094.12,
       "last_checked_ts": 1782997200,
       "close_notified": false
     }
