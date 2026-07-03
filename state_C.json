@@ -371,7 +371,7 @@
       "stair_4r_locked": true,
       "pyramid_entered": true,
       "pyramid_entry_price": 74515.35,
-      "last_checked_ts": 1783080000
+      "last_checked_ts": 1783083600
     },
     {
       "signal_time": "2026-05-30 03:00 UTC",
@@ -530,21 +530,22 @@
       "expires_at": "2026-06-18 17:00 UTC",
       "expires_ts": 1781802000,
       "pattern_desc": "看跌反转 (急涨后顶部缠绕)",
-      "status": "entered",
+      "status": "tp_hit",
       "entry_price": 63952.4,
       "entry_time": "2026-06-18 14:00 UTC",
       "entry_ts": 1781791200,
-      "exit_price": null,
-      "exit_time": null,
-      "exit_ts": null,
-      "result_r": null,
-      "result_r_raw": null,
+      "exit_price": 62192.93,
+      "exit_time": "2026-07-03 13:00 UTC",
+      "exit_ts": 1783083600,
+      "result_r": 0.7,
+      "result_r_raw": 1.0,
       "size_multiplier": 0.7,
       "stair_2r_locked": true,
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 62192.93,
-      "last_checked_ts": 1783080000
+      "last_checked_ts": 1783080000,
+      "close_notified": true
     },
     {
       "signal_time": "2026-06-19 21:00 UTC",
@@ -659,7 +660,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 62323.36,
-      "last_checked_ts": 1783080000
+      "last_checked_ts": 1783083600
     },
     {
       "signal_time": "2026-06-24 12:00 UTC",
@@ -716,7 +717,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 62094.12,
-      "last_checked_ts": 1783080000,
+      "last_checked_ts": 1783083600,
       "close_notified": false
     }
   ],
