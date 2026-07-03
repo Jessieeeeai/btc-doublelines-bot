@@ -371,7 +371,7 @@
       "stair_4r_locked": true,
       "pyramid_entered": true,
       "pyramid_entry_price": 74515.35,
-      "last_checked_ts": 1783083600
+      "last_checked_ts": 1783087200
     },
     {
       "signal_time": "2026-05-30 03:00 UTC",
@@ -660,7 +660,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 62323.36,
-      "last_checked_ts": 1783083600
+      "last_checked_ts": 1783087200
     },
     {
       "signal_time": "2026-06-24 12:00 UTC",
@@ -717,7 +717,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 62094.12,
-      "last_checked_ts": 1783083600,
+      "last_checked_ts": 1783087200,
       "close_notified": false
     }
   ],
