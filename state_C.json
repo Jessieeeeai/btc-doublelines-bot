@@ -371,7 +371,7 @@
       "stair_4r_locked": true,
       "pyramid_entered": true,
       "pyramid_entry_price": 74515.35,
-      "last_checked_ts": 1783270800
+      "last_checked_ts": 1783274400
     },
     {
       "signal_time": "2026-05-30 03:00 UTC",
@@ -718,7 +718,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 62094.12,
-      "last_checked_ts": 1783270800,
+      "last_checked_ts": 1783274400,
       "close_notified": false
     }
   ],
@@ -729,6 +729,6 @@
   "pause_until_ts": 0,
   "pause_until_ts_long": 1782280800,
   "pause_until_ts_short": 1782100800,
-  "last_weekly_report_ts": 1782673233,
+  "last_weekly_report_ts": 1783278047,
   "report_format_v": 5
 }
