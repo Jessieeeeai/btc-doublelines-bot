@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "updated_at": "2026-07-06 12:00 UTC",
-  "next_event_id": 12,
+  "updated_at": "2026-07-06 12:15 UTC",
+  "next_event_id": 14,
   "events": [
     {
       "ts": 1782982800,
@@ -213,23 +213,51 @@
       "lock": "+1R",
       "dedup": "C-025:stop:62094.12",
       "event_id": 11
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1783339200,
+      "time": "2026-07-06 12:15 UTC",
       "strategy": "B",
       "signal_no": 23,
       "pos_id": "B-023",
+      "action": "close",
       "direction": "long",
       "entry_price": 60486.7,
       "sl": 62094.12,
       "tp": 73346.04,
       "size_mult": 1.0,
       "r_dollar": 1607.42,
-      "stair_2r_locked": true,
-      "pyramid_entered": false,
-      "notional_usd": 10000
+      "notional_usd": 10000,
+      "reason": "lock",
+      "exit_price": 62094.12,
+      "result_r": 1.0,
+      "dollar_pl": 265.75,
+      "dedup": "B-023:close",
+      "event_id": 12
     },
+    {
+      "ts": 1783339200,
+      "time": "2026-07-06 12:15 UTC",
+      "strategy": "C",
+      "signal_no": 25,
+      "pos_id": "C-025",
+      "action": "close",
+      "direction": "long",
+      "entry_price": 60486.7,
+      "sl": 62094.12,
+      "tp": 73346.04,
+      "size_mult": 1.0,
+      "r_dollar": 1607.42,
+      "notional_usd": 10000,
+      "reason": "lock",
+      "exit_price": 62094.12,
+      "result_r": 1.0,
+      "dollar_pl": 265.75,
+      "dedup": "C-025:close",
+      "event_id": 13
+    }
+  ],
+  "open_positions": [
     {
       "strategy": "C",
       "signal_no": 13,
@@ -240,20 +268,6 @@
       "tp": 57724.8,
       "size_mult": 1.0,
       "r_dollar": 2398.65,
-      "stair_2r_locked": true,
-      "pyramid_entered": true,
-      "notional_usd": 10000
-    },
-    {
-      "strategy": "C",
-      "signal_no": 25,
-      "pos_id": "C-025",
-      "direction": "long",
-      "entry_price": 60486.7,
-      "sl": 62094.12,
-      "tp": 73346.04,
-      "size_mult": 1.0,
-      "r_dollar": 1607.42,
       "stair_2r_locked": true,
       "pyramid_entered": true,
       "notional_usd": 10000
