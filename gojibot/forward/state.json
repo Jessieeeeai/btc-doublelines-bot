@@ -1,5 +1,17 @@
 {
   "position": null,
   "cooldown_until": 0,
-  "last_bar": 1782946800
+  "last_bar": 1783922400,
+  "long": {
+    "BTC": {
+      "position": null,
+      "cooldown_until": 0,
+      "last_bar": 1783922400
+    },
+    "ETH": {
+      "position": null,
+      "cooldown_until": 0,
+      "last_bar": 1783922400
+    }
+  }
 }
