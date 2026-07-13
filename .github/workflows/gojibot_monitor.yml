@@ -20,17 +20,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: TG 通道测试（临时，验证后删除本步骤）
-        if: github.event_name == 'workflow_dispatch'
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.GOJI_TG_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.GOJI_TG_CHAT_ID }}
-        run: python3 gojibot/tg.py test
-
       - name: Run monitor
         env:
           COINGLASS_API_KEY: ${{ secrets.COINGLASS_API_KEY }}
-          # GojiBot 专属 TG（与 F6 频道完全分离）。未配置时不发任何 TG，只写日志。
+          # GojiBot 专属 TG（与 F6 频道完全分离）
           TELEGRAM_BOT_TOKEN: ${{ secrets.GOJI_TG_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.GOJI_TG_CHAT_ID }}
         run: python3 gojibot/monitor.py
