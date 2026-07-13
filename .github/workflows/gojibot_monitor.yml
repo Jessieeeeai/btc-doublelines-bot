@@ -23,9 +23,9 @@ jobs:
       - name: Run monitor
         env:
           COINGLASS_API_KEY: ${{ secrets.COINGLASS_API_KEY }}
-          # 优先用 GojiBot 专属 TG（GOJI_TG_*），没配则回落到 F6 的 TG 频道
-          TELEGRAM_BOT_TOKEN: ${{ secrets.GOJI_TG_BOT_TOKEN || secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.GOJI_TG_CHAT_ID || secrets.TELEGRAM_CHAT_ID }}
+          # GojiBot 专属 TG（与 F6 频道完全分离）。未配置时不发任何 TG，只写日志。
+          TELEGRAM_BOT_TOKEN: ${{ secrets.GOJI_TG_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.GOJI_TG_CHAT_ID }}
         run: python3 gojibot/monitor.py
 
       - name: Commit forward state
