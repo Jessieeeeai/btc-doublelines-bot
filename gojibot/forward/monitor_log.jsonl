@@ -1,0 +1,1 @@
+{"run_at": "2026-07-02T00:37:05.991834+00:00", "bar": "2026-07-01T23:00:00+00:00", "close": 59961.45, "funding": 6.726e-05, "spot_cvd24": -495.3, "resistance": 61287.33, "res_dist_pct": 2.211, "ob_imb": 0.0386, "c1_near_res": false, "c3_cvd_neg": true, "c5_fr_pos": true, "signal": false, "position_open": false}
