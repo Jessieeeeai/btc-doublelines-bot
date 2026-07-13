@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "updated_at": "2026-07-13 09:45 UTC",
-  "next_event_id": 20,
+  "updated_at": "2026-07-13 10:01 UTC",
+  "next_event_id": 22,
   "events": [
     {
       "ts": 1782982800,
@@ -357,6 +357,40 @@
       "notional_usd": 10000,
       "dedup": "C-027:open",
       "event_id": 19
+    },
+    {
+      "ts": 1783936800,
+      "time": "2026-07-13 10:00 UTC",
+      "strategy": "B",
+      "signal_no": 26,
+      "pos_id": "B-026",
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 63074.0,
+      "sl": 64525.2,
+      "tp": 51464.4,
+      "size_mult": 1.0,
+      "r_dollar": 1451.2,
+      "notional_usd": 10000,
+      "dedup": "B-026:open",
+      "event_id": 20
+    },
+    {
+      "ts": 1783936800,
+      "time": "2026-07-13 10:01 UTC",
+      "strategy": "C",
+      "signal_no": 28,
+      "pos_id": "C-028",
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 63074.0,
+      "sl": 64525.2,
+      "tp": 51464.4,
+      "size_mult": 2.0,
+      "r_dollar": 1451.2,
+      "notional_usd": 10000,
+      "dedup": "C-028:open",
+      "event_id": 21
     }
   ],
   "open_positions": [
@@ -417,6 +451,20 @@
       "notional_usd": 10000
     },
     {
+      "strategy": "B",
+      "signal_no": 26,
+      "pos_id": "B-026",
+      "direction": "short",
+      "entry_price": 63074.0,
+      "sl": 64525.2,
+      "tp": 51464.4,
+      "size_mult": 1.0,
+      "r_dollar": 1451.2,
+      "stair_2r_locked": false,
+      "pyramid_entered": false,
+      "notional_usd": 10000
+    },
+    {
       "strategy": "C",
       "signal_no": 13,
       "pos_id": "C-013",
@@ -454,6 +502,20 @@
       "tp": 76061.65,
       "size_mult": 2.0,
       "r_dollar": 1525.66,
+      "stair_2r_locked": false,
+      "pyramid_entered": false,
+      "notional_usd": 10000
+    },
+    {
+      "strategy": "C",
+      "signal_no": 28,
+      "pos_id": "C-028",
+      "direction": "short",
+      "entry_price": 63074.0,
+      "sl": 64525.2,
+      "tp": 51464.4,
+      "size_mult": 2.0,
+      "r_dollar": 1451.2,
       "stair_2r_locked": false,
       "pyramid_entered": false,
       "notional_usd": 10000
