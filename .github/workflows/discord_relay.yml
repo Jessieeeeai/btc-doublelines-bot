@@ -1,0 +1,46 @@
+name: Discord 信号同步
+
+on:
+  repository_dispatch:
+    types: [check-signals]   # 跟信号机器人同节奏 (cron-job.org 每20分钟)
+  schedule:
+    - cron: '*/30 * * * *'   # 兜底
+  workflow_dispatch: {}
+
+concurrency:
+  group: discord-relay
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  relay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: 等信号机器人先写完 feed
+        if: github.event_name != 'workflow_dispatch'
+        run: sleep 90
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Relay to Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python3 discord_relay.py
+
+      - name: Commit relay state
+        run: |
+          git config user.name "discord-relay"
+          git config user.email "actions@users.noreply.github.com"
+          git pull --rebase || true
+          git add discord_relay_state.json
+          if git diff --cached --quiet; then echo "no change"; exit 0; fi
+          git commit -m "discord relay state"
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            git pull --rebase
+          done
+          exit 1
