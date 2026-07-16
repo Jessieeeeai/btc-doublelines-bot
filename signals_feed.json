@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "updated_at": "2026-07-16 18:52 UTC",
-  "next_event_id": 29,
+  "updated_at": "2026-07-16 19:00 UTC",
+  "next_event_id": 31,
   "events": [
     {
       "ts": 1782982800,
@@ -530,6 +530,40 @@
       "notional_usd": 10000,
       "dedup": "C-029:open",
       "event_id": 28
+    },
+    {
+      "ts": 1784228400,
+      "time": "2026-07-16 19:00 UTC",
+      "strategy": "B",
+      "signal_no": 28,
+      "pos_id": "B-028",
+      "action": "open_long",
+      "direction": "long",
+      "entry_price": 64225.0,
+      "sl": 62678.84,
+      "tp": 76594.28,
+      "size_mult": 1.0,
+      "r_dollar": 1546.16,
+      "notional_usd": 10000,
+      "dedup": "B-028:open",
+      "event_id": 29
+    },
+    {
+      "ts": 1784228400,
+      "time": "2026-07-16 19:00 UTC",
+      "strategy": "C",
+      "signal_no": 30,
+      "pos_id": "C-030",
+      "action": "open_long",
+      "direction": "long",
+      "entry_price": 64225.0,
+      "sl": 62678.84,
+      "tp": 76594.28,
+      "size_mult": 0.7,
+      "r_dollar": 1546.16,
+      "notional_usd": 10000,
+      "dedup": "C-030:open",
+      "event_id": 30
     }
   ],
   "open_positions": [
@@ -576,6 +610,20 @@
       "notional_usd": 10000
     },
     {
+      "strategy": "B",
+      "signal_no": 28,
+      "pos_id": "B-028",
+      "direction": "long",
+      "entry_price": 64225.0,
+      "sl": 62678.84,
+      "tp": 76594.28,
+      "size_mult": 1.0,
+      "r_dollar": 1546.16,
+      "stair_2r_locked": false,
+      "pyramid_entered": false,
+      "notional_usd": 10000
+    },
+    {
       "strategy": "C",
       "signal_no": 13,
       "pos_id": "C-013",
@@ -613,6 +661,20 @@
       "tp": 78738.88,
       "size_mult": 0.7,
       "r_dollar": 1798.06,
+      "stair_2r_locked": false,
+      "pyramid_entered": false,
+      "notional_usd": 10000
+    },
+    {
+      "strategy": "C",
+      "signal_no": 30,
+      "pos_id": "C-030",
+      "direction": "long",
+      "entry_price": 64225.0,
+      "sl": 62678.84,
+      "tp": 76594.28,
+      "size_mult": 0.7,
+      "r_dollar": 1546.16,
       "stair_2r_locked": false,
       "pyramid_entered": false,
       "notional_usd": 10000
