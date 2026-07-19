@@ -690,7 +690,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1784480400,
+      "last_checked_ts": 1784484000,
       "close_notified": false
     },
     {
@@ -817,6 +817,6 @@
   "pause_until_ts": 1784354400,
   "pause_until_ts_long": 0,
   "pause_until_ts_short": 0,
-  "last_weekly_report_ts": 1783882855,
+  "last_weekly_report_ts": 1784487627,
   "report_format_v": 5
 }
