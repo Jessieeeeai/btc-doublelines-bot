@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "updated_at": "2026-07-24 13:30 UTC",
-  "next_event_id": 38,
+  "updated_at": "2026-07-24 13:45 UTC",
+  "next_event_id": 39,
   "events": [
     {
       "ts": 1782982800,
@@ -701,6 +701,27 @@
       "notional_usd": 10000,
       "dedup": "B-030:open",
       "event_id": 37
+    },
+    {
+      "ts": 1784898000,
+      "time": "2026-07-24 13:45 UTC",
+      "strategy": "B",
+      "signal_no": 30,
+      "pos_id": "B-030",
+      "action": "close",
+      "direction": "long",
+      "entry_price": 65925.0,
+      "sl": 64194.9,
+      "tp": 79765.8,
+      "size_mult": 1.0,
+      "r_dollar": 1730.1,
+      "notional_usd": 10000,
+      "reason": "sl",
+      "exit_price": 64194.9,
+      "result_r": -1.0,
+      "dollar_pl": -262.43,
+      "dedup": "B-030:close",
+      "event_id": 38
     }
   ],
   "open_positions": [
@@ -742,20 +763,6 @@
       "tp": 76942.49,
       "size_mult": 1.0,
       "r_dollar": 1464.72,
-      "stair_2r_locked": false,
-      "pyramid_entered": false,
-      "notional_usd": 10000
-    },
-    {
-      "strategy": "B",
-      "signal_no": 30,
-      "pos_id": "B-030",
-      "direction": "long",
-      "entry_price": 65925.0,
-      "sl": 64194.9,
-      "tp": 79765.8,
-      "size_mult": 1.0,
-      "r_dollar": 1730.1,
       "stair_2r_locked": false,
       "pyramid_entered": false,
       "notional_usd": 10000
