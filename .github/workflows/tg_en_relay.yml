@@ -1,0 +1,47 @@
+name: English TG 信号同步
+
+on:
+  repository_dispatch:
+    types: [check-signals]
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch: {}
+
+concurrency:
+  group: tg-en-relay
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  relay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Wait for signal bot to update feed
+        if: github.event_name != 'workflow_dispatch'
+        run: sleep 100
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Relay to English TG group
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TG_EN_CHAT_ID: ${{ secrets.TG_EN_CHAT_ID }}
+        run: python3 tg_en_relay.py
+
+      - name: Commit relay state
+        run: |
+          git config user.name "tg-en-relay"
+          git config user.email "actions@users.noreply.github.com"
+          git pull --rebase || true
+          git add tg_en_relay_state.json
+          if git diff --cached --quiet; then echo "no change"; exit 0; fi
+          git commit -m "tg-en relay state"
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            git pull --rebase
+          done
+          exit 1
