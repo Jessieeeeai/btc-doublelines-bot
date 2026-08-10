@@ -19,7 +19,7 @@ import signal_feed
 
 
 SIGNAL_FEED_FILE = "signals_feed.json"  # 给外部执行端订阅的可执行信号源
-MAX_SIGNALS = 30  # 收 30 个就出战报 (3 策略共享, 实际每个最多 ~10 单)
+MAX_SIGNALS = 1_000_000  # 长期实盘: 不再限制信号数 (原为30, 会导致收满后停止开新单)
 N_BARS = 300
 COINGLASS_BASE = "https://open-api-v4.coinglass.com"
 
