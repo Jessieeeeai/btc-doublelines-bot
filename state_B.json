@@ -690,7 +690,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1786435200,
+      "last_checked_ts": 1786438800,
       "close_notified": false
     },
     {
@@ -893,7 +893,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1786435200,
+      "last_checked_ts": 1786438800,
       "close_notified": false
     },
     {
@@ -922,7 +922,36 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1786435200,
+      "last_checked_ts": 1786438800,
+      "close_notified": false
+    },
+    {
+      "signal_time": "2026-08-11 09:00 UTC",
+      "signal_ts": 1786438800,
+      "direction": "short",
+      "trigger_price": 64109.8,
+      "sl0": 65566.62,
+      "current_sl": 65566.62,
+      "tp": 52455.24,
+      "r_dollar": 1456.82,
+      "expires_at": "2026-08-11 13:00 UTC",
+      "expires_ts": 1786453200,
+      "pattern_desc": "看跌反转 (急涨后顶部缠绕)",
+      "status": "waiting",
+      "entry_price": null,
+      "entry_time": null,
+      "entry_ts": null,
+      "exit_price": null,
+      "exit_time": null,
+      "exit_ts": null,
+      "result_r": null,
+      "result_r_raw": null,
+      "size_multiplier": 1.0,
+      "stair_2r_locked": false,
+      "stair_4r_locked": false,
+      "pyramid_entered": false,
+      "pyramid_entry_price": null,
+      "last_checked_ts": null,
       "close_notified": false
     }
   ],
