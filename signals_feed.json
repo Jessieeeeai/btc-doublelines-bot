@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "updated_at": "2026-08-13 16:30 UTC",
-  "next_event_id": 55,
+  "updated_at": "2026-08-13 16:45 UTC",
+  "next_event_id": 56,
   "events": [
     {
       "ts": 1782982800,
@@ -998,6 +998,25 @@
       "notional_usd": 10000,
       "dedup": "C-035:open",
       "event_id": 54
+    },
+    {
+      "ts": 1786446000,
+      "time": "2026-08-13 16:45 UTC",
+      "strategy": "C",
+      "signal_no": 34,
+      "pos_id": "C-034",
+      "action": "pyramid_add",
+      "direction": "short",
+      "entry_price": 64205.3,
+      "sl": 65575.9,
+      "tp": 53240.48,
+      "size_mult": 0.7,
+      "r_dollar": 1370.6,
+      "notional_usd": 10000,
+      "add_price": 62834.7,
+      "add_size": 0.5,
+      "dedup": "C-034:pyramid",
+      "event_id": 55
     }
   ],
   "open_positions": [
@@ -1250,7 +1269,7 @@
       "size_mult": 0.7,
       "r_dollar": 1370.6,
       "stair_2r_locked": false,
-      "pyramid_entered": false,
+      "pyramid_entered": true,
       "notional_usd": 10000
     },
     {
