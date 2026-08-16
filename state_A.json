@@ -821,7 +821,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1786899600,
+      "last_checked_ts": 1786903200,
       "close_notified": false
     },
     {
@@ -879,7 +879,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1786899600,
+      "last_checked_ts": 1786903200,
       "close_notified": false
     },
     {
@@ -908,7 +908,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1786899600,
+      "last_checked_ts": 1786903200,
       "close_notified": false
     },
     {
@@ -937,7 +937,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1786899600,
+      "last_checked_ts": 1786903200,
       "close_notified": false
     },
     {
@@ -966,7 +966,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1786899600,
+      "last_checked_ts": 1786903200,
       "close_notified": false
     },
     {
@@ -995,7 +995,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1786899600,
+      "last_checked_ts": 1786903200,
       "close_notified": false
     },
     {
@@ -1024,7 +1024,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1786899600,
+      "last_checked_ts": 1786903200,
       "close_notified": false
     },
     {
@@ -1053,7 +1053,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1786899600,
+      "last_checked_ts": 1786903200,
       "close_notified": false
     }
   ],
@@ -1064,6 +1064,6 @@
   "pause_until_ts": 0,
   "pause_until_ts_long": 0,
   "pause_until_ts_short": 0,
-  "last_weekly_report_ts": 1785697230,
+  "last_weekly_report_ts": 1786906834,
   "report_format_v": 5
 }
