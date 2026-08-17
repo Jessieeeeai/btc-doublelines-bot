@@ -371,7 +371,7 @@
       "stair_4r_locked": true,
       "pyramid_entered": true,
       "pyramid_entry_price": 74515.35,
-      "last_checked_ts": 1786946400
+      "last_checked_ts": 1786950000
     },
     {
       "signal_time": "2026-05-30 03:00 UTC",
@@ -747,7 +747,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 65687.76,
-      "last_checked_ts": 1786946400,
+      "last_checked_ts": 1786950000,
       "close_notified": false
     },
     {
@@ -892,7 +892,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1786946400,
+      "last_checked_ts": 1786950000,
       "close_notified": false
     },
     {
@@ -921,7 +921,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 62563.04,
-      "last_checked_ts": 1786946400,
+      "last_checked_ts": 1786950000,
       "close_notified": false
     },
     {
@@ -950,7 +950,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 62652.98,
-      "last_checked_ts": 1786946400,
+      "last_checked_ts": 1786950000,
       "close_notified": false
     },
     {
@@ -979,7 +979,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 62834.7,
-      "last_checked_ts": 1786946400,
+      "last_checked_ts": 1786950000,
       "close_notified": false
     },
     {
@@ -1008,7 +1008,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1786946400,
+      "last_checked_ts": 1786950000,
       "close_notified": false
     },
     {
@@ -1037,7 +1037,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1786946400,
+      "last_checked_ts": 1786950000,
       "close_notified": false
     },
     {
@@ -1066,7 +1066,36 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1786946400,
+      "last_checked_ts": 1786950000,
+      "close_notified": false
+    },
+    {
+      "signal_time": "2026-08-17 07:00 UTC",
+      "signal_ts": 1786950000,
+      "direction": "short",
+      "trigger_price": 63493.5,
+      "sl0": 64967.06,
+      "current_sl": 64967.06,
+      "tp": 51704.99,
+      "r_dollar": 1473.56,
+      "expires_at": "2026-08-17 11:00 UTC",
+      "expires_ts": 1786964400,
+      "pattern_desc": "看跌反转 (急涨后顶部缠绕)",
+      "status": "entered",
+      "entry_price": 63493.5,
+      "entry_time": "2026-08-17 08:00 UTC",
+      "entry_ts": 1786953600,
+      "exit_price": null,
+      "exit_time": null,
+      "exit_ts": null,
+      "result_r": null,
+      "result_r_raw": null,
+      "size_multiplier": 0.7,
+      "stair_2r_locked": false,
+      "stair_4r_locked": false,
+      "pyramid_entered": false,
+      "pyramid_entry_price": null,
+      "last_checked_ts": null,
       "close_notified": false
     }
   ],
