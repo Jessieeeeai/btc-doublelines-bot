@@ -36,8 +36,8 @@ NOTIONAL_FIXED = 10000.0
 HORSES = [
     {"code": "N-A", "name": "FINAL_R完全体 (跟踪+等风险)", "state_file": "state_N_A.json",
      "exit": "trail", "sizing": "risk", "min_l": MIN_L_PCT},
-    {"code": "N-B", "name": "固定仓跟踪 (跟踪+$10k)", "state_file": "state_N_B.json",
-     "exit": "trail", "sizing": "fixed", "min_l": MIN_L_PCT},
+    # N-B (固定仓跟踪) 于2026-08-18裁撤: 与N-A同信号同出场, 仅仓位不同,
+    # 其结果可从N-A流水直接换算 (pnl = 价格百分比 x $10,000), 无独立信息量。
     {"code": "N-C", "name": "固定TP保守版 (3L/1.5L+$10k)", "state_file": "state_N_C.json",
      "exit": "fixed", "sizing": "fixed", "min_l": MIN_L_PCT},
     # 野马: 原始P3+P5合体, 不带微型L门槛。63%回测利润来自止损距离<0.1%的微型单,
