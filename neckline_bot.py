@@ -44,6 +44,10 @@ HORSES = [
     # 纸面成交假设在那些单子上不可信 — 成绩仅供观察, 不作实盘决策依据。
     {"code": "N-D", "name": "野马 (原始合体·仅观察)", "state_file": "state_N_D.json",
      "exit": "trail", "sizing": "risk", "min_l": 0.0, "observe": True},
+    # 白马: FINAL_R + 前置冲击 (重叠对前一根A为大实体, |A实体|>=2L)。
+    # 第七轮T4: 回测719笔 wr59.8% 每笔$45.63 总+$32,809 — 质量王配置。
+    {"code": "N-E", "name": "白马 (前置冲击+完全体)", "state_file": "state_N_E.json",
+     "exit": "trail", "sizing": "risk", "min_l": MIN_L_PCT, "big_a": True},
 ]
 
 PAPER_MARK = "\n🧪 <i>纸面验证 — 非实盘指令</i>"
@@ -310,8 +314,12 @@ def process_horse(horse, bars):
 
         # 4) 本根K线与上一根是否构成新形态 (下一根起可触发)
         if j >= 1:
-            state["forming"] = pair_signal(closed[j - 1], closed[j],
-                                           horse.get("min_l", MIN_L_PCT))
+            sig = pair_signal(closed[j - 1], closed[j], horse.get("min_l", MIN_L_PCT))
+            # 白马: 前置冲击条件 — 重叠对前一根A必须是大实体 (|A实体| >= 2L)
+            if sig is not None and horse.get("big_a"):
+                if j < 2 or abs(closed[j - 2]["close"] - closed[j - 2]["open"]) < 2 * sig["L"]:
+                    sig = None
+            state["forming"] = sig
 
         state["last_bar_ts"] = bar["ts"]
 
