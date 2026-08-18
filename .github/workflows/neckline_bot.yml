@@ -22,6 +22,9 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install matplotlib
+        run: pip install --quiet matplotlib
+
       - name: Run neckline race bot (4 horses, paper)
         env:
           COINGLASS_API_KEY: ${{ secrets.COINGLASS_API_KEY }}
@@ -32,10 +35,10 @@ jobs:
 
       - name: Commit state files if changed
         run: |
-          if [ -n "$(git status --porcelain state_N_A.json state_N_B.json state_N_C.json state_N_D.json 2>/dev/null)" ]; then
+          if [ -n "$(git status --porcelain state_N_A.json state_N_B.json state_N_C.json state_N_D.json neckline_feed.json 2>/dev/null)" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add state_N_A.json state_N_B.json state_N_C.json state_N_D.json 2>/dev/null || true
+            git add state_N_A.json state_N_B.json state_N_C.json state_N_D.json neckline_feed.json 2>/dev/null || true
             git commit -m "update neckline race states $(date -u +'%Y-%m-%d %H:%M UTC')"
             pushed=0
             for attempt in 1 2 3 4 5; do
