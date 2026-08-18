@@ -1,0 +1,13 @@
+{
+  "started": true,
+  "anchor_ts": 1787083200,
+  "last_bar_ts": 1787083200,
+  "active": [],
+  "forming": null,
+  "position": null,
+  "trades": [],
+  "seq": 0,
+  "n_skipped": 0,
+  "n_expired": 0,
+  "n_ambiguous": 0
+}
