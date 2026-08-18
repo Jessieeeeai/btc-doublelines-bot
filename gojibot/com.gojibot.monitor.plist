@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.gojibot.monitor</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/python3</string>
+        <string>/Users/guoxiaoquandediannao/Desktop/交易/gojibot/monitor.py</string>
+    </array>
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Minute</key>
+        <integer>5</integer>
+    </dict>
+    <key>StandardOutPath</key>
+    <string>/Users/guoxiaoquandediannao/Desktop/交易/gojibot/forward/launchd.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/guoxiaoquandediannao/Desktop/交易/gojibot/forward/launchd.err</string>
+</dict>
+</plist>

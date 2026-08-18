@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>双线反转 · F6 策略 · 3 策略赛马 · 小白图解</title>
+<style>
+  :root {
+    --bg: #f7f5f0;
+    --paper: #ffffff;
+    --ink: #1a1a1a;
+    --soft: #4b4b4b;
+    --muted: #8b8b8b;
+    --border: #e8e6e0;
+    --accent: #c15f3c;
+    --accent-soft: #fef3e9;
+    --good: #15803d;
+    --good-soft: #ecfdf5;
+    --bad: #b91c1c;
+    --bad-soft: #fef2f2;
+    --info: #1d4ed8;
+    --info-soft: #eff6ff;
+    --warn: #b45309;
+    --warn-soft: #fffbeb;
+    --gray: #94a3b8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+    background: var(--bg); color: var(--ink); margin: 0; padding: 40px 20px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 880px; margin: 0 auto; }
+  h1 { font-size: 36px; margin: 0 0 8px; font-weight: 700; letter-spacing: -0.02em; }
+  .lead { font-size: 17px; color: var(--soft); margin: 0 0 36px; }
+  h2 {
+    font-size: 26px; margin: 56px 0 16px; font-weight: 700; letter-spacing: -0.01em;
+    border-bottom: 2px solid var(--ink); padding-bottom: 10px;
+  }
+  h2 .num {
+    display: inline-block; background: var(--ink); color: white;
+    width: 32px; height: 32px; border-radius: 50%; text-align: center;
+    line-height: 32px; font-size: 16px; margin-right: 10px; vertical-align: 2px;
+  }
+  h3 { font-size: 20px; margin: 32px 0 12px; font-weight: 600; }
+  p { margin: 14px 0; }
+  .punchline {
+    background: var(--accent-soft); border-left: 4px solid var(--accent);
+    padding: 20px 24px; border-radius: 4px; margin: 24px 0;
+  }
+  .punchline strong { color: var(--accent); }
+  .callout {
+    background: var(--info-soft); border-left: 4px solid var(--info);
+    padding: 16px 22px; border-radius: 4px; margin: 22px 0; font-size: 15px;
+  }
+  .callout.good { background: var(--good-soft); border-color: var(--good); }
+  .callout.bad { background: var(--bad-soft); border-color: var(--bad); }
+  .callout.warn { background: var(--warn-soft); border-color: var(--warn); }
+  .term {
+    background: white; border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px 18px; margin: 12px 0; font-size: 14px;
+  }
+  .term .key { font-weight: 600; color: var(--accent); margin-right: 8px; }
+  .term .key::before { content: "📖 "; }
+  figure {
+    margin: 28px 0; padding: 22px;
+    background: white; border: 1px solid var(--border); border-radius: 12px;
+  }
+  figure svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+  figcaption {
+    font-size: 13px; color: var(--muted); text-align: center; margin-top: 12px;
+    font-style: italic;
+  }
+  table {
+    width: 100%; border-collapse: collapse; margin: 20px 0;
+    background: white; border-radius: 8px; overflow: hidden;
+    border: 1px solid var(--border); font-size: 15px;
+  }
+  th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: #fafaf6; font-weight: 600; color: var(--soft); font-size: 13px;
+       text-transform: uppercase; letter-spacing: 0.04em; }
+  tr:last-child td { border-bottom: none; }
+  .num-val { text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
+  .ok { color: var(--good); }
+  .bad-c { color: var(--bad); }
+  .gray-c { color: var(--gray); }
+  .compare {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0;
+  }
+  .compare > div {
+    background: white; border: 1px solid var(--border); border-radius: 10px;
+    padding: 18px 22px;
+  }
+  .compare h4 { margin: 0 0 8px; font-size: 16px; font-weight: 600; }
+  .compare .before h4 { color: var(--bad); }
+  .compare .after h4 { color: var(--good); }
+  .step {
+    background: white; border: 1px solid var(--border); border-radius: 10px;
+    padding: 22px 26px 22px 38px; margin: 18px 0; position: relative;
+  }
+  .step .badge {
+    position: absolute; left: -12px; top: 22px;
+    background: var(--accent); color: white;
+    width: 28px; height: 28px; border-radius: 50%;
+    text-align: center; line-height: 28px; font-weight: 700; font-size: 14px;
+  }
+  .step h3 { margin-top: 4px; }
+  .step .before { color: var(--bad); font-size: 14px; padding: 4px 10px; background: var(--bad-soft); border-radius: 6px; display: inline-block; margin: 4px 0; }
+  .step .after { color: var(--good); font-size: 14px; padding: 4px 10px; background: var(--good-soft); border-radius: 6px; display: inline-block; margin: 4px 0; }
+  .step .why { margin-top: 10px; padding: 10px 14px; background: var(--warn-soft); border-radius: 6px; font-size: 14px; color: var(--warn); font-style: italic; }
+  .toc {
+    background: white; border: 1px solid var(--border); border-radius: 10px;
+    padding: 18px 24px; margin: 24px 0; font-size: 15px;
+  }
+  .toc ol { margin: 8px 0; padding-left: 22px; }
+  .toc li { margin: 4px 0; }
+  .toc a { color: var(--info); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .pill {
+    display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px;
+    font-weight: 600; background: var(--accent-soft); color: var(--accent);
+  }
+  hr { border: none; border-top: 1px dashed var(--border); margin: 36px 0; }
+  footer { color: var(--muted); font-size: 13px; text-align: center; margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>双线反转 → F6 → 3 策略赛马</h1>
+<p class="lead">小白版图解说明。从你那个 Pine 指标怎么变成 +1785% 的策略, 配图 + 名词翻译, 按顺序读完你就懂了。</p>
+
+<div class="toc">
+  <strong>这页讲什么：</strong>
+  <ol>
+    <li><a href="#part1">先把名词翻译成人话</a></li>
+    <li><a href="#part2">你原来的策略 — 双线反转在做什么</a></li>
+    <li><a href="#part3">原策略的两个毛病</a></li>
+    <li><a href="#part4">5 轮迭代 — 怎么把它改成"完整交易系统"</a></li>
+    <li><a href="#part5">反共识杀招 — 80% 时间根本不该开仓</a></li>
+    <li><a href="#part6">还能更好 — B 让赢家奔跑 / C 终极 alpha</a></li>
+    <li><a href="#part7">改完效果对比 — 真实数据</a></li>
+    <li><a href="#part8">一句话总结</a></li>
+  </ol>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="part1"><span class="num">1</span>先把名词翻译成人话</h2>
+
+<p>下面这些词后面会反复用到, 先记个大概意思, 不懂的时候随时翻回来。</p>
+
+<div class="term">
+  <span class="key">K 线</span>
+  一根 K 线 = 一段时间的价格走势。<b>1 小时 K 线</b>就是每 1 小时画一根, 一天 24 根。一根 K 线记录这 1 小时的<b>开盘价</b>（开始多少钱）、<b>收盘价</b>（结束多少钱）、<b>最高价</b>、<b>最低价</b>。
+</div>
+
+<div class="term">
+  <span class="key">K 线的实体</span>
+  K 线那个长方形部分（开盘价到收盘价）就叫"实体", 两边的细线叫"影线"。<b>实体大 = 这小时价格变化大</b>; 实体小 = 价格基本没动。我们策略要求 B、C 两根的实体占比 ≥ 50% — 不能太"心虚"。
+</div>
+
+<div class="term">
+  <span class="key">止损 (Stop Loss / SL)</span>
+  事先决定的<b>"我最多输多少钱就走"的价位</b>。比如你 80,000 买入, 止损设 78,000 — 万一 BTC 跌到 78,000, 系统自动帮你卖, 不再继续亏。
+</div>
+
+<div class="term">
+  <span class="key">止盈 (Take Profit / TP)</span>
+  反过来 — <b>"涨到这个价就走人"</b>。比如 80,000 买入, 止盈 84,000 — 涨到 84,000 自动卖, 落袋为安。
+</div>
+
+<div class="term">
+  <span class="key">R · "1 倍风险"</span>
+  R 不是利率, 是 Risk-Multiple。<b>1R = 这一单你最多亏多少钱</b>。比如止损时亏 $284, 那 1R = $284。"2R 止盈" 就是<b>"赚到 $568 才走"</b>——简单说: 我赔 1 块, 必须能赢 2 块才进场。
+</div>
+
+<div class="term">
+  <span class="key">Buffer (止损缓冲)</span>
+  止损位<b>往外多让一截</b>的百分比。BTC 经常有"插针"（价格突然跌一下又弹回来）, 如果止损紧贴 K 线最低点, 一根针就把你扫飞。给止损往下让 2%, 插针就扫不到, 但走势对了照样能赚。
+</div>
+
+<div class="term">
+  <span class="key">EMA-200 (200 小时均线)</span>
+  Exponential Moving Average, <b>过去 200 根 K 线收盘价的"加权平均"</b>。在 1 小时图上 ≈ 过去 8 天的平均价。这条线代表<b>中期方向</b> — 价格在它上方 = 这一周大方向是涨的; 下方 = 跌的。
+</div>
+
+<div class="term">
+  <span class="key">ADX · "趋势强度"</span>
+  Average Directional Index, 衡量<b>"现在的趋势有多猛"</b>。
+  <br>• ADX &gt; 25 = BTC 现在涨或跌得猛 → <b>强趋势</b>
+  <br>• ADX &lt; 20 = 在横盘磨人 → <b>震荡</b>
+  <br>• 中间 = 过渡
+</div>
+
+<div class="term">
+  <span class="key">回撤 (Drawdown / DD)</span>
+  从历史最高点跌下来多少。<b>"最大回撤 -47%"</b> 意思是账户最惨的时候比之前最高峰少了 47%。<b>衡量"难受程度"最直接的数字</b> — 不是看你最后赚了多少, 是看你中途扛了多痛苦。
+</div>
+
+<div class="term">
+  <span class="key">买入持有 (Buy &amp; Hold)</span>
+  最简单的"策略": 买了 BTC 就一直拿着不动, 3 年后看赚多少。<b>所有主动策略都要跟这个比</b> — 跑不赢它, 你的主动操作就是在交手续费。
+</div>
+
+<div class="term">
+  <span class="key">alpha (阿尔法)</span>
+  金融行话, 简单说就是<b>"靠技巧赚的钱, 不是靠大盘涨上去赚的钱"</b>。你拿着 BTC 等它涨, 那是 beta; 你通过 timing / 选币 / 风控比"躺平"赚得更多, 那部分就是 alpha。
+</div>
+
+<!-- ============================================================ -->
+<h2 id="part2"><span class="num">2</span>你原来的策略 — 双线反转在做什么</h2>
+
+<p class="lead">
+  一句话：<b>盯着 BTC, 找"急涨/急跌之后两根 K 缠绕"的形态, 在那位置画箭头, 赌它要反转。</b>
+</p>
+
+<p>两年前我在 TradingView 上写了一个 Pine Script 指标——叫"两线反转"。它工作原理很简单, 找 3 根连续 K 线 A、B、C:</p>
+
+<figure>
+  <svg viewBox="0 0 760 320" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, sans-serif">
+    <rect width="760" height="320" fill="#fafaf6"/>
+    <g stroke="#e8e6e0" stroke-width="0.5">
+      <line x1="40" y1="60" x2="720" y2="60"/>
+      <line x1="40" y1="140" x2="720" y2="140"/>
+      <line x1="40" y1="220" x2="720" y2="220"/>
+    </g>
+
+    <!-- A 急跌大阴线 -->
+    <g>
+      <line x1="160" y1="60" x2="160" y2="260" stroke="#b91c1c" stroke-width="2"/>
+      <rect x="143" y="70" width="34" height="180" fill="#dc2626"/>
+      <text x="160" y="285" text-anchor="middle" fill="#b91c1c" font-size="14" font-weight="700">A · 急跌</text>
+      <text x="160" y="50" text-anchor="middle" fill="#8b8b8b" font-size="11">长阴线</text>
+    </g>
+
+    <text x="225" y="160" fill="#8b8b8b" font-size="22">→</text>
+
+    <!-- B 小阳线 -->
+    <g>
+      <line x1="300" y1="200" x2="300" y2="245" stroke="#15803d" stroke-width="2"/>
+      <rect x="283" y="205" width="34" height="34" fill="#16a34a"/>
+      <text x="300" y="285" text-anchor="middle" fill="#15803d" font-size="14" font-weight="700">B · 小阳</text>
+      <text x="300" y="190" text-anchor="middle" fill="#8b8b8b" font-size="11">缠绕开始</text>
+    </g>
+
+    <text x="365" y="160" fill="#8b8b8b" font-size="22">→</text>
+
+    <!-- C 小阴线在 B 实体内 -->
+    <g>
+      <line x1="440" y1="198" x2="440" y2="240" stroke="#b91c1c" stroke-width="2"/>
+      <rect x="423" y="212" width="34" height="22" fill="#dc2626"/>
+      <text x="440" y="285" text-anchor="middle" fill="#b91c1c" font-size="14" font-weight="700">C · 缠绕</text>
+      <text x="440" y="190" text-anchor="middle" fill="#8b8b8b" font-size="11">压在 B 里</text>
+    </g>
+
+    <text x="505" y="160" fill="#8b8b8b" font-size="22">→</text>
+
+    <!-- 信号箭头 -->
+    <g>
+      <text x="610" y="240" text-anchor="middle" fill="#1d4ed8" font-size="38" font-weight="700">↑</text>
+      <text x="610" y="285" text-anchor="middle" fill="#1d4ed8" font-size="13" font-weight="700">看涨信号</text>
+      <text x="610" y="180" text-anchor="middle" fill="#8b8b8b" font-size="11">指标画箭头</text>
+    </g>
+
+    <!-- 矩形把 B C 圈起来 -->
+    <rect x="278" y="195" width="180" height="55" rx="4" fill="none" stroke="#1d4ed8" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
+    <text x="368" y="265" text-anchor="middle" fill="#1d4ed8" font-size="10">"两线缠绕"区域</text>
+  </svg>
+  <figcaption>看涨反转形态: A 急跌之后, B、C 两根在底部缠绕 (实体重叠), 像有人在底部接盘 → 可能要反弹</figcaption>
+</figure>
+
+<p>反过来就是<b>看跌反转</b>: A 急涨 → B、C 在高位缠绕 → 可能要下跌。</p>
+
+<h3>"缠绕" 的判定规则</h3>
+
+<p>不是看着像缠绕就行, 要满足两个条件:</p>
+
+<p>
+  ① B、C 两根的<b>实体占比 ≥ 50%</b> (不能太心虚)<br>
+  ② B 的典型价 (开高低收的平均) <b>在 C 实体的范围内</b>, C 的典型价也<b>在 B 实体的范围内</b> — 互相"压在对方身上"
+</p>
+
+<p class="callout">
+  <b>类比:</b> 急跌之后, 价格本来应该继续往下走。但 B、C 两根突然不走了, 在那儿原地踏步, 像是有人在底部接盘——这种"反常的不走"就是反转的前兆。
+</p>
+
+<!-- ============================================================ -->
+<h2 id="part3"><span class="num">3</span>原策略的两个毛病</h2>
+
+<h3>毛病一: 它只是"画箭头", 不是"交易系统"</h3>
+
+<p>原始的"两线反转"指标只做一件事: <b>画箭头</b>。它就是个"显示器", 不是"操作员"。看到箭头那一刻, 它<b>没回答你 4 个最关键的问题</b>:</p>
+
+<div class="compare">
+  <div class="before">
+    <h4>❌ 原始指标不告诉你</h4>
+    <ul style="padding-left:18px; font-size:14px">
+      <li><b>什么价位买?</b> 看到箭头立刻买? 等等再买?</li>
+      <li><b>止损放哪?</b> 跌多少认输?</li>
+      <li><b>什么价位卖?</b> 涨多少走人?</li>
+      <li><b>仓位多大?</b> 这一单押多少钱?</li>
+    </ul>
+  </div>
+  <div class="after">
+    <h4>✅ 完整交易系统必须回答</h4>
+    <ul style="padding-left:18px; font-size:14px">
+      <li>入场价 (entry)</li>
+      <li>止损价 (SL)</li>
+      <li>止盈价 (TP)</li>
+      <li>仓位规模 (position size)</li>
+    </ul>
+  </div>
+</div>
+
+<p class="callout bad">
+<b>关键数据:</b> 如果只看箭头就冲, 不管止损止盈和仓位 — 3 年 BTC 1h 数据回测显示: 胜率 &lt; 40%, 最后<b>大概率亏钱</b>。这就是 95% 散户量化梦碎的位置。
+</p>
+
+<h3>毛病二: 它不分大趋势, 逆势硬接</h3>
+
+<p>BTC 进入下跌大趋势时, 即使出现"看涨反转"形态, 接下来大概率<b>反弹一小下又继续跌</b>。原指标不管这个, 见到形态就画箭头——结果你买在半山腰, 跌一波被止损扫飞。</p>
+
+<figure>
+  <svg viewBox="0 0 760 280" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, sans-serif">
+    <rect width="760" height="280" fill="#fafaf6"/>
+
+    <!-- 下跌走势 + 几次小反弹 -->
+    <path d="M 40,60 L 130,90 L 180,75 L 240,110 L 290,95 L 350,140 L 410,125 L 470,170 L 520,155 L 580,200 L 640,185 L 720,230"
+          fill="none" stroke="#1a1a1a" stroke-width="2.2"/>
+
+    <!-- 大趋势下降箭头 -->
+    <line x1="50" y1="40" x2="700" y2="240" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="60" y="35" font-size="12" fill="#b91c1c" font-weight="600">大趋势 · 下跌</text>
+
+    <!-- 在每次反弹给假买入信号 -->
+    <g font-size="11" text-anchor="middle">
+      <circle cx="180" cy="75" r="6" fill="#16a34a"/>
+      <text x="180" y="60" fill="#16a34a" font-weight="600">买</text>
+      <line x1="180" y1="80" x2="180" y2="120" stroke="#16a34a" stroke-dasharray="2,2"/>
+      <circle cx="240" cy="110" r="6" fill="#dc2626"/>
+      <text x="240" y="130" fill="#dc2626" font-weight="600">止损 ↓</text>
+
+      <circle cx="290" cy="95" r="6" fill="#16a34a"/>
+      <text x="290" y="80" fill="#16a34a" font-weight="600">买</text>
+      <line x1="290" y1="100" x2="290" y2="150" stroke="#16a34a" stroke-dasharray="2,2"/>
+      <circle cx="350" cy="140" r="6" fill="#dc2626"/>
+      <text x="350" y="160" fill="#dc2626" font-weight="600">止损 ↓</text>
+
+      <circle cx="410" cy="125" r="6" fill="#16a34a"/>
+      <text x="410" y="110" fill="#16a34a" font-weight="600">买</text>
+      <line x1="410" y1="130" x2="410" y2="180" stroke="#16a34a" stroke-dasharray="2,2"/>
+      <circle cx="470" cy="170" r="6" fill="#dc2626"/>
+      <text x="470" y="190" fill="#dc2626" font-weight="600">止损 ↓</text>
+    </g>
+
+    <rect x="500" y="50" width="220" height="60" rx="4" fill="#fef2f2" stroke="#dc2626" stroke-width="1"/>
+    <text x="510" y="70" font-size="12" fill="#b91c1c" font-weight="600">在下跌大趋势中</text>
+    <text x="510" y="88" font-size="11" fill="#b91c1c">所有"看涨反转"都是错的</text>
+    <text x="510" y="103" font-size="11" fill="#b91c1c">每次反弹都被埋</text>
+  </svg>
+  <figcaption>下跌大趋势中, "急跌后底部缠绕" 出现得最多 — 但反弹通常只是中场休息, 跌一波就把你的止损扫飞。</figcaption>
+</figure>
+
+<!-- ============================================================ -->
+<h2 id="part4"><span class="num">4</span>5 轮迭代 — 从亏钱到 +119R</h2>
+
+<p>我决定把"画箭头的指标" 改成<b>完整的交易系统</b>。每改一次, 跑一次 3 年回测看效果——总共改了 5 轮:</p>
+
+<div class="step">
+  <span class="badge">1</span>
+  <h3>原始策略 + 紧贴 K 线最低点止损</h3>
+  <span class="before">❌ 结果: 亏钱</span>
+  <div class="why">📖 <b>为什么亏?</b> BTC 经常有"插针"——价格突然跌一下又立刻弹回来, 像针扎一下。止损紧贴最低点, 这种针一扎就把你扫飞了, 但走势其实是对的——你赔了, 然后看着它涨上去。</div>
+</div>
+
+<div class="step">
+  <span class="badge">2</span>
+  <h3>给止损加 2% buffer (缓冲)</h3>
+  <span class="before">原: SL = K 线最低点</span><br>
+  <span class="after">新: SL = K 线最低点 × 0.98 (往下再让 2%)</span>
+  <div class="why">📖 <b>为什么是 2%?</b> BTC 1h 的插针通常 1-1.5%, 让 2% 刚好扛得过去。结果: 从亏钱回到打平 (不亏不赚)。</div>
+</div>
+
+<div class="step">
+  <span class="badge">3</span>
+  <h3>找最佳止盈倍数: 1.5R / 2R / 2.5R / 3R</h3>
+  <span class="after">新: 止盈 = 2 倍止损距离 (2R)</span>
+  <div class="why">📖 <b>测试发现:</b> 拉到 3R 反而胜率掉到 23% (等太久, 价格已经回来了); 1.5R 又赚不够。<b>2R 是甜点</b>——这就是赔率思维: 输 1 块, 必须能赢 2 块才进场。</div>
+</div>
+
+<div class="step">
+  <span class="badge">4</span>
+  <h3>不是看到信号就冲, 等突破再进</h3>
+  <span class="before">原: 信号出现立刻按市价买</span><br>
+  <span class="after">新: 等价格真的突破 B、C 两根 K 收盘价更高的那一个, 再用限价单进</span>
+  <div class="why">📖 <b>为什么要等?</b> "双线反转"形态出现, 不代表方向真的转了。等价格真的<b>突破上方</b>, 才能确认反弹开始, 这时候再进——过滤掉一堆假信号, 胜率立刻上升。</div>
+</div>
+
+<div class="step">
+  <span class="badge">5</span>
+  <h3>加 EMA-200 顺势过滤</h3>
+  <span class="before">原: 不管市场方向, 反转就接</span><br>
+  <span class="after">新: 看 EMA-200, 价格在它上方才接多, 下方才接空</span>
+  <div class="why">📖 <b>胜率从 37% → 43%, 单笔期望 +0.086R → +0.25R, 几乎翻 3 倍。</b> 反转策略本质是"猜底/猜顶"。大方向是涨的, 猜底有可能猜对; 大方向是跌的, 猜底就是接飞刀——可能接到血腥的那一刀。</div>
+</div>
+
+<figure>
+  <svg viewBox="0 0 760 320" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, sans-serif">
+    <rect width="760" height="320" fill="#fafaf6"/>
+
+    <!-- EMA-200 平滑线 -->
+    <path d="M 40,200 Q 200,180 380,140 Q 560,100 720,80"
+          fill="none" stroke="#1d4ed8" stroke-width="2.5"/>
+
+    <!-- 价格线 -->
+    <path d="M 40,230 L 80,190 L 130,220 L 180,170 L 230,210 L 280,150 L 330,180 L 380,120 L 420,170 L 460,90 L 510,120 L 560,80 L 610,130 L 660,70 L 720,60"
+          fill="none" stroke="#1a1a1a" stroke-width="2"/>
+
+    <!-- 上方绿色区 -->
+    <path d="M 40,200 Q 200,180 380,140 Q 560,100 720,80 L 720,30 L 40,30 Z"
+          fill="#16a34a" fill-opacity="0.08"/>
+    <!-- 下方红色区 -->
+    <path d="M 40,200 Q 200,180 380,140 Q 560,100 720,80 L 720,290 L 40,290 Z"
+          fill="#dc2626" fill-opacity="0.06"/>
+
+    <!-- 重画线 -->
+    <path d="M 40,200 Q 200,180 380,140 Q 560,100 720,80"
+          fill="none" stroke="#1d4ed8" stroke-width="2.5"/>
+    <path d="M 40,230 L 80,190 L 130,220 L 180,170 L 230,210 L 280,150 L 330,180 L 380,120 L 420,170 L 460,90 L 510,120 L 560,80 L 610,130 L 660,70 L 720,60"
+          fill="none" stroke="#1a1a1a" stroke-width="2"/>
+
+    <!-- 红区里的买信号 (过滤掉) -->
+    <circle cx="80" cy="190" r="6" fill="#dc2626" opacity="0.5"/>
+    <text x="80" y="180" font-size="11" fill="#dc2626" text-anchor="middle">✗买</text>
+    <circle cx="180" cy="170" r="6" fill="#dc2626" opacity="0.5"/>
+    <text x="180" y="160" font-size="11" fill="#dc2626" text-anchor="middle">✗买</text>
+    <circle cx="280" cy="150" r="6" fill="#dc2626" opacity="0.5"/>
+    <text x="280" y="140" font-size="11" fill="#dc2626" text-anchor="middle">✗买</text>
+
+    <!-- 绿区里的买信号 (保留) -->
+    <circle cx="460" cy="90" r="7" fill="#16a34a" stroke="white" stroke-width="2"/>
+    <text x="460" y="78" font-size="11" fill="#16a34a" text-anchor="middle" font-weight="600">✓买入</text>
+    <circle cx="560" cy="80" r="7" fill="#16a34a" stroke="white" stroke-width="2"/>
+    <text x="560" y="68" font-size="11" fill="#16a34a" text-anchor="middle" font-weight="600">✓买入</text>
+    <circle cx="660" cy="70" r="7" fill="#16a34a" stroke="white" stroke-width="2"/>
+    <text x="660" y="58" font-size="11" fill="#16a34a" text-anchor="middle" font-weight="600">✓买入</text>
+
+    <text x="600" y="40" font-size="13" fill="#15803d" font-weight="600">允许做多区 (价格 &gt; EMA200)</text>
+    <text x="60" y="285" font-size="13" fill="#b91c1c" font-weight="600">禁交易区 (价格 &lt; EMA200)</text>
+    <text x="730" y="76" font-size="11" fill="#1d4ed8" text-anchor="end">EMA-200 (8 天均价)</text>
+    <text x="730" y="58" font-size="11" fill="#1a1a1a" text-anchor="end">BTC 价格</text>
+  </svg>
+  <figcaption>EMA-200 把图切成两块: 价格在它上方才允许做多, 下方一律拒接 — 不管那里有多少"反转形态"。</figcaption>
+</figure>
+
+<div class="callout good">
+<b>5 轮迭代到这里, 3 年累计 +119R, 年化 +46%</b> — 看起来完美。<b>但接下来发生了一件事让我重新思考整个策略……</b>
+</div>
+
+<hr>
+
+<h3>但是: 12 个月地狱</h3>
+
+<p>5 轮迭代上线后, 我以为已经赢了。结果接下来 12 个月——</p>
+
+<p class="callout bad">
+<b>账户最高点 $7,098 → 最低点 $1,878</b><br>
+整整 12 个月, 账户从最高点跌了 <b>73%</b>。
+</p>
+
+<p>我翻交易明细, 找到 4 笔最痛的:</p>
+
+<ul style="background:#fef2f2; padding:14px 32px; border-radius:8px; margin:14px 0">
+  <li>2024/10/22 多单一笔亏 <b style="color:#b91c1c">$860</b>, 账户当时只剩 $4,400——一笔吃掉 20%</li>
+  <li>2024/08/11 亏 $613</li>
+  <li>2025/01/19 亏 $532</li>
+  <li>2025/02/14 亏 $457——那天 BTC 一根强阴线, 把 3 个仓位同时收割</li>
+</ul>
+
+<p>这 12 个月 BTC 振幅 96%, 是震荡偏多的行情——<b>反转策略不应该是它最好的舞台吗?</b></p>
+
+<p>我决定不再凭直觉判断, 用数据找答案——这一找, 发现了真正的 alpha 在哪里。</p>
+
+<!-- ============================================================ -->
+<h2 id="part5"><span class="num">5</span>反共识杀招 — 80% 时间根本不该开仓</h2>
+
+<p>我用两个指标——<b>ADX</b> 和"价格离 EMA-200 的偏离度"——把过去 3 年每一根 K 线分到 3 个状态:</p>
+
+<figure>
+  <svg viewBox="0 0 760 260" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, sans-serif">
+    <rect width="760" height="260" fill="#fafaf6"/>
+
+    <!-- 强趋势区 -->
+    <rect x="50" y="40" width="210" height="180" rx="10" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5"/>
+    <text x="155" y="75" text-anchor="middle" fill="#b91c1c" font-size="15" font-weight="700">强趋势期</text>
+    <text x="155" y="100" text-anchor="middle" fill="#7c1d1d" font-size="12">21% 时间</text>
+    <text x="155" y="125" text-anchor="middle" fill="#4b4b4b" font-size="11">ADX > 25 且</text>
+    <text x="155" y="140" text-anchor="middle" fill="#4b4b4b" font-size="11">离均线 > 3%</text>
+    <text x="155" y="180" text-anchor="middle" fill="#b91c1c" font-size="22" font-weight="800">亏钱 💸</text>
+    <text x="155" y="205" text-anchor="middle" fill="#8b8b8b" font-size="11">反转模式失效</text>
+
+    <!-- 过渡/混合 -->
+    <rect x="280" y="40" width="210" height="180" rx="10" fill="#fffbeb" stroke="#b45309" stroke-width="1.5"/>
+    <text x="385" y="75" text-anchor="middle" fill="#b45309" font-size="15" font-weight="700">过渡 / 混合</text>
+    <text x="385" y="100" text-anchor="middle" fill="#7c5e00" font-size="12">56% 时间</text>
+    <text x="385" y="125" text-anchor="middle" fill="#4b4b4b" font-size="11">介于两者之间</text>
+    <text x="385" y="180" text-anchor="middle" fill="#b45309" font-size="22" font-weight="800">中性</text>
+    <text x="385" y="205" text-anchor="middle" fill="#8b8b8b" font-size="11">小赚或小亏</text>
+
+    <!-- 震荡区 -->
+    <rect x="510" y="40" width="210" height="180" rx="10" fill="#ecfdf5" stroke="#15803d" stroke-width="1.5"/>
+    <text x="615" y="75" text-anchor="middle" fill="#15803d" font-size="15" font-weight="700">震荡期</text>
+    <text x="615" y="100" text-anchor="middle" fill="#14532d" font-size="12">23% 时间</text>
+    <text x="615" y="125" text-anchor="middle" fill="#4b4b4b" font-size="11">ADX < 20 且</text>
+    <text x="615" y="140" text-anchor="middle" fill="#4b4b4b" font-size="11">离均线 < 1.5%</text>
+    <text x="615" y="180" text-anchor="middle" fill="#15803d" font-size="22" font-weight="800">赚钱 💰</text>
+    <text x="615" y="205" text-anchor="middle" fill="#8b8b8b" font-size="11">反转最有效</text>
+
+    <text x="385" y="245" text-anchor="middle" fill="#4b4b4b" font-size="13">3 年时间被分成 3 块, 每块的表现完全不同</text>
+  </svg>
+</figure>
+
+<p>看清楚——<b>强趋势期反而是亏钱的</b>。这跟所有教材"震荡用反转、趋势用顺势"的常识<b>完全反过来</b>。</p>
+
+<h3>为什么强趋势期反而亏?</h3>
+
+<p>BTC 在 2024 Q4 从 6.5 万拉到 10.8 万那一段, 一路猛涨。中间会有很多次"急涨后顶部缠绕"的形态, 看起来像见顶要回调。<b>但实际上这些不是真正的顶, 只是涨势的"中场休息"</b>。你做空抢这种"顶", 就是在跟整个上涨趋势对抗——大概率被打飞。</p>
+
+<p class="callout">
+<b>💡 关键洞察:</b> 强趋势里的"急涨急跌", 根本不是反转信号——<b>是趋势本身的中场休息</b>。BTC 喘口气接着冲, 你以为它要反转, 结果踏空者陷阱。
+</p>
+
+<h3>所以 F6 策略的杀招是什么?</h3>
+
+<table>
+  <thead><tr><th>步骤</th><th>做什么</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>每根 K 线收完, 先算 ADX 和 EMA 偏离度</td></tr>
+    <tr><td>2</td><td>判定为<b>强趋势</b>? → <b style="color:var(--bad)">空仓不动, 一笔不打</b></td></tr>
+    <tr><td>3</td><td>其他时间, 看 EMA-200 决定多空方向</td></tr>
+    <tr><td>4</td><td>挂限价单, 等突破 B、C 收盘价高点</td></tr>
+    <tr><td>5</td><td>止损 K 线最低 × 0.98, 止盈 2R, 单笔风险 2%</td></tr>
+  </tbody>
+</table>
+
+<div class="callout good">
+<b>F6 baseline · 3 年最终成绩:</b><br>
+胜率 <b>47.1%</b> · 单笔期望 <b>+0.37R</b> · 累计 <b>+167R</b> · 最大回撤从 73% → 47%<br>
+<b>1 万 USD → 5.3 万 USD (+434%)</b>
+</div>
+
+<p class="punchline">
+  <strong>真正的 alpha 在于有所为, 有所不为——</strong><br>
+  抓住该放手的信号, 比抓对信号更难。
+</p>
+
+<p>币圈的特殊性: <b>90% 的时间是垃圾时间, 盘整磨人</b>——能学会在垃圾时间空仓, 就跑赢了 80% 的散户。</p>
+
+<!-- ============================================================ -->
+<h2 id="part6"><span class="num">6</span>还能更好 — B / C 两个升级版</h2>
+
+<p>F6 baseline (+434%) 上线后, 我以为是终点了。但强迫症发作, 又跑了 100 多种参数组合——大部分都输给 baseline, 但找到 <b>2 个真能打过的组合</b>。现在 bot 上 3 个策略并行跑, 看哪个真能 deliver。</p>
+
+<h3>策略 B · "让赢家奔跑" (H 方案)</h3>
+
+<p>跟 baseline 同样入场, 但 <b>2 个改动</b>:</p>
+
+<div class="step">
+  <span class="badge">B1</span>
+  <h3>止盈目标从 2R 拉到 8R</h3>
+  <p>BTC 反转启动后经常一路冲到 +5R、+6R、+8R——baseline 在 2R 就关掉, 等于<b>把后面的肉让给市场</b>。所以 B 不在 2R 走, 继续等更高。</p>
+</div>
+
+<div class="step">
+  <span class="badge">B2</span>
+  <h3>阶梯锁: 价格走到 +2R, SL 升到 +1R; 走到 +4R, SL 升到 +2R</h3>
+  <p>就像<b>爬山时打绳结</b>——每上一个台阶就打个结, 万一掉下来不会跌回原地。<b>既让单子奔跑, 又不让它跌回亏损区。</b></p>
+</div>
+
+<figure>
+  <svg viewBox="0 0 760 320" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, sans-serif">
+    <rect width="760" height="320" fill="#fafaf6"/>
+
+    <!-- 价格轴 -->
+    <line x1="80" y1="270" x2="720" y2="270" stroke="#8b8b8b" stroke-width="1"/>
+
+    <!-- 入场价线 -->
+    <line x1="80" y1="200" x2="720" y2="200" stroke="#1d4ed8" stroke-width="1" stroke-dasharray="4,4"/>
+    <text x="65" y="204" text-anchor="end" fill="#1d4ed8" font-size="11">入场</text>
+
+    <!-- 1R 线 -->
+    <line x1="80" y1="170" x2="720" y2="170" stroke="#b45309" stroke-width="1" stroke-dasharray="4,4"/>
+    <text x="65" y="174" text-anchor="end" fill="#b45309" font-size="11">+1R</text>
+
+    <!-- 2R 线 -->
+    <line x1="80" y1="135" x2="720" y2="135" stroke="#15803d" stroke-width="1" stroke-dasharray="4,4"/>
+    <text x="65" y="139" text-anchor="end" fill="#15803d" font-size="11">+2R</text>
+
+    <!-- 4R 线 -->
+    <line x1="80" y1="85" x2="720" y2="85" stroke="#15803d" stroke-width="1" stroke-dasharray="4,4"/>
+    <text x="65" y="89" text-anchor="end" fill="#15803d" font-size="11">+4R</text>
+
+    <!-- 8R TP 线 -->
+    <line x1="80" y1="40" x2="720" y2="40" stroke="#15803d" stroke-width="2"/>
+    <text x="65" y="44" text-anchor="end" fill="#15803d" font-size="11" font-weight="700">+8R TP</text>
+
+    <!-- 原始 SL 线 -->
+    <line x1="80" y1="250" x2="720" y2="250" stroke="#b91c1c" stroke-width="2"/>
+    <text x="65" y="254" text-anchor="end" fill="#b91c1c" font-size="11" font-weight="700">SL -1R</text>
+
+    <!-- 价格走势 -->
+    <path d="M 100 200 Q 180 190 220 135 Q 260 110 350 85 Q 420 65 500 55 Q 560 45 670 40"
+          stroke="#1a1a1a" stroke-width="2.5" fill="none"/>
+
+    <!-- 触发点 1: +2R -->
+    <circle cx="240" cy="135" r="7" fill="#b45309" stroke="white" stroke-width="2"/>
+    <text x="248" y="125" fill="#b45309" font-size="11" font-weight="700">📌 SL 升到 +1R</text>
+
+    <!-- 触发点 2: +4R -->
+    <circle cx="360" cy="85" r="7" fill="#15803d" stroke="white" stroke-width="2"/>
+    <text x="368" y="75" fill="#15803d" font-size="11" font-weight="700">📌 SL 升到 +2R</text>
+
+    <!-- 出场点 -->
+    <circle cx="670" cy="40" r="8" fill="#15803d" stroke="white" stroke-width="2"/>
+    <text x="550" y="25" fill="#15803d" font-size="13" font-weight="700">🎯 +8R 出场</text>
+
+    <text x="400" y="300" text-anchor="middle" fill="#8b8b8b" font-size="12">让单子一路奔跑到 +8R, 中途阶梯锁打绳结保护利润</text>
+  </svg>
+  <figcaption>"打绳结": 每上一个台阶, SL 跟着升一档。最差也能锁住 +1R, 最好能跑到 +8R。</figcaption>
+</figure>
+
+<h3>策略 C · 终极 alpha</h3>
+
+<p>在 B 的基础上, 再加 2 件事——这是为什么它能跑到 +1785% 的关键。</p>
+
+<div class="step">
+  <span class="badge">C1</span>
+  <h3>Kelly 加仓: 连胜后下次押更大, 连败后缩小</h3>
+  <p>赌徒的逻辑——连胜说明你<b>"押对了节奏"</b>, 趁热打铁; 连败说明节奏错了, 缩小风险等回血。</p>
+  <p>具体规则:</p>
+  <ul style="padding-left:22px; font-size:14px">
+    <li>连续 2 笔赢 → 下一笔仓位 × 1.5</li>
+    <li>连续 3 笔赢 → 下一笔仓位 × 2</li>
+    <li>最近 1 笔亏 → 下一笔仓位 × 0.7</li>
+  </ul>
+  <div class="why">📖 <b>这名字哪来的?</b> 1956 年贝尔实验室 John Kelly 提出的"凯利公式"——后来巴菲特、爱德华·索普 (打败赌场的数学家) 都用这套逻辑。核心思想: 押对了加注, 押错了缩仓。</div>
+</div>
+
+<div class="step">
+  <span class="badge">C2</span>
+  <h3>金字塔加仓: 浮盈到 +1R 再加 0.5 仓</h3>
+  <p>本来 1 仓买入, 当行情走到 +1R (赚到 1 倍风险), 再追加 0.5 仓。<b>顺势加注——下注往赢的方向倾斜。</b></p>
+  <p>像打麻将抓到好牌, 自摸 +1 番之后接着加杠, 牌越来越大。</p>
+</div>
+
+<p class="callout warn">
+<b>⚠ C 的代价: 最大回撤 -170%</b><br>
+C 总收益最高 (+1785%), 但中途账户从最高点跌掉 170%——你必须有<b>足够本金扛得住中途巨幅浮亏</b>。<b>1 万本金一把梭, 中途绝对挺不过去 → 爆仓出局 → 你看不到最后的 +1785%。</b><br><br>
+<b>回测涨 18 倍 ≠ 你能赚 18 倍。</b>
+</p>
+
+<!-- ============================================================ -->
+<h2 id="part7"><span class="num">7</span>改完效果对比 — 真实数据</h2>
+
+<p>同样 3 年 BTC 1h, 同样 26,280 根 K 线, 1 万本金起步:</p>
+
+<figure>
+  <svg viewBox="0 0 760 320" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, sans-serif">
+    <rect width="760" height="320" fill="#fafaf6"/>
+
+    <text x="380" y="30" text-anchor="middle" fill="#1a1a1a" font-size="16" font-weight="700">1 万 USD · 3 年回测对比</text>
+
+    <!-- 原始 Pine 指标 -->
+    <g transform="translate(0,60)">
+      <text x="40" y="20" fill="#b91c1c" font-size="13" font-weight="700">原始 Pine 指标</text>
+      <text x="40" y="38" fill="#8b8b8b" font-size="11">只画箭头, 没规则</text>
+      <rect x="240" y="10" width="60" height="22" fill="#dc2626" rx="3"/>
+      <text x="270" y="26" text-anchor="middle" fill="white" font-size="12" font-weight="700">亏钱</text>
+      <text x="320" y="26" fill="#b91c1c" font-size="14" font-weight="700">胜率 &lt;40%</text>
+    </g>
+
+    <!-- F6 baseline -->
+    <g transform="translate(0,110)">
+      <text x="40" y="20" fill="#1d4ed8" font-size="13" font-weight="700">A · F6 baseline</text>
+      <text x="40" y="38" fill="#8b8b8b" font-size="11">5 轮迭代 + 反共识</text>
+      <rect x="240" y="10" width="170" height="22" fill="#1d4ed8" rx="3"/>
+      <text x="325" y="26" text-anchor="middle" fill="white" font-size="12" font-weight="700">1 万 → 5.3 万</text>
+      <text x="430" y="26" fill="#1d4ed8" font-size="14" font-weight="700">+434%</text>
+    </g>
+
+    <!-- B 让赢家奔跑 -->
+    <g transform="translate(0,160)">
+      <text x="40" y="20" fill="#b45309" font-size="13" font-weight="700">B · 让赢家奔跑</text>
+      <text x="40" y="38" fill="#8b8b8b" font-size="11">8R 阶梯锁 + 冷却</text>
+      <rect x="240" y="10" width="240" height="22" fill="#b45309" rx="3"/>
+      <text x="360" y="26" text-anchor="middle" fill="white" font-size="12" font-weight="700">1 万 → 9.4 万</text>
+      <text x="500" y="26" fill="#b45309" font-size="14" font-weight="700">+840%</text>
+    </g>
+
+    <!-- C 终极 alpha -->
+    <g transform="translate(0,210)">
+      <text x="40" y="20" fill="#c15f3c" font-size="13" font-weight="700">C · 终极 alpha</text>
+      <text x="40" y="38" fill="#8b8b8b" font-size="11">+ Kelly + 金字塔</text>
+      <rect x="240" y="10" width="380" height="22" fill="#c15f3c" rx="3"/>
+      <text x="430" y="26" text-anchor="middle" fill="white" font-size="12" font-weight="700">1 万 → 18.8 万</text>
+      <text x="640" y="26" fill="#c15f3c" font-size="14" font-weight="700">+1785%</text>
+    </g>
+
+    <text x="380" y="305" text-anchor="middle" fill="#8b8b8b" font-size="11">3 年 BTC 1h 回测 · 26,280 根 K 线</text>
+  </svg>
+  <figcaption>从只画箭头的原始指标, 到 +1785% 的终极版——一步步加规则得来的</figcaption>
+</figure>
+
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th class="num-val">原始 Pine</th>
+      <th class="num-val">A · F6</th>
+      <th class="num-val">B · 让赢家</th>
+      <th class="num-val">C · 终极 alpha</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>3 年总收益</td>
+      <td class="num-val bad-c">亏钱</td>
+      <td class="num-val">+434%</td>
+      <td class="num-val">+840%</td>
+      <td class="num-val ok"><b>+1785%</b></td></tr>
+    <tr><td>1 万本金终值</td>
+      <td class="num-val bad-c">&lt; 1 万</td>
+      <td class="num-val">5.3 万</td>
+      <td class="num-val">9.4 万</td>
+      <td class="num-val ok"><b>18.8 万</b></td></tr>
+    <tr><td>胜率</td>
+      <td class="num-val bad-c">&lt;40%</td>
+      <td class="num-val">47.1%</td>
+      <td class="num-val">47.1%</td>
+      <td class="num-val ok">55.9%</td></tr>
+    <tr><td>最大回撤 (越小越好)</td>
+      <td class="num-val bad-c">??</td>
+      <td class="num-val ok">-47%</td>
+      <td class="num-val">-78%</td>
+      <td class="num-val bad-c"><b>-170%</b></td></tr>
+    <tr><td>风格</td>
+      <td class="num-val gray-c">无规则</td>
+      <td class="num-val">🛡 稳健</td>
+      <td class="num-val">⚖ 平衡</td>
+      <td class="num-val">🔥 激进</td></tr>
+  </tbody>
+</table>
+
+<div class="callout good">
+<b>用一句话总结这张表:</b> C 涨幅最高 (+1785%), 但回撤也最深 (-170%)——<b>本金不够大就直接爆仓出局, 看不到最后的胜利</b>。A 稳健 (回撤只 -47%), 大多数人应该跟 A。B 是中庸选项。这就是为什么 bot 上 3 个并行跑——<b>看实盘 30 天哪个能真的 deliver</b>。
+</div>
+
+<!-- ============================================================ -->
+<h2 id="part8"><span class="num">8</span>一句话总结</h2>
+
+<div class="punchline">
+  <strong>原策略:</strong> 在 K 线上画"反转箭头", 但没告诉你怎么进、怎么出、押多少——只是个显示器, 不是交易系统。<br><br>
+  <strong>F6 策略:</strong> 加 5 条规则 (buffer 止损 / 2R 止盈 / 突破入场 / EMA-200 顺势 / <b>强趋势期空仓</b>) → 3 年 +434%。<b>最关键的不是怎么开仓, 是什么时候根本不该开仓。</b><br><br>
+  <strong>B / C 终极版:</strong> 在 F6 基础上, 让赢家继续奔跑 (8R 阶梯锁) + 连胜加仓 (Kelly) + 顺势加注 (金字塔) → 最高 +1785%。但回撤更深, 适合本金够大的玩家。
+</div>
+
+<p>所以三条核心改动按重要性排序:</p>
+
+<ol>
+  <li><b>反共识杀招: 强趋势期空仓</b> (贡献最大) — 解决"在踏空者陷阱里乱接"的问题</li>
+  <li><b>5 轮迭代基本功</b> (buffer + 2R + 突破 + EMA 顺势) — 把"画箭头"变成"完整交易系统"</li>
+  <li><b>让赢家奔跑 + 加仓</b> (B、C 升级) — 把 baseline 推到极限</li>
+</ol>
+
+<p>策略数据上验证可行 → 已经部署到 Solode Neo 盒子上, 3 个策略 7×24 并行赛马, 30 天后实盘真实战报。</p>
+
+<footer>
+  生成于 2026-05-17 · 数据: BTCUSDT 1h · 2023-05 ~ 2026-05 · 26,280 根 K 线 · 加密大漂亮
+</footer>
+
+</div>
+</body>
+</html>

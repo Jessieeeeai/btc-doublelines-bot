@@ -1,0 +1,42 @@
+name: 大漂亮资金流秘籍信号机器人
+
+on:
+  schedule:
+    - cron: '7 * * * *'   # 每小时第7分钟（UTC），留足K线收盘+数据源更新时间
+  workflow_dispatch: {}    # 支持手动触发
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bot
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 安装依赖
+        run: pip install matplotlib
+
+      - name: 运行机器人
+        env:
+          COINGLASS_API_KEY: ${{ secrets.COINGLASS_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python bot.py
+
+      - name: 提交状态回仓库
+        run: |
+          git config user.name "dpl-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add -A state.json trades_*.csv 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "state update $(date -u '+%Y-%m-%d %H:%M')"
+          git push

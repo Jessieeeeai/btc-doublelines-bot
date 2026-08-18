@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>智能工资助手</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.6/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  body{background:#f4f6fb;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+  .card{background:#fff;border:1px solid #eceef3;border-radius:14px}
+  .btn{border-radius:10px;font-weight:600;transition:.15s}
+  input,select,textarea{outline:none}
+  ::-webkit-scrollbar{height:8px;width:8px}::-webkit-scrollbar-thumb{background:#d4d9e3;border-radius:8px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect, useRef } = React;
+const TKEY = 'salary_token';
+const C_PRIMARY = '#2f3a66';
+
+// ---------- api ----------
+async function api(action, params) {
+  const token = localStorage.getItem(TKEY) || '';
+  const r = await fetch('/api/rpc', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+    body: JSON.stringify({ action, params: params || {} })
+  });
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.error || '请求失败');
+  return j;
+}
+const fmt = (n, cur) => (cur || '¥') + (Math.round(Number(n) || 0)).toLocaleString();
+const curMonth = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); };
+function monthOptions() {
+  const out = []; const d = new Date();
+  for (let i = 0; i < 12; i++) { const x = new Date(d.getFullYear(), d.getMonth() - i, 1); out.push(x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0')); }
+  return out;
+}
+
+// ---------- small ui ----------
+function Btn({ children, onClick, kind, className, type }) {
+  const styles = {
+    primary: 'text-white', ghost: 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50',
+    danger: 'bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100',
+    soft: 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+  };
+  const k = kind || 'primary';
+  return <button type={type || 'button'} onClick={onClick}
+    style={k === 'primary' ? { background: C_PRIMARY } : {}}
+    className={`btn px-3.5 py-2 text-sm ${styles[k]} ${className || ''}`}>{children}</button>;
+}
+function Field({ label, children }) {
+  return <label className="block"><div className="text-xs text-slate-500 mb-1">{label}</div>{children}</label>;
+}
+const inputCls = 'w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:border-indigo-400 bg-white';
+function Modal({ title, onClose, children, wide }) {
+  return <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4" onClick={onClose}>
+    <div className={`card p-5 w-full ${wide ? 'max-w-3xl' : 'max-w-lg'} max-h-[88vh] overflow-auto`} onClick={e => e.stopPropagation()}>
+      <div className="flex items-center justify-between mb-4">
+        <div className="text-lg font-bold text-slate-800">{title}</div>
+        <button onClick={onClose} className="text-slate-400 hover:text-slate-600 text-xl leading-none">×</button>
+      </div>
+      {children}
+    </div>
+  </div>;
+}
+function Badge({ children, color }) {
+  const c = color || 'slate';
+  const m = { slate: 'bg-slate-100 text-slate-600', green: 'bg-emerald-100 text-emerald-700', amber: 'bg-amber-100 text-amber-700', blue: 'bg-indigo-100 text-indigo-700' };
+  return <span className={`px-2 py-0.5 rounded-md text-xs font-medium ${m[c]}`}>{children}</span>;
+}
+function Stat({ label, value, sub }) {
+  return <div className="card p-4">
+    <div className="text-xs text-slate-500">{label}</div>
+    <div className="text-2xl font-bold text-slate-800 mt-1">{value}</div>
+    {sub && <div className="text-xs text-slate-400 mt-1">{sub}</div>}
+  </div>;
+}
+
+// =================== LOGIN ===================
+function Login({ onLogin }) {
+  const [mode, setMode] = useState('admin');
+  const [pw, setPw] = useState(''); const [code, setCode] = useState('');
+  const [err, setErr] = useState(''); const [busy, setBusy] = useState(false);
+  async function go() {
+    setErr(''); setBusy(true);
+    try {
+      const r = await api('login', mode === 'admin' ? { password: pw } : { code });
+      localStorage.setItem(TKEY, r.token);
+      onLogin(r);
+    } catch (e) { setErr(e.message); } finally { setBusy(false); }
+  }
+  return <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="card p-8 w-full max-w-md">
+      <div className="text-2xl font-bold text-center" style={{ color: C_PRIMARY }}>智能工资助手</div>
+      <div className="text-center text-slate-400 text-sm mt-1 mb-6">任务派发 · 绩效考核 · 自动算薪</div>
+      <div className="flex bg-slate-100 rounded-lg p-1 mb-5">
+        {[['admin', '管理员'], ['employee', '员工']].map(([m, l]) =>
+          <button key={m} onClick={() => { setMode(m); setErr(''); }}
+            className={`flex-1 py-2 rounded-md text-sm font-semibold ${mode === m ? 'bg-white shadow text-slate-800' : 'text-slate-500'}`}>{l}</button>)}
+      </div>
+      {mode === 'admin'
+        ? <Field label="管理员密码"><input className={inputCls} type="password" value={pw}
+            onChange={e => setPw(e.target.value)} onKeyDown={e => e.key === 'Enter' && go()} placeholder="默认 admin888" /></Field>
+        : <Field label="员工登录码"><input className={inputCls} value={code}
+            onChange={e => setCode(e.target.value)} onKeyDown={e => e.key === 'Enter' && go()} placeholder="向管理员索取" /></Field>}
+      {err && <div className="text-rose-500 text-sm mt-3">{err}</div>}
+      <div className="mt-5"><Btn onClick={go} className="w-full py-2.5">{busy ? '登录中…' : '登录'}</Btn></div>
+    </div>
+  </div>;
+}
+
+// =================== ADMIN ===================
+function Admin({ session, onLogout }) {
+  const [view, setView] = useState('mywork');
+  const [month, setMonth] = useState(curMonth());
+  const [state, setState] = useState(null);
+  const [loading, setLoading] = useState(true);
+  async function load() { setLoading(true); try { const r = await api('getState', { month }); setState(r); } catch (e) { alert(e.message); } setLoading(false); }
+  useEffect(() => { load(); }, [month]);
+
+  const nav = [['mywork', '我的工作台', '🏠'], ['dash', '仪表盘', '📊'], ['payroll', '工资核算', '💰'], ['tasks', '任务表', '📋'], ['kaohe', '月度考核表', '📝'], ['okr', 'OKR目标', '🚩'],
+    ['expenses', '报销审批', '💳'], ['leave', '请假审批', '🏖'], ['announce', '公告通知', '📣'], ['chat', '聊天', '💬'],
+    ['emps', '员工', '👥'], ['roles', '岗位与考核', '🎯'], ['settings', '设置', '⚙️']];
+
+  return <div className="min-h-screen flex">
+    <aside className="w-52 bg-white border-r border-slate-100 flex flex-col p-3 shrink-0">
+      <div className="px-2 py-3 font-bold text-slate-800">{state?.settings?.companyName || '工资助手'}</div>
+      <nav className="flex-1 space-y-1 mt-2">
+        {nav.map(([k, l, ic]) => <button key={k} onClick={() => setView(k)}
+          className={`w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center gap-2 ${view === k ? 'text-white' : 'text-slate-600 hover:bg-slate-50'}`}
+          style={view === k ? { background: C_PRIMARY } : {}}><span>{ic}</span>{l}</button>)}
+      </nav>
+      <button onClick={onLogout} className="text-xs text-slate-400 hover:text-slate-600 px-3 py-2 text-left">退出登录</button>
+    </aside>
+    <main className="flex-1 p-6 overflow-auto h-screen">
+      {view !== 'mywork' && <div className="flex items-center justify-between mb-5">
+        <div className="text-xl font-bold text-slate-800">{nav.find(n => n[0] === view)[1]}</div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-slate-500">月份</span>
+          <select className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm bg-white" value={month} onChange={e => setMonth(e.target.value)}>
+            {monthOptions().map(m => <option key={m} value={m}>{m}</option>)}
+          </select>
+        </div>
+      </div>}
+      {view === 'mywork' && <MyWork session={session} embedded />}
+      {view !== 'mywork' && (loading || !state ? <div className="text-slate-400">加载中…</div> : <>
+        {view === 'dash' && <Dashboard state={state} month={month} />}
+        {view === 'payroll' && <Payroll state={state} reload={load} />}
+        {view === 'tasks' && <SheetView sheetId="tasks" session={session} />}
+        {view === 'kaohe' && <SheetView sheetId="kaohe" session={session} />}
+        {view === 'okr' && <AdminOkr state={state} />}
+        {view === 'expenses' && <Expenses state={state} reload={load} />}
+        {view === 'leave' && <AdminLeave />}
+        {view === 'announce' && <Announce state={state} reload={load} />}
+        {view === 'chat' && <Chat session={session} />}
+        {view === 'emps' && <Employees state={state} reload={load} />}
+        {view === 'roles' && <Roles state={state} reload={load} />}
+        {view === 'settings' && <Settings state={state} reload={load} />}
+      </>)}
+    </main>
+  </div>;
+}
+
+function Dashboard({ state, month }) {
+  const cur = state.settings.currency;
+  const pr = state.payroll;
+  const [digest, setDigest] = useState(null); const [dBusy, setDBusy] = useState(false);
+  useEffect(() => { api('getDigest', { month }).then(r => setDigest(r.digest)).catch(() => {}); }, [month]);
+  async function genDigest() { setDBusy(true); try { const r = await api('weeklyDigest', {}); setDigest({ summary: r.summary, month }); } catch (e) { alert(e.message); } setDBusy(false); }
+  const total = pr.reduce((a, p) => a + p.salary.total, 0);
+  const avgPerf = pr.length ? Math.round(pr.reduce((a, p) => a + p.perf.perfScore, 0) / pr.length * 10) / 10 : 0;
+  const finalized = pr.filter(p => p.finalized).length;
+  const reimburse = pr.reduce((a, p) => a + (p.reimburse || 0), 0);
+  const chartRef = useRef(null); const chartObj = useRef(null);
+  useEffect(() => {
+    let alive = true;
+    api('trend', {}).then(r => {
+      if (!alive || !chartRef.current) return;
+      if (chartObj.current) chartObj.current.destroy();
+      chartObj.current = new Chart(chartRef.current, {
+        data: { labels: r.series.map(s => s.month), datasets: [
+          { type: 'bar', label: '应发总额', data: r.series.map(s => s.total), backgroundColor: '#9aa7d8', yAxisID: 'y' },
+          { type: 'line', label: '平均绩效', data: r.series.map(s => s.avgPerf), borderColor: '#2f3a66', backgroundColor: '#2f3a66', yAxisID: 'y1', tension: .3 }
+        ] },
+        options: { responsive: true, maintainAspectRatio: false,
+          scales: { y: { position: 'left', title: { display: true, text: '工资' } }, y1: { position: 'right', max: 100, grid: { drawOnChartArea: false }, title: { display: true, text: '绩效' } } } }
+      });
+    }).catch(() => {});
+    return () => { alive = false; };
+  }, []);
+  const byRole = {};
+  pr.forEach(p => { const r = p.employee.role; (byRole[r] = byRole[r] || { n: 0, total: 0, perf: 0 }); byRole[r].n++; byRole[r].total += p.salary.total; byRole[r].perf += p.perf.perfScore; });
+
+  return <div className="space-y-5">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <Stat label={`本月应发总额 (${month})`} value={fmt(total, cur)} />
+      <Stat label="平均绩效分" value={avgPerf} sub="满分 100" />
+      <Stat label="在职人数" value={pr.length} />
+      <Stat label="已定薪" value={`${finalized}/${pr.length}`} sub="已确认的人数" />
+      <Stat label="本月报销(已通过)" value={fmt(reimburse, cur)} />
+    </div>
+    <div className="card p-4"><div className="font-semibold text-slate-700 mb-2">近 6 个月趋势</div>
+      <div style={{ height: 260 }}><canvas ref={chartRef}></canvas></div></div>
+    <div className="card p-4">
+      <div className="flex items-center justify-between mb-2">
+        <div className="font-semibold text-slate-700">📰 本周团队周报（AI）</div>
+        <Btn kind="ghost" onClick={genDigest}>{dBusy ? '生成中…' : '生成/刷新周报'}</Btn>
+      </div>
+      <div className="text-sm text-slate-600 whitespace-pre-wrap">{digest ? digest.summary : '点右上角生成本月周报（已设每周一自动生成）'}</div>
+    </div>
+    <div className="card p-4"><div className="font-semibold text-slate-700 mb-3">按岗位汇总</div>
+      <table className="w-full text-sm">
+        <thead><tr className="text-slate-400 text-left border-b border-slate-100"><th className="py-2">岗位</th><th>人数</th><th>平均绩效</th><th>应发合计</th></tr></thead>
+        <tbody>{Object.entries(byRole).map(([r, v]) => <tr key={r} className="border-b border-slate-50">
+          <td className="py-2 font-medium text-slate-700">{r}</td><td>{v.n}</td><td>{Math.round(v.perf / v.n * 10) / 10}</td><td>{fmt(v.total, cur)}</td></tr>)}</tbody>
+      </table></div>
+  </div>;
+}
+
+function Payroll({ state, reload }) {
+  const cur = state.settings.currency;
+  const [edit, setEdit] = useState(null);
+  function exportCsv() {
+    const rows = [['姓名', '岗位', '完成分(参考)', '底薪', '绩效', '分成', '激励', '应发合计', '状态']];
+    state.payroll.forEach(p => rows.push([p.employee.name, p.employee.role, p.perf.perfScore, p.salary.base, p.salary.perfAmount, p.salary.commission, p.salary.incentive, p.salary.total, p.finalized ? '已定薪' : '草稿']));
+    const csv = '﻿' + rows.map(r => r.join(',')).join('\n');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    a.download = `工资表_${state.month}.csv`; a.click();
+  }
+  return <div>
+    <div className="flex justify-end mb-3"><Btn kind="ghost" onClick={exportCsv}>导出 CSV</Btn></div>
+    <div className="card overflow-hidden">
+      <table className="w-full text-sm">
+        <thead><tr className="text-slate-400 text-left bg-slate-50">
+          <th className="py-2.5 px-3">姓名</th><th>岗位</th><th>完成分<span className="font-normal text-slate-300">(参考)</span></th><th>底薪</th><th>绩效</th><th>分成</th><th>激励</th><th>应发合计</th><th>状态</th><th></th></tr></thead>
+        <tbody>{state.payroll.map(p => <tr key={p.employee.id} className="border-t border-slate-50 hover:bg-slate-50/60">
+          <td className="py-2.5 px-3 font-medium text-slate-800">{p.employee.name}</td>
+          <td>{p.employee.role}</td>
+          <td><span className="text-slate-400">{p.perf.perfScore}</span></td>
+          <td>{fmt(p.salary.base, cur)}</td><td><span style={{ color: C_PRIMARY }} className="font-semibold">{fmt(p.salary.perfAmount, cur)}</span></td>
+          <td>{fmt(p.salary.commission, cur)}</td><td>{fmt(p.salary.incentive, cur)}</td>
+          <td className="font-bold text-slate-800">{fmt(p.salary.total, cur)}</td>
+          <td>{p.finalized ? <Badge color="green">已定薪</Badge> : <Badge color="amber">草稿</Badge>}</td>
+          <td className="pr-3"><Btn kind="soft" onClick={() => setEdit(p)}>核算</Btn></td>
+        </tr>)}</tbody>
+      </table>
+    </div>
+    {edit && <AssessModal p={edit} state={state} onClose={() => setEdit(null)} reload={reload} />}
+  </div>;
+}
+
+function AssessModal({ p, state, onClose, reload }) {
+  const role = state.roles.find(r => r.name === p.employee.role);
+  const a0 = p.assessment || {};
+  const [kpi, setKpi] = useState(a0.kpiScores || {});
+  const [perfAmount, setPerfAmount] = useState(a0.perfAmount ?? '');
+  const [biz, setBiz] = useState(a0.businessBase ?? '');
+  const [inc, setInc] = useState(a0.incentive ?? '');
+  const [commission, setCommission] = useState(a0.commissionRate ?? '');
+  const [notes, setNotes] = useState(a0.notes || '');
+  const [busy, setBusy] = useState(false);
+  const [aiReviewTxt, setAiReviewTxt] = useState(''); const [aiBusy, setAiBusy] = useState('');
+  const prevMonth = (() => { const [y, mo] = state.month.split('-').map(Number); const d = new Date(y, mo - 2, 1); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); })();
+  const [ctx, setCtx] = useState(null);
+  const [reviews, setReviews] = useState(null);
+  useEffect(() => {
+    api('empTasks', { employeeId: p.employee.id, months: [state.month, prevMonth] }).then(r => setCtx(r.tasks || {})).catch(() => {});
+    api('reviewsFor', { employeeId: p.employee.id, month: state.month }).then(r => setReviews(r.reviews || [])).catch(() => {});
+  }, []);
+  async function genReview() { setAiBusy('review'); try { const r = await api('aiReview', { employeeId: p.employee.id, month: state.month }); setAiReviewTxt(r.result); } catch (e) { alert(e.message); } setAiBusy(''); }
+  async function genComment() { setAiBusy('comment'); try { const r = await api('aiComment', { employeeId: p.employee.id, month: state.month }); setNotes(r.result); } catch (e) { alert(e.message); } setAiBusy(''); }
+  async function save(finalize) {
+    setBusy(true);
+    try {
+      await api('saveAssessment', { assessment: {
+        employeeId: p.employee.id, month: state.month, kpiScores: kpi,
+        perfAmount: perfAmount === '' ? 0 : Number(perfAmount),
+        businessBase: biz === '' ? 0 : Number(biz), incentive: inc === '' ? 0 : Number(inc),
+        commissionRate: commission === '' ? undefined : Number(commission), notes
+      } });
+      if (finalize !== undefined) await api('finalizeAssessment', { employeeId: p.employee.id, month: state.month, unfinalize: !finalize });
+      await reload(); onClose();
+    } catch (e) { alert(e.message); } setBusy(false);
+  }
+  return <Modal title={`核算 · ${p.employee.name}（${p.employee.role}）`} onClose={onClose} wide>
+    <div className="border border-slate-200 rounded-lg p-3 mb-4">
+      <div className="text-xs text-slate-400 mb-2">📋 工作与完成情况（判断绩效时参考）</div>
+      {[[state.month, '本月'], [prevMonth, '上月']].map(([m, label]) => <div key={m} className="mb-2 last:mb-0">
+        <div className="text-xs font-semibold text-slate-600 mb-1">{label}（{m}）</div>
+        {!ctx ? <div className="text-slate-300 text-xs">加载中…</div> :
+          (ctx[m] || []).length === 0 ? <div className="text-slate-300 text-xs">无任务记录</div> :
+            <div className="space-y-1">{(ctx[m] || []).map(t => <div key={t.id} className="text-sm flex items-start gap-2">
+              <Badge color={TASK_STATUS[t.status] || 'slate'}>{t.status || '进行中'}</Badge>
+              <span className="font-medium text-slate-700">{t.title}</span>
+              {t.note && <span className="text-slate-400">— {t.note}</span>}</div>)}</div>}
+      </div>)}
+      {reviews && reviews.length > 0 && <div className="mt-2 pt-2 border-t border-slate-100">
+        <div className="text-xs font-semibold text-slate-600 mb-1">🤝 同事互评（{reviews.length}人 · 均分 {(reviews.reduce((a, r) => a + (Number(r.score) || 0), 0) / reviews.length).toFixed(1)}）</div>
+        {reviews.map(r => <div key={r.id} className="text-sm text-slate-600">· {r.score}分{r.comment ? ' — ' + r.comment : ''}</div>)}
+      </div>}
+    </div>
+    <div className="bg-indigo-50 rounded-lg p-3 mb-4">
+      <div className="text-xs text-slate-500 mb-1">底薪（固定）：<b className="text-slate-700">{fmt(p.salary.base, state.settings.currency)}</b>
+        　完成情况参考分（自动，仅辅助判断）：<b>{p.perf.perfScore}</b></div>
+      <Field label="★ 绩效金额（你看完成情况后判断，本月发多少绩效）">
+        <input className={inputCls} type="number" value={perfAmount} onChange={e => setPerfAmount(e.target.value)} placeholder="例如 2000；留空=0" /></Field>
+    </div>
+    <div className="grid grid-cols-3 gap-3 mb-4">
+      <Field label="激励 / 额外"><input className={inputCls} type="number" value={inc} onChange={e => setInc(e.target.value)} placeholder="0" /></Field>
+      <Field label="业绩基数（商务/交易分成用，可空）"><input className={inputCls} type="number" value={biz} onChange={e => setBiz(e.target.value)} placeholder="0" /></Field>
+      <Field label={`分成比例（默认 ${p.employee.commissionRate}）`}><input className={inputCls} type="number" step="0.01" value={commission} onChange={e => setCommission(e.target.value)} placeholder={String(p.employee.commissionRate)} /></Field>
+    </div>
+    <div className="text-xs text-slate-400 mb-1">完成情况打分（参考，辅助你和 AI 判断，不直接进工资）</div>
+    {role && role.kpis.length ? <div className="grid grid-cols-3 gap-2 mb-3">
+      {role.kpis.map(k => <Field key={k.name} label={`${k.name}（满分${k.max}）`}>
+        <input className={inputCls} type="number" value={kpi[k.name] ?? ''}
+          onChange={e => setKpi({ ...kpi, [k.name]: e.target.value })} placeholder={`0~${k.max}`} /></Field>)}
+    </div> : <div className="text-slate-300 text-sm mb-3">该岗位未设参考指标，可在「岗位与考核」添加。</div>}
+    <div className="flex gap-2 my-3">
+      <Btn kind="ghost" onClick={genReview}>{aiBusy === 'review' ? 'AI 分析中…' : '🤖 AI 考核建议'}</Btn>
+      <Btn kind="ghost" onClick={genComment}>{aiBusy === 'comment' ? 'AI 撰写中…' : '🤖 AI 生成评语（填入备注）'}</Btn>
+    </div>
+    {aiReviewTxt && <div className="bg-amber-50 text-amber-900 rounded-lg p-3 text-sm mb-3 whitespace-pre-wrap">{aiReviewTxt}</div>}
+    <Field label="备注 / 评语"><textarea className={inputCls} rows="3" value={notes} onChange={e => setNotes(e.target.value)} /></Field>
+    {(() => {
+      const cur = state.settings.currency;
+      const n = v => v === '' ? 0 : (Number(v) || 0);
+      const liveComm = Math.round(n(biz) * (commission === '' ? p.employee.commissionRate : Number(commission)));
+      const liveTotal = p.salary.base + n(perfAmount) + liveComm + n(inc);
+      return <div className="bg-slate-50 rounded-lg p-3 mt-4 text-sm text-slate-600">
+        <div className="font-semibold text-slate-700 mb-1">实时预览</div>
+        底薪 {fmt(p.salary.base, cur)} ＋ 绩效 {fmt(n(perfAmount), cur)} ＋ 分成 {fmt(liveComm, cur)} ＋ 激励 {fmt(n(inc), cur)}
+        ＝ <b className="text-slate-800 text-base">{fmt(liveTotal, cur)}</b></div>;
+    })()}
+    <div className="flex gap-2 justify-end mt-5">
+      <Btn kind="ghost" onClick={onClose}>取消</Btn>
+      <Btn kind="soft" onClick={() => save()}>{busy ? '…' : '保存草稿'}</Btn>
+      {p.finalized ? <Btn kind="danger" onClick={() => save(false)}>撤销定薪</Btn> : <Btn onClick={() => save(true)}>保存并定薪</Btn>}
+    </div>
+  </Modal>;
+}
+
+function Tasks({ state, reload, month }) {
+  const [sel, setSel] = useState(state.employees.filter(e => e.active)[0]?.id || '');
+  const [title, setTitle] = useState(''); const [points, setPoints] = useState(10); const [due, setDue] = useState('');
+  const [desc, setDesc] = useState(''); const [aiOpen, setAiOpen] = useState(false); const [editTask, setEditTask] = useState(null); const [assignOpen, setAssignOpen] = useState(false);
+  async function setStatus(t, status) { await api('myTaskSave', { task: { id: t.id, status } }); reload(); }
+  async function add() {
+    if (!sel || !title) return alert('请选择员工并填写任务标题');
+    await api('saveTask', { task: { employeeId: sel, month, title, desc, points: Number(points), due } });
+    setTitle(''); setDesc(''); setPoints(10); setDue(''); reload();
+  }
+  async function score(t) {
+    const v = prompt(`给「${t.title}」打分（0~${t.points}）`, t.score ?? t.points);
+    if (v === null) return;
+    await api('scoreTask', { id: t.id, score: Math.max(0, Math.min(Number(t.points), Number(v) || 0)) }); reload();
+  }
+  async function del(t) { if (confirm('删除该任务？')) { await api('deleteTask', { id: t.id }); reload(); } }
+  const emps = state.employees.filter(e => e.active);
+  const byEmp = {};
+  state.tasks.forEach(t => { (byEmp[t.employeeId] = byEmp[t.employeeId] || []).push(t); });
+  const stColor = { '进行中': 'amber', '已完成': 'green', '已归档': 'slate' };
+  return <div className="space-y-5">
+    <div className="card p-4">
+      <div className="flex items-center justify-between mb-3">
+        <div className="font-semibold text-slate-700">派发新任务</div>
+        <div className="flex gap-2">
+          <Btn kind="ghost" onClick={() => setAssignOpen(true)}>🤖 AI 按擅长派活</Btn>
+          <Btn kind="ghost" onClick={() => setAiOpen(true)}>🤖 AI 拆解本月 KPI</Btn>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 items-end">
+        <Field label="员工"><select className={inputCls} value={sel} onChange={e => setSel(e.target.value)}>{emps.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}</select></Field>
+        <Field label="任务标题"><input className={inputCls} value={title} onChange={e => setTitle(e.target.value)} /></Field>
+        <Field label="分值"><input className={inputCls} type="number" value={points} onChange={e => setPoints(e.target.value)} /></Field>
+        <Field label="截止日"><input className={inputCls} type="date" value={due} onChange={e => setDue(e.target.value)} /></Field>
+        <Btn onClick={add}>＋ 派发</Btn>
+      </div>
+      <Field label="说明（可选）"><input className={inputCls + ' mt-2'} value={desc} onChange={e => setDesc(e.target.value)} /></Field>
+    </div>
+    {emps.map(e => <div key={e.id} className="card p-4">
+      <div className="font-semibold text-slate-700 mb-2">{e.name} <span className="text-slate-400 font-normal text-sm">· {e.role} · 共 {(byEmp[e.id] || []).length} 项</span></div>
+      {(byEmp[e.id] || []).length === 0 ? <div className="text-slate-300 text-sm">本月暂无任务</div> :
+        <div className="overflow-x-auto"><table className="w-full text-sm">
+          <thead><tr className="text-slate-400 text-left bg-slate-50">
+            <th className="py-2 px-2">任务</th><th className="w-20">部门</th><th className="w-24">配合</th><th className="w-28">截止</th><th className="w-24">进度</th><th className="w-40">当前情况</th><th className="w-24">分·得分</th><th className="w-32"></th></tr></thead>
+          <tbody>{(byEmp[e.id] || []).slice().sort(byDue).map(t => <tr key={t.id} className="border-b border-slate-50 align-top">
+            <td className="py-2 px-2 font-medium text-slate-700">{t.title}{t.desc && <span className="text-slate-400 font-normal"> — {t.desc}</span>}</td>
+            <td className="text-slate-500">{t.department || '—'}</td>
+            <td className="text-slate-500">{t.collaborators || '—'}</td>
+            <td className="text-slate-500">{t.dueDate || '—'}</td>
+            <td><select className="border border-slate-200 rounded-md px-1.5 py-1 text-xs" value={t.status || '进行中'} onChange={ev => setStatus(t, ev.target.value)}>{Object.keys(TASK_STATUS).map(s => <option key={s}>{s}</option>)}</select></td>
+            <td className="text-slate-500 text-xs">{t.note || '—'}</td>
+            <td className="text-slate-500">{t.points > 0 ? `${t.points}分${t.scored ? ` · ${t.score}` : ''}` : '—'}</td>
+            <td className="text-right whitespace-nowrap">
+              <button className="text-slate-500 text-sm mr-2" onClick={() => setEditTask(t)}>编辑</button>
+              <button className="text-indigo-600 text-sm mr-2" onClick={() => score(t)}>打分</button>
+              <button className="text-rose-400 text-sm" onClick={() => del(t)}>删</button></td>
+          </tr>)}</tbody>
+        </table></div>}
+    </div>)}
+    {aiOpen && <AiKpiModal state={state} month={month} defaultEmp={sel} onClose={() => setAiOpen(false)} reload={reload} />}
+    {assignOpen && <AiAssignModal month={month} onClose={() => setAssignOpen(false)} reload={reload} />}
+    {editTask && <MyTaskModal t={editTask} month={month} onClose={() => setEditTask(null)} reload={reload} />}
+  </div>;
+}
+function AiAssignModal({ month, onClose, reload }) {
+  const [text, setText] = useState(''); const [busy, setBusy] = useState(false); const [res, setRes] = useState(null);
+  async function go() { if (!text.trim()) return alert('每行写一条任务'); setBusy(true); try { const r = await api('aiAssign', { tasksText: text, month }); setRes(r.assign || []); await reload(); } catch (e) { alert(e.message); } setBusy(false); }
+  return <Modal title="🤖 AI 按擅长派活" onClose={onClose} wide>
+    <div className="text-xs text-slate-400 mb-2">每行一条任务。AI 会按每个人在「员工」里填的"擅长"自动分给最合适的人，并创建到 {month}。</div>
+    <textarea className={inputCls} rows="6" value={text} onChange={e => setText(e.target.value)} placeholder={'做一条币圈盘点长视频\n策划一场社群 TG 活动\n交易策略复盘直播'} />
+    <div className="text-right mt-3"><Btn onClick={go}>{busy ? '分配中…' : 'AI 分配并创建'}</Btn></div>
+    {res && <div className="mt-3 text-sm space-y-1">{res.length === 0 ? <div className="text-slate-300">无结果</div> : res.map((a, i) => <div key={i} className="text-slate-600"><span className="font-medium">{a.owner}</span> ← {a.task}</div>)}</div>}
+  </Modal>;
+}
+
+function AiKpiModal({ state, month, defaultEmp, onClose, reload }) {
+  const emps = state.employees.filter(e => e.active);
+  const [emp, setEmp] = useState(defaultEmp || emps[0]?.id || '');
+  const [goal, setGoal] = useState('');
+  const [busy, setBusy] = useState(false); const [res, setRes] = useState(null); const [err, setErr] = useState('');
+  async function gen() {
+    setBusy(true); setErr(''); setRes(null);
+    try { const r = await api('aiSplitKpi', { employeeId: emp, month, goal }); setRes(r.result); }
+    catch (e) { setErr(e.message); } setBusy(false);
+  }
+  async function adopt() {
+    for (const t of (res.tasks || [])) await api('saveTask', { task: { employeeId: emp, month, title: t.title, desc: t.desc || '', points: Number(t.points) || 10 } });
+    await reload(); onClose();
+  }
+  return <Modal title="🤖 AI 拆解本月 KPI / 任务" onClose={onClose} wide>
+    <div className="grid grid-cols-2 gap-3 mb-3">
+      <Field label="员工"><select className={inputCls} value={emp} onChange={e => setEmp(e.target.value)}>{emps.map(e => <option key={e.id} value={e.id}>{e.name}（{e.role}）</option>)}</select></Field>
+      <Field label="本月目标（一句话，可留空）"><input className={inputCls} value={goal} onChange={e => setGoal(e.target.value)} placeholder="例：提升短视频出片量和爆款率" /></Field>
+    </div>
+    <Btn onClick={gen}>{busy ? 'AI 生成中…' : '生成方案'}</Btn>
+    {err && <div className="text-rose-500 text-sm mt-3">{err}</div>}
+    {res && <div className="mt-4">
+      {res.summary && <div className="bg-indigo-50 text-indigo-800 rounded-lg p-3 text-sm mb-3">本月重点：{res.summary}</div>}
+      <table className="w-full text-sm"><thead><tr className="text-slate-400 text-left"><th className="pb-1">任务</th><th className="w-20">分值</th></tr></thead>
+        <tbody>{(res.tasks || []).map((t, i) => <tr key={i} className="border-b border-slate-50">
+          <td className="py-1.5"><div className="font-medium text-slate-700">{t.title}</div>{t.desc && <div className="text-slate-400 text-xs">{t.desc}</div>}</td>
+          <td>{t.points}</td></tr>)}</tbody></table>
+      <div className="flex justify-end gap-2 mt-4"><Btn kind="ghost" onClick={onClose}>取消</Btn><Btn onClick={adopt}>全部采纳为任务</Btn></div>
+    </div>}
+  </Modal>;
+}
+
+function Expenses({ state, reload }) {
+  const cur = state.settings.currency;
+  const exps = (state.expenses || []).slice().sort((a, b) => b.createdAt - a.createdAt);
+  const empName = id => (state.employees.find(e => e.id === id) || {}).name || '—';
+  const stMap = { pending: ['待审批', 'amber'], approved: ['已通过', 'green'], rejected: ['已驳回', 'slate'] };
+  async function decide(e, approve) {
+    let note = '';
+    if (!approve) { note = prompt('驳回理由（可选）') || ''; }
+    await api('approveExpense', { id: e.id, approve, note }); reload();
+  }
+  const totalApproved = exps.filter(e => e.status === 'approved').reduce((s, e) => s + Number(e.amount || 0), 0);
+  const pending = exps.filter(e => e.status === 'pending').length;
+  return <div className="space-y-4">
+    <div className="grid grid-cols-3 gap-4">
+      <Stat label="本月报销单数" value={exps.length} />
+      <Stat label="待审批" value={pending} />
+      <Stat label="已通过金额" value={fmt(totalApproved, cur)} />
+    </div>
+    <div className="card overflow-hidden"><table className="w-full text-sm">
+      <thead><tr className="text-slate-400 text-left bg-slate-50"><th className="py-2.5 px-3">员工</th><th>类别</th><th>金额</th><th>说明</th><th>凭证</th><th>状态</th><th></th></tr></thead>
+      <tbody>{exps.length === 0 ? <tr><td colSpan="7" className="text-slate-300 p-4">本月暂无报销</td></tr> :
+        exps.map(e => <tr key={e.id} className="border-t border-slate-50">
+          <td className="py-2.5 px-3 font-medium text-slate-700">{empName(e.employeeId)}</td>
+          <td>{e.category}</td><td className="font-semibold">{fmt(e.amount, cur)}</td>
+          <td className="text-slate-500 max-w-xs">{e.note}</td>
+          <td>{e.photoUrl ? <a href={e.photoUrl} target="_blank" className="text-indigo-600">查看</a> : '—'}</td>
+          <td><Badge color={stMap[e.status][1]}>{stMap[e.status][0]}</Badge></td>
+          <td className="pr-3 text-right whitespace-nowrap">{e.status === 'pending' ?
+            <><button className="text-emerald-600 mr-2" onClick={() => decide(e, true)}>通过</button>
+              <button className="text-rose-400" onClick={() => decide(e, false)}>驳回</button></> :
+            <span className="text-slate-300">已处理</span>}</td>
+        </tr>)}</tbody>
+    </table></div>
+  </div>;
+}
+
+function Announce({ state, reload }) {
+  const [title, setTitle] = useState(''); const [body, setBody] = useState(''); const [audience, setAudience] = useState('all');
+  const anns = (state.announcements || []).slice().sort((a, b) => b.createdAt - a.createdAt);
+  const empName = id => (state.employees.find(e => e.id === id) || {}).name || id;
+  async function post() {
+    if (!title && !body) return alert('请填写内容');
+    await api('postAnnouncement', { announcement: { title, body, audience } });
+    setTitle(''); setBody(''); setAudience('all'); reload();
+  }
+  async function del(id) { if (confirm('删除这条公告？')) { await api('deleteAnnouncement', { id }); reload(); } }
+  return <div className="space-y-4">
+    <div className="card p-4 space-y-3">
+      <div className="font-semibold text-slate-700">发布公告 / 通知</div>
+      <div className="grid grid-cols-3 gap-3">
+        <Field label="标题"><input className={inputCls} value={title} onChange={e => setTitle(e.target.value)} /></Field>
+        <Field label="接收对象"><select className={inputCls} value={audience} onChange={e => setAudience(e.target.value)}>
+          <option value="all">全员</option>{state.employees.filter(e => e.active).map(e => <option key={e.id} value={e.id}>{e.name}</option>)}</select></Field>
+        <div className="flex items-end"><Btn onClick={post}>发布</Btn></div>
+      </div>
+      <Field label="内容"><textarea className={inputCls} rows="3" value={body} onChange={e => setBody(e.target.value)} /></Field>
+    </div>
+    {anns.map(a => <div key={a.id} className="card p-4">
+      <div className="flex justify-between items-start">
+        <div><span className="font-semibold text-slate-800">{a.title || '（无标题）'}</span>
+          <span className="ml-2"><Badge color={a.audience === 'all' ? 'blue' : 'slate'}>{a.audience === 'all' ? '全员' : empName(a.audience)}</Badge></span></div>
+        <button className="text-rose-400 text-sm" onClick={() => del(a.id)}>删除</button>
+      </div>
+      <div className="text-slate-600 text-sm mt-2 whitespace-pre-wrap">{a.body}</div>
+      <div className="text-xs text-slate-300 mt-2">{new Date(a.createdAt).toLocaleString()}</div>
+    </div>)}
+  </div>;
+}
+
+function Employees({ state, reload }) {
+  const [edit, setEdit] = useState(null);
+  const blank = { name: '', role: state.roles[0]?.name || '', baseSalary: 6000, bonusBase: 3000, commissionRate: 0 };
+  return <div>
+    <div className="flex justify-end mb-3"><Btn onClick={() => setEdit(blank)}>＋ 新增员工</Btn></div>
+    <div className="card overflow-hidden"><table className="w-full text-sm">
+      <thead><tr className="text-slate-400 text-left bg-slate-50"><th className="py-2.5 px-3">姓名</th><th>岗位</th><th>底薪</th><th>绩效参考</th><th>分成比例</th><th>登录码</th><th></th></tr></thead>
+      <tbody>{state.employees.filter(e => e.active).map(e => <tr key={e.id} className="border-t border-slate-50">
+        <td className="py-2.5 px-3 font-medium text-slate-800">{e.name}</td><td>{e.role}</td>
+        <td>{fmt(e.baseSalary, state.settings.currency)}</td><td>{fmt(e.bonusBase, state.settings.currency)}</td>
+        <td>{(e.commissionRate * 100).toFixed(1)}%</td>
+        <td><code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs">{e.loginCode}</code></td>
+        <td className="pr-3 text-right"><Btn kind="soft" onClick={() => setEdit(e)}>编辑</Btn></td></tr>)}</tbody>
+    </table></div>
+    {edit && <EmpModal e={edit} state={state} onClose={() => setEdit(null)} reload={reload} />}
+  </div>;
+}
+function EmpModal({ e, state, onClose, reload }) {
+  const [f, setF] = useState({ ...e });
+  const up = (k, v) => setF({ ...f, [k]: v });
+  async function save() {
+    if (!f.name) return alert('请填姓名');
+    await api('saveEmployee', { employee: {
+      id: f.id, name: f.name, role: f.role, baseSalary: Number(f.baseSalary) || 0,
+      bonusBase: Number(f.bonusBase) || 0, commissionRate: Number(f.commissionRate) || 0, loginCode: f.loginCode, skills: f.skills || '', baseDuties: f.baseDuties || ''
+    } }); reload(); onClose();
+  }
+  async function remove() { if (confirm('停用该员工？历史数据保留。')) { await api('deleteEmployee', { id: f.id }); reload(); onClose(); } }
+  return <Modal title={f.id ? '编辑员工' : '新增员工'} onClose={onClose}>
+    <div className="grid grid-cols-2 gap-3">
+      <Field label="姓名"><input className={inputCls} value={f.name} onChange={ev => up('name', ev.target.value)} /></Field>
+      <Field label="岗位"><select className={inputCls} value={f.role} onChange={ev => up('role', ev.target.value)}>{state.roles.map(r => <option key={r.name}>{r.name}</option>)}</select></Field>
+      <Field label="底薪"><input className={inputCls} type="number" value={f.baseSalary} onChange={ev => up('baseSalary', ev.target.value)} /></Field>
+      <Field label="绩效参考（AI建议绩效时的量级参考，可选）"><input className={inputCls} type="number" value={f.bonusBase} onChange={ev => up('bonusBase', ev.target.value)} /></Field>
+      <Field label="分成比例（0.05=5%）"><input className={inputCls} type="number" step="0.01" value={f.commissionRate} onChange={ev => up('commissionRate', ev.target.value)} /></Field>
+      {f.id && <Field label="登录码"><input className={inputCls} value={f.loginCode || ''} onChange={ev => up('loginCode', ev.target.value)} /></Field>}
+    </div>
+    <Field label="擅长 / 技能（AI 按擅长派活的依据，逗号分隔）"><input className={inputCls + ' mt-3'} value={f.skills || ''} onChange={ev => up('skills', ev.target.value)} placeholder="如：短视频脚本, 交易策略, 社群运营" /></Field>
+    <div className="flex justify-between mt-5">
+      {f.id ? <Btn kind="danger" onClick={remove}>停用</Btn> : <span />}
+      <div className="flex gap-2"><Btn kind="ghost" onClick={onClose}>取消</Btn><Btn onClick={save}>保存</Btn></div>
+    </div>
+  </Modal>;
+}
+
+function Roles({ state, reload }) {
+  const [roles, setRoles] = useState(JSON.parse(JSON.stringify(state.roles)));
+  const [dirty, setDirty] = useState(false);
+  const touch = r => { setRoles(r); setDirty(true); };
+  function addRole() { touch([...roles, { name: '新岗位', kpis: [] }]); }
+  function addKpi(i) { const r = [...roles]; r[i].kpis.push({ name: '指标', weight: 1, max: 100 }); touch(r); }
+  async function save() { await api('saveRoles', { roles }); setDirty(false); reload(); }
+  return <div className="space-y-4">
+    <div className="flex justify-between"><div className="text-sm text-slate-500">每个岗位一套考核指标，KPI 得分按权重归一到 100。</div>
+      <div className="flex gap-2"><Btn kind="ghost" onClick={addRole}>＋ 岗位</Btn>{dirty && <Btn onClick={save}>保存修改</Btn>}</div></div>
+    {roles.map((r, i) => <div key={i} className="card p-4">
+      <div className="flex items-center gap-2 mb-3">
+        <input className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm font-semibold" value={r.name}
+          onChange={e => { const x = [...roles]; x[i].name = e.target.value; touch(x); }} />
+        <button className="text-rose-400 text-sm ml-auto" onClick={() => touch(roles.filter((_, j) => j !== i))}>删除岗位</button>
+      </div>
+      <table className="w-full text-sm"><thead><tr className="text-slate-400 text-left"><th className="pb-1">指标</th><th className="w-28">满分</th><th className="w-28">权重</th><th></th></tr></thead>
+        <tbody>{r.kpis.map((k, j) => <tr key={j}>
+          <td className="py-1"><input className="border border-slate-200 rounded px-2 py-1 w-full" value={k.name} onChange={e => { const x = [...roles]; x[i].kpis[j].name = e.target.value; touch(x); }} /></td>
+          <td><input type="number" className="border border-slate-200 rounded px-2 py-1 w-20" value={k.max} onChange={e => { const x = [...roles]; x[i].kpis[j].max = Number(e.target.value); touch(x); }} /></td>
+          <td><input type="number" className="border border-slate-200 rounded px-2 py-1 w-20" value={k.weight} onChange={e => { const x = [...roles]; x[i].kpis[j].weight = Number(e.target.value); touch(x); }} /></td>
+          <td className="text-right"><button className="text-rose-400" onClick={() => { const x = [...roles]; x[i].kpis.splice(j, 1); touch(x); }}>删</button></td>
+        </tr>)}</tbody></table>
+      <button className="text-indigo-600 text-sm mt-2" onClick={() => addKpi(i)}>＋ 指标</button>
+      <RoleMembers roleName={r.name} employees={state.employees} reload={reload} />
+    </div>)}
+  </div>;
+}
+function RoleMembers({ roleName, employees, reload }) {
+  const members = employees.filter(e => e.active && e.role === roleName);
+  const [edits, setEdits] = useState({}); const [savedId, setSavedId] = useState(null);
+  async function save(e) {
+    const v = edits[e.id] != null ? edits[e.id] : (e.baseDuties || '');
+    await api('saveEmployee', { employee: { id: e.id, name: e.name, role: e.role, baseSalary: e.baseSalary, bonusBase: e.bonusBase, commissionRate: e.commissionRate, loginCode: e.loginCode, skills: e.skills || '', baseDuties: v } });
+    setSavedId(e.id); setTimeout(() => setSavedId(null), 1500); reload();
+  }
+  return <div className="mt-3 pt-3 border-t border-slate-100">
+    <div className="text-xs text-slate-500 mb-2">👥 本岗位成员 · 基础工作（底薪覆盖的职责）</div>
+    {members.length === 0 ? <div className="text-slate-300 text-xs">本岗位暂无成员</div> :
+      members.map(e => <div key={e.id} className="flex items-center gap-2 mb-1.5">
+        <span className="w-16 text-sm font-medium text-slate-700 shrink-0">{e.name}</span>
+        <input className={inputCls} defaultValue={e.baseDuties || ''} onChange={ev => setEdits({ ...edits, [e.id]: ev.target.value })} placeholder="底薪覆盖的基础工作，如：每周5篇短视频脚本并发布" />
+        <button className="text-indigo-600 text-sm shrink-0" onClick={() => save(e)}>{savedId === e.id ? '已存' : '保存'}</button>
+      </div>)}
+  </div>;
+}
+
+function Settings({ state, reload }) {
+  const s = state.settings;
+  const [f, setF] = useState({ companyName: s.companyName, currency: s.currency, taskWeight: s.taskWeight, kpiWeight: s.kpiWeight });
+  const [pw, setPw] = useState('');
+  const [ai, setAi] = useState({ aiBaseUrl: s.aiBaseUrl || 'https://api.deepseek.com', aiModel: s.aiModel || 'deepseek-chat', aiKey: '' });
+  async function save() {
+    if (Math.abs((Number(f.taskWeight) + Number(f.kpiWeight)) - 1) > 0.001) return alert('任务权重 + KPI权重 需等于 1');
+    await api('saveSettings', { settings: { companyName: f.companyName, currency: f.currency, taskWeight: Number(f.taskWeight), kpiWeight: Number(f.kpiWeight) } }); reload(); alert('已保存');
+  }
+  async function saveAi() {
+    const payload = { aiBaseUrl: ai.aiBaseUrl, aiModel: ai.aiModel };
+    if (ai.aiKey) payload.aiKey = ai.aiKey;
+    await api('saveSettings', { settings: payload }); setAi({ ...ai, aiKey: '' }); reload(); alert('AI 设置已保存');
+  }
+  async function changePw() { if (!pw) return; await api('changePassword', { password: pw }); setPw(''); alert('管理员密码已更新'); }
+  return <div className="space-y-4 max-w-xl">
+    <div className="card p-5 space-y-3">
+      <div className="font-semibold text-slate-700">基础设置</div>
+      <Field label="公司 / 标题"><input className={inputCls} value={f.companyName} onChange={e => setF({ ...f, companyName: e.target.value })} /></Field>
+      <Field label="货币符号"><input className={inputCls} value={f.currency} onChange={e => setF({ ...f, currency: e.target.value })} /></Field>
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="绩效中·任务权重"><input className={inputCls} type="number" step="0.05" value={f.taskWeight} onChange={e => setF({ ...f, taskWeight: e.target.value })} /></Field>
+        <Field label="绩效中·KPI权重"><input className={inputCls} type="number" step="0.05" value={f.kpiWeight} onChange={e => setF({ ...f, kpiWeight: e.target.value })} /></Field>
+      </div>
+      <div className="text-xs text-slate-400">绩效分 = 任务完成得分 × 任务权重 + KPI得分 × KPI权重（两者之和需为 1）</div>
+      <Btn onClick={save}>保存设置</Btn>
+    </div>
+    <div className="card p-5 space-y-3">
+      <div className="flex items-center justify-between">
+        <div className="font-semibold text-slate-700">AI 智能设置（DeepSeek / 兼容 OpenAI）</div>
+        {s.aiKeySet ? <Badge color="green">密钥已配置</Badge> : <Badge color="amber">未配置密钥</Badge>}
+      </div>
+      <Field label="接口地址"><input className={inputCls} value={ai.aiBaseUrl} onChange={e => setAi({ ...ai, aiBaseUrl: e.target.value })} /></Field>
+      <Field label="模型"><input className={inputCls} value={ai.aiModel} onChange={e => setAi({ ...ai, aiModel: e.target.value })} /></Field>
+      <Field label="API Key（粘贴后保存；留空则不修改）"><input className={inputCls} type="password" value={ai.aiKey} onChange={e => setAi({ ...ai, aiKey: e.target.value })} placeholder={s.aiKeySet ? '已配置，如需更换再粘贴' : 'sk-...'} /></Field>
+      <div className="text-xs text-slate-400">去 deepseek.com 注册后在「API Keys」创建一个密钥，粘到这里。AI 拆 KPI、考核建议、写评语都用它。</div>
+      <Btn onClick={saveAi}>保存 AI 设置</Btn>
+    </div>
+    <div className="card p-5 space-y-3">
+      <div className="font-semibold text-slate-700">修改管理员密码</div>
+      <Field label="新密码"><input className={inputCls} type="password" value={pw} onChange={e => setPw(e.target.value)} /></Field>
+      <Btn kind="ghost" onClick={changePw}>更新密码</Btn>
+    </div>
+  </div>;
+}
+
+// =================== OKR / 请假 / 互评 ===================
+function MyOkr({ okrs, month, reload }) {
+  const [edit, setEdit] = useState(null);
+  async function save(o) { await api('saveOkr', { okr: { ...o, period: month } }); reload(); setEdit(null); }
+  async function del(id) { if (confirm('删除该 OKR？')) { await api('deleteOkr', { id }); reload(); } }
+  return <div className="card p-4 mb-5">
+    <div className="flex items-center justify-between mb-3">
+      <div className="font-semibold text-slate-700">🚩 我的 OKR（{month}）</div>
+      <Btn onClick={() => setEdit({ objective: '', keyResults: [{ text: '', progress: 0 }] })}>＋ 新建</Btn>
+    </div>
+    {okrs.length === 0 ? <div className="text-slate-300 text-sm">本月暂无 OKR，点右上角新建</div> :
+      <div className="space-y-3">{okrs.map(o => <div key={o.id} className="border border-slate-100 rounded-xl p-3">
+        <div className="flex justify-between"><div className="font-medium text-slate-700">🎯 {o.objective}</div>
+          <div className="whitespace-nowrap"><button className="text-indigo-600 text-sm mr-2" onClick={() => setEdit(o)}>编辑</button><button className="text-rose-400 text-sm" onClick={() => del(o.id)}>删</button></div></div>
+        <div className="mt-2 space-y-1.5">{(o.keyResults || []).map((k, i) => <div key={i} className="text-sm">
+          <div className="flex justify-between text-slate-600"><span>{k.text}</span><span>{k.progress}%</span></div>
+          <div className="h-1.5 bg-slate-100 rounded"><div className="h-1.5 rounded" style={{ width: Math.min(100, k.progress) + '%', background: C_PRIMARY }}></div></div></div>)}</div>
+      </div>)}</div>}
+    {edit && <OkrModal o={edit} onClose={() => setEdit(null)} onSave={save} />}
+  </div>;
+}
+function OkrModal({ o, onClose, onSave }) {
+  const [obj, setObj] = useState(o.objective || '');
+  const [krs, setKrs] = useState(o.keyResults && o.keyResults.length ? o.keyResults : [{ text: '', progress: 0 }]);
+  const setKr = (i, f, v) => { const x = [...krs]; x[i] = { ...x[i], [f]: v }; setKrs(x); };
+  return <Modal title={o.id ? '编辑 OKR' : '新建 OKR'} onClose={onClose}>
+    <Field label="目标 Objective（想达成什么）"><input className={inputCls} value={obj} onChange={e => setObj(e.target.value)} /></Field>
+    <div className="mt-3 text-xs text-slate-500 mb-1">关键结果 Key Results（可衡量）</div>
+    {krs.map((k, i) => <div key={i} className="flex gap-2 mt-1 items-center">
+      <input className={inputCls} value={k.text} onChange={e => setKr(i, 'text', e.target.value)} placeholder="关键结果" />
+      <input className="border border-slate-200 rounded-lg px-2 py-2 w-16 text-sm" type="number" value={k.progress} onChange={e => setKr(i, 'progress', Number(e.target.value))} />
+      <span className="text-slate-400 text-sm">%</span>
+      <button className="text-rose-400" onClick={() => setKrs(krs.filter((_, j) => j !== i))}>×</button></div>)}
+    <button className="text-indigo-600 text-sm mt-2" onClick={() => setKrs([...krs, { text: '', progress: 0 }])}>＋ 关键结果</button>
+    <div className="flex justify-end gap-2 mt-4"><Btn kind="ghost" onClick={onClose}>取消</Btn><Btn onClick={() => obj ? onSave({ id: o.id, objective: obj, keyResults: krs, createdAt: o.createdAt }) : alert('请填目标')}>保存</Btn></div>
+  </Modal>;
+}
+const LEAVE_ST = { pending: ['待审批', 'amber'], approved: ['已批准', 'green'], rejected: ['已驳回', 'slate'] };
+function MyLeave({ leaves, reload }) {
+  const [f, setF] = useState({ type: '事假', startDate: '', endDate: '', days: 1, reason: '' });
+  async function submit() { if (!f.startDate) return alert('请选开始日期'); await api('submitLeave', { leave: f }); setF({ type: '事假', startDate: '', endDate: '', days: 1, reason: '' }); reload(); }
+  return <div className="card p-4 mb-5">
+    <div className="font-semibold text-slate-700 mb-3">🏖 请假 / 调休</div>
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+      <Field label="类型"><select className={inputCls} value={f.type} onChange={e => setF({ ...f, type: e.target.value })}>{['事假', '病假', '年假', '调休', '其他'].map(t => <option key={t}>{t}</option>)}</select></Field>
+      <Field label="开始"><input className={inputCls} type="date" value={f.startDate} onChange={e => setF({ ...f, startDate: e.target.value })} /></Field>
+      <Field label="结束"><input className={inputCls} type="date" value={f.endDate} onChange={e => setF({ ...f, endDate: e.target.value })} /></Field>
+      <Field label="天数"><input className={inputCls} type="number" value={f.days} onChange={e => setF({ ...f, days: e.target.value })} /></Field>
+    </div>
+    <Field label="事由"><input className={inputCls + ' mt-2'} value={f.reason} onChange={e => setF({ ...f, reason: e.target.value })} /></Field>
+    <div className="text-right mt-2"><Btn onClick={submit}>提交申请</Btn></div>
+    {leaves.length > 0 && <div className="mt-3 space-y-1">{leaves.map(l => <div key={l.id} className="flex justify-between text-sm border-t border-slate-50 pt-2">
+      <span className="text-slate-600">{l.type} {l.startDate}~{l.endDate} {l.days}天 <span className="text-slate-400">{l.reason}</span></span>
+      <Badge color={LEAVE_ST[l.status][1]}>{LEAVE_ST[l.status][0]}</Badge></div>)}</div>}
+  </div>;
+}
+function MyReview({ colleagues, myReviews, month, reload }) {
+  const [to, setTo] = useState(''); const [score, setScore] = useState(5); const [comment, setComment] = useState('');
+  const rated = new Set(myReviews.map(r => r.toId));
+  async function submit() { if (!to) return alert('请选同事'); await api('submitReview', { review: { toId: to, score, comment, month } }); setTo(''); setComment(''); setScore(5); reload(); }
+  return <div className="card p-4 mb-5">
+    <div className="font-semibold text-slate-700 mb-3">🤝 同事互评（{month}）</div>
+    <div className="grid grid-cols-2 gap-2">
+      <Field label="评价对象"><select className={inputCls} value={to} onChange={e => setTo(e.target.value)}><option value="">选择同事</option>{colleagues.map(c => <option key={c.id} value={c.id}>{c.name}（{c.role}）{rated.has(c.id) ? ' ✓已评' : ''}</option>)}</select></Field>
+      <Field label="评分"><select className={inputCls} value={score} onChange={e => setScore(Number(e.target.value))}>{[5, 4, 3, 2, 1].map(s => <option key={s} value={s}>{s} 分</option>)}</select></Field>
+    </div>
+    <Field label="评价（可选）"><input className={inputCls + ' mt-2'} value={comment} onChange={e => setComment(e.target.value)} /></Field>
+    <div className="text-right mt-2"><Btn onClick={submit}>提交评价</Btn></div>
+    {myReviews.length > 0 && <div className="text-xs text-slate-400 mt-2">本月已评 {myReviews.length} 位同事</div>}
+  </div>;
+}
+function AdminOkr({ state }) {
+  const [okrs, setOkrs] = useState(null);
+  const [obj, setObj] = useState(''); const [krs, setKrs] = useState(null); const [busy, setBusy] = useState('');
+  useEffect(() => { setOkrs(null); api('listOkrs', { period: state.month }).then(r => setOkrs(r.okrs || [])).catch(() => setOkrs([])); }, [state.month]);
+  const name = id => (state.employees.find(e => e.id === id) || {}).name || '—';
+  async function splitKr() { if (!obj) return; setBusy('kr'); try { const r = await api('aiSplitObjective', { objective: obj }); setKrs(r.result && r.result.krs || []); } catch (e) { alert(e.message); } setBusy(''); }
+  async function pushAll() { setBusy('push'); try { const r = await api('aiSuggestAll', {}); alert('已给 ' + (r.count || 0) + ' 人推送下周任务建议（他们登录工作台即可看到）'); } catch (e) { alert(e.message); } setBusy(''); }
+  async function archive() { setBusy('arc'); try { const r = await api('archiveNow', {}); alert('已归档 ' + (r.archived || 0) + ' 条旧任务'); } catch (e) { alert(e.message); } setBusy(''); }
+  return <div className="space-y-4">
+    <div className="card p-4">
+      <div className="font-semibold text-slate-700 mb-2">🚩 目标 → AI 拆 KR</div>
+      <div className="flex gap-2"><input className={inputCls} value={obj} onChange={e => setObj(e.target.value)} placeholder="写一个目标，如：本季品牌曝光翻倍" />
+        <Btn onClick={splitKr}>{busy === 'kr' ? '…' : 'AI 拆 KR'}</Btn></div>
+      {krs && <ul className="mt-3 space-y-1 text-sm text-slate-600">{krs.map((k, i) => <li key={i}>· {k.text} <span className="text-slate-400">（{k.metric}）</span></li>)}</ul>}
+      <div className="flex gap-2 mt-4 pt-3 border-t border-slate-100">
+        <Btn kind="ghost" onClick={pushAll}>{busy === 'push' ? '生成中…' : '🤖 给全员推下周建议'}</Btn>
+        <Btn kind="ghost" onClick={archive}>{busy === 'arc' ? '…' : '📦 立即归档旧任务'}</Btn>
+        <span className="text-xs text-slate-400 self-center">（已设每周一自动推建议、每天自动归档）</span>
+      </div>
+    </div>
+    {Object.keys((okrs || []).reduce((m, o) => { (m[o.employeeId] = 1); return m; }, {})).length === 0 ? <div className="card p-4 text-slate-300">本月暂无 OKR（员工在自己工作台填）</div> :
+    <AdminOkrList okrs={okrs} name={name} />}
+  </div>;
+}
+function AdminOkrList({ okrs, name }) {
+  const byEmp = {}; okrs.forEach(o => { (byEmp[o.employeeId] = byEmp[o.employeeId] || []).push(o); });
+  return <div className="space-y-4">{
+    Object.entries(byEmp).map(([eid, list]) => <div key={eid} className="card p-4">
+      <div className="font-semibold text-slate-700 mb-2">{name(eid)}</div>
+      {list.map(o => <div key={o.id} className="mb-2"><div className="font-medium text-slate-700">🎯 {o.objective}</div>
+        {(o.keyResults || []).map((k, i) => <div key={i} className="text-sm text-slate-600 flex justify-between"><span>· {k.text}</span><span>{k.progress}%</span></div>)}</div>)}
+    </div>)}</div>;
+}
+function AdminLeave() {
+  const [leaves, setLeaves] = useState(null);
+  function load() { api('listLeaves').then(r => setLeaves(r.leaves || [])).catch(() => setLeaves([])); }
+  useEffect(load, []);
+  async function decide(l, approve) { let note = ''; if (!approve) note = prompt('驳回理由（可选）') || ''; await api('approveLeave', { id: l.id, approve, note }); load(); }
+  if (!leaves) return <div className="text-slate-400">加载中…</div>;
+  return <div className="card overflow-hidden"><table className="w-full text-sm">
+    <thead><tr className="text-slate-400 text-left bg-slate-50"><th className="py-2.5 px-3">员工</th><th>类型</th><th>起止</th><th>天数</th><th>事由</th><th>状态</th><th></th></tr></thead>
+    <tbody>{leaves.length === 0 ? <tr><td colSpan="7" className="p-4 text-slate-300">暂无请假申请</td></tr> : leaves.map(l => <tr key={l.id} className="border-t border-slate-50">
+      <td className="py-2.5 px-3 font-medium text-slate-700">{l.employeeName}</td><td>{l.type}</td><td>{l.startDate}~{l.endDate}</td><td>{l.days}</td><td className="text-slate-500">{l.reason}</td>
+      <td><Badge color={LEAVE_ST[l.status][1]}>{LEAVE_ST[l.status][0]}</Badge></td>
+      <td className="pr-3 text-right whitespace-nowrap">{l.status === 'pending' ? <><button className="text-emerald-600 mr-2" onClick={() => decide(l, true)}>批准</button><button className="text-rose-400" onClick={() => decide(l, false)}>驳回</button></> : <span className="text-slate-300">已处理</span>}</td></tr>)}</tbody>
+  </table></div>;
+}
+
+// =================== 全员共创任务总表 ===================
+function TaskBoard({ session, monthProp, embedded }) {
+  const [innerMonth, setInnerMonth] = useState(curMonth());
+  const month = monthProp || innerMonth;
+  const [data, setData] = useState(null); const [edit, setEdit] = useState(null);
+  async function load() { try { setData(await api('allTasks', { month })); } catch (e) { alert(e.message); } }
+  useEffect(() => { load(); }, [month]);
+  const isAdmin = session.role === 'admin';
+  if (!data) return <div className="text-slate-400">加载中…</div>;
+  const goalOf = id => (data.goals.find(g => g.employeeId === id) || {}).text || '';
+  async function saveGoal(eid, text) { await api('saveMonthGoal', { employeeId: eid, month, text }); }
+  async function setStatus(t, s) { await api('myTaskSave', { task: { id: t.id, status: s } }); load(); }
+  async function saveNote(t, note) { if (note === (t.note || '')) return; await api('myTaskSave', { task: { id: t.id, note } }); load(); }
+  async function del(t) { if (confirm('删除这条任务？')) { await api('myTaskDelete', { id: t.id }); load(); } }
+  let list = data.employees;
+  if (!isAdmin) list = data.employees.filter(e => e.id === session.id || data.tasks.some(t => t.employeeId === e.id));
+  return <div>
+    <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+      <div className="text-sm text-slate-500">全员任务总表（{month}）· 按人分组，每人填本月目标与任务、完成情况，一起共创</div>
+      {!monthProp && <select className="border border-slate-200 rounded-lg px-2 py-1.5 text-sm bg-white" value={innerMonth} onChange={e => setInnerMonth(e.target.value)}>{monthOptions().map(m => <option key={m}>{m}</option>)}</select>}
+    </div>
+    {list.map(e => {
+      const myTasks = data.tasks.filter(t => t.employeeId === e.id).sort(byDue);
+      const editable = isAdmin || e.id === session.id;
+      return <div key={e.id} className="card p-4 mb-4">
+        <div className="flex items-center justify-between">
+          <div className="font-semibold text-slate-700">{e.name} <span className="text-slate-400 font-normal text-sm">· {e.role} · {myTasks.length} 项任务</span></div>
+          {editable && <Btn kind="soft" onClick={() => setEdit({ month, employeeId: e.id })}>＋ 加任务</Btn>}
+        </div>
+        <div className="flex items-center gap-2 mt-2 mb-3">
+          <span className="text-xs text-slate-400 shrink-0">🎯 本月工作目标</span>
+          {editable ? <input className={inputCls} defaultValue={goalOf(e.id)} onBlur={ev => saveGoal(e.id, ev.target.value)} placeholder="写本月要达成的目标" /> : <span className="text-sm text-slate-600">{goalOf(e.id) || '—'}</span>}
+        </div>
+        {myTasks.length === 0 ? <div className="text-slate-300 text-sm">本月暂无任务</div> :
+          <div className="overflow-x-auto"><table className="w-full text-sm border border-slate-100">
+            <thead><tr className="text-slate-500 text-left bg-slate-50"><th className="py-2 px-2 border-r border-slate-100">任务</th><th className="px-2 border-r border-slate-100 w-28">预计完成日期</th><th className="px-2 border-r border-slate-100 w-24">进度</th><th className="px-2 border-r border-slate-100 w-20">部门</th><th className="px-2 border-r border-slate-100 w-24">配合人员</th><th className="px-2 border-r border-slate-100">当前情况</th><th className="px-2 w-16"></th></tr></thead>
+            <tbody>{myTasks.map(t => <tr key={t.id} className="border-t border-slate-100 align-top">
+              <td className="py-1.5 px-2 border-r border-slate-50 font-medium text-slate-700">{t.title}</td>
+              <td className="px-2 border-r border-slate-50 text-slate-500 whitespace-nowrap">{t.dueDate || '—'}</td>
+              <td className="px-2 border-r border-slate-50">{editable ? <select className="border border-slate-200 rounded-md px-1 py-1 text-xs" value={t.status || '进行中'} onChange={ev => setStatus(t, ev.target.value)}>{Object.keys(TASK_STATUS).map(s => <option key={s}>{s}</option>)}</select> : <Badge color={TASK_STATUS[t.status] || 'slate'}>{t.status}</Badge>}</td>
+              <td className="px-2 border-r border-slate-50 text-slate-500">{t.department || '—'}</td>
+              <td className="px-2 border-r border-slate-50 text-slate-500">{t.collaborators || '—'}</td>
+              <td className="px-2 border-r border-slate-50">{editable ? <input className="border border-slate-200 rounded px-2 py-1 w-full text-sm" defaultValue={t.note || ''} onBlur={ev => saveNote(t, ev.target.value)} placeholder="填写完成情况…" /> : <span className="text-slate-500 text-xs">{t.note || '—'}</span>}</td>
+              <td className="px-2 text-right whitespace-nowrap">{editable && <><button className="text-slate-500 text-xs mr-1" onClick={() => setEdit(t)}>编辑</button><button className="text-rose-400 text-xs" onClick={() => del(t)}>删</button></>}</td>
+            </tr>)}</tbody></table></div>}
+      </div>;
+    })}
+    {edit && <TaskBoardModal t={edit} month={month} isAdmin={isAdmin} employees={data.employees} onClose={() => setEdit(null)} reload={load} />}
+  </div>;
+}
+function TaskBoardModal({ t, month, isAdmin, employees, onClose, reload }) {
+  const [f, setF] = useState({ title: t.title || '', department: t.department || '', collaborators: t.collaborators || '', dueDate: t.dueDate || '', status: t.status || '进行中', note: t.note || '', employeeId: t.employeeId || '' });
+  const up = (k, v) => setF({ ...f, [k]: v });
+  async function save() {
+    if (!f.title) return alert('请填任务');
+    const task = { id: t.id, month, title: f.title, department: f.department, collaborators: f.collaborators, dueDate: f.dueDate, status: f.status, note: f.note };
+    if (isAdmin && f.employeeId) task.employeeId = f.employeeId;
+    await api('myTaskSave', { task }); reload(); onClose();
+  }
+  return <Modal title={t.id ? '编辑任务' : '添加任务'} onClose={onClose}>
+    <Field label="任务"><input className={inputCls} value={f.title} onChange={e => up('title', e.target.value)} /></Field>
+    <div className="grid grid-cols-2 gap-3 mt-3">
+      {isAdmin && <Field label="负责人"><select className={inputCls} value={f.employeeId} onChange={e => up('employeeId', e.target.value)}><option value="">（我自己）</option>{employees.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}</select></Field>}
+      <Field label="部门"><input className={inputCls} value={f.department} onChange={e => up('department', e.target.value)} placeholder="运营/社群…" /></Field>
+      <Field label="配合人员"><input className={inputCls} value={f.collaborators} onChange={e => up('collaborators', e.target.value)} /></Field>
+      <Field label="预计完成"><input className={inputCls} type="date" value={f.dueDate} onChange={e => up('dueDate', e.target.value)} /></Field>
+      <Field label="进度"><select className={inputCls} value={f.status} onChange={e => up('status', e.target.value)}>{Object.keys(TASK_STATUS).map(s => <option key={s}>{s}</option>)}</select></Field>
+    </div>
+    <Field label="当前情况"><textarea className={inputCls + ' mt-3'} rows="2" value={f.note} onChange={e => up('note', e.target.value)} /></Field>
+    <div className="flex justify-end gap-2 mt-4"><Btn kind="ghost" onClick={onClose}>取消</Btn><Btn onClick={save}>保存</Btn></div>
+  </Modal>;
+}
+function AdminTasks({ state, session, month }) {
+  const [k, setK] = useState(0); const [aiOpen, setAiOpen] = useState(false); const [assignOpen, setAssignOpen] = useState(false);
+  const bump = () => setK(x => x + 1);
+  return <div className="space-y-3">
+    <div className="flex justify-end gap-2">
+      <Btn kind="ghost" onClick={() => setAssignOpen(true)}>🤖 AI 按擅长派活</Btn>
+      <Btn kind="ghost" onClick={() => setAiOpen(true)}>🤖 AI 拆解 KPI</Btn>
+    </div>
+    <TaskBoard key={k} session={session} monthProp={month} />
+    {aiOpen && <AiKpiModal state={state} month={month} defaultEmp={state.employees[0] && state.employees[0].id} onClose={() => setAiOpen(false)} reload={bump} />}
+    {assignOpen && <AiAssignModal month={month} onClose={() => setAssignOpen(false)} reload={bump} />}
+  </div>;
+}
+
+// =================== 自定义内联表格（像飞书多维表格：点格子直接填、列可改）===================
+function Cell({ col, value, employees, onSave }) {
+  const [v, setV] = useState(value == null ? '' : value);
+  useEffect(() => { setV(value == null ? '' : value); }, [value]);
+  if (col.type === 'select' || col.type === 'person') {
+    const opts = col.type === 'person' ? (employees || []).map(e => e.name) : (col.options || []);
+    return <select className="w-full border-0 bg-transparent text-sm py-1 focus:bg-indigo-50 rounded" value={v} onChange={e => { setV(e.target.value); onSave(e.target.value); }}><option value=""></option>{opts.map(o => <option key={o}>{o}</option>)}</select>;
+  }
+  if (col.type === 'checkbox') return <div className="py-1"><input type="checkbox" checked={!!v} onChange={e => { setV(e.target.checked); onSave(e.target.checked); }} /></div>;
+  if (col.type === 'number') return <input type="number" className="w-full border-0 bg-transparent text-sm py-1 focus:bg-indigo-50 rounded" value={v} onChange={e => setV(e.target.value)} onBlur={() => v !== (value == null ? '' : value) && onSave(v)} />;
+  if (col.type === 'date') return <input type="date" className="w-full border-0 bg-transparent text-sm py-1 focus:bg-indigo-50 rounded" value={v} onChange={e => setV(e.target.value)} onBlur={() => v !== (value || '') && onSave(v)} />;
+  return <textarea rows="1" className="w-full border-0 bg-transparent text-sm py-1 resize-none focus:bg-indigo-50 rounded leading-snug" value={v} onChange={e => setV(e.target.value)} onBlur={() => v !== (value || '') && onSave(v)} />;
+}
+function SheetView({ sheetId, session, embedded }) {
+  const [d, setD] = useState(null); const [cfg, setCfg] = useState(false);
+  async function load() { try { setD(await api('listSheet', { sheetId })); } catch (e) { alert(e.message); } }
+  useEffect(() => { load(); }, [sheetId]);
+  if (!d) return <div className="text-slate-400">加载中…</div>;
+  const isAdmin = session.role === 'admin';
+  const cols = d.sheet.columns || [];
+  async function saveCell(rec, key, value) { rec[key] = value; setD({ ...d }); try { await api('saveCell', { sheetId, recordId: rec.id, key, value }); } catch (e) { alert(e.message); } }
+  async function addRow() { await api('addRecord', { sheetId, values: {} }); await load(); }
+  async function createWith(key, value) { if (!String(value || '').trim()) return; await api('addRecord', { sheetId, values: { [key]: value } }); await load(); }
+  function startResize(e, col) {
+    e.preventDefault(); const startX = e.clientX; const startW = col.width || 150;
+    function move(ev) { col.width = Math.max(70, startW + (ev.clientX - startX)); setD(p => ({ ...p })); }
+    function up() { document.removeEventListener('mousemove', move); document.removeEventListener('mouseup', up); api('saveSheetColumns', { sheetId, columns: d.sheet.columns }).catch(() => {}); }
+    document.addEventListener('mousemove', move); document.addEventListener('mouseup', up);
+  }
+  async function delRow(rec) { if (confirm('删除这一行？')) { await api('delRecord', { sheetId, recordId: rec.id }); await load(); } }
+  return <div>
+    <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+      <div className="font-semibold text-slate-700">{d.sheet.name} <span className="text-slate-400 font-normal text-sm">· {d.records.length} 条记录 · 点格子直接填</span></div>
+      <div className="flex gap-2">{isAdmin && <Btn kind="ghost" onClick={() => setCfg(true)}>⚙️ 字段配置</Btn>}<Btn onClick={addRow}>＋ 添加记录</Btn></div>
+    </div>
+    <div className="card overflow-x-auto"><table className="text-sm" style={{ tableLayout: 'fixed', width: 'max-content', minWidth: '100%' }}>
+      <colgroup>{cols.map(c => <col key={c.key} style={{ width: (c.width || 150) + 'px' }} />)}<col style={{ width: '40px' }} /></colgroup>
+      <thead><tr className="text-slate-500 text-left bg-slate-50">{cols.map(c => <th key={c.key} className="px-2 py-2 border-r border-slate-100 relative select-none truncate">{c.name}<span onMouseDown={e => startResize(e, c)} className="absolute right-0 top-0 h-full w-1.5 cursor-col-resize hover:bg-indigo-300"></span></th>)}<th></th></tr></thead>
+      <tbody>
+        {d.records.map(rec => <tr key={rec.id} className="border-t border-slate-100 align-top hover:bg-slate-50/40">
+          {cols.map(c => <td key={c.key} className="px-1 border-r border-slate-50 align-top break-words"><Cell col={c} value={rec[c.key]} employees={d.employees} onSave={v => saveCell(rec, c.key, v)} /></td>)}
+          <td className="px-1 text-center"><button className="text-rose-300 hover:text-rose-500 text-xs" onClick={() => delRow(rec)}>✕</button></td>
+        </tr>)}
+        <tr className="border-t border-slate-100 bg-indigo-50/20 align-top">
+          {cols.map(c => <td key={c.key} className="px-1 border-r border-slate-50 align-top break-words"><Cell key={'new-' + c.key + '-' + d.records.length} col={c} value="" employees={d.employees} onSave={v => createWith(c.key, v)} /></td>)}
+          <td className="px-1 text-center text-slate-300 text-xs">＋</td>
+        </tr>
+      </tbody>
+    </table></div>
+    {cfg && <FieldConfigModal sheet={d.sheet} onClose={() => setCfg(false)} reload={load} />}
+  </div>;
+}
+function FieldConfigModal({ sheet, onClose, reload }) {
+  const [cols, setCols] = useState(JSON.parse(JSON.stringify(sheet.columns || [])));
+  const up = (i, k, val) => { const x = [...cols]; x[i] = { ...x[i], [k]: val }; setCols(x); };
+  function add() { setCols([...cols, { key: 'f' + Date.now().toString(36), name: '新字段', type: 'text' }]); }
+  function move(i, dir) { const j = i + dir; if (j < 0 || j >= cols.length) return; const x = [...cols];[x[i], x[j]] = [x[j], x[i]]; setCols(x); }
+  async function save() { await api('saveSheetColumns', { sheetId: sheet.id, columns: cols }); reload(); onClose(); }
+  return <Modal title={`字段配置 · ${sheet.name}`} onClose={onClose} wide>
+    <div className="text-xs text-slate-400 mb-2">增删改列、调顺序。改完保存即生效。</div>
+    {cols.map((c, i) => <div key={i} className="flex gap-2 mb-2 items-center">
+      <input className={inputCls} value={c.name} onChange={e => up(i, 'name', e.target.value)} />
+      <select className="border border-slate-200 rounded-lg px-2 py-2 text-sm shrink-0" value={c.type} onChange={e => up(i, 'type', e.target.value)}><option value="text">文本</option><option value="number">数字</option><option value="date">日期</option><option value="select">单选</option><option value="checkbox">复选框</option><option value="person">人员</option></select>
+      {c.type === 'select' && <input className={inputCls} value={(c.options || []).join(',')} onChange={e => up(i, 'options', e.target.value.split(',').map(s => s.trim()).filter(Boolean))} placeholder="选项,逗号分隔" />}
+      <button className="text-slate-400 shrink-0" onClick={() => move(i, -1)}>↑</button><button className="text-slate-400 shrink-0" onClick={() => move(i, 1)}>↓</button>
+      <button className="text-rose-400 shrink-0" onClick={() => setCols(cols.filter((_, j) => j !== i))}>×</button>
+    </div>)}
+    <button className="text-indigo-600 text-sm mt-1" onClick={add}>＋ 加字段</button>
+    <div className="flex justify-end gap-2 mt-4"><Btn kind="ghost" onClick={onClose}>取消</Btn><Btn onClick={save}>保存</Btn></div>
+  </Modal>;
+}
+
+// =================== 内置聊天 ===================
+function Chat({ session, embedded }) {
+  const [data, setData] = useState(null);
+  const [gid, setGid] = useState(null);
+  const [msgs, setMsgs] = useState([]);
+  const [text, setText] = useState('');
+  const [showNew, setShowNew] = useState(false);
+  const boxRef = useRef(null);
+  useEffect(() => { api('chatList').then(r => { setData(r); if (r.groups && r.groups[0]) setGid(g => g || r.groups[0].id); }).catch(() => {}); }, []);
+  useEffect(() => {
+    if (!gid) return; let alive = true;
+    const load = () => api('chatMessages', { groupId: gid }).then(r => { if (alive) setMsgs(r.messages || []); }).catch(() => {});
+    load(); const t = setInterval(load, 4000); return () => { alive = false; clearInterval(t); };
+  }, [gid]);
+  useEffect(() => { if (boxRef.current) boxRef.current.scrollTop = boxRef.current.scrollHeight; }, [msgs]);
+  async function send() { const t = text.trim(); if (!t || !gid) return; setText(''); try { await api('chatSend', { groupId: gid, text: t }); const r = await api('chatMessages', { groupId: gid }); setMsgs(r.messages || []); } catch (e) { alert(e.message); } }
+  function onCreated(g) { setData(d => ({ ...d, groups: [...(d.groups || []), g] })); setGid(g.id); setShowNew(false); }
+  if (!data) return <div className="text-slate-400">加载中…</div>;
+  return <div className="flex gap-4" style={{ height: embedded ? '60vh' : 'calc(100vh - 110px)' }}>
+    <div className="w-52 card p-2 overflow-auto shrink-0">
+      <div className="flex items-center justify-between px-2 py-1">
+        <span className="text-xs text-slate-400">群组</span>
+        {session.role === 'admin' && <button className="text-indigo-600 text-sm" onClick={() => setShowNew(true)}>＋建群</button>}
+      </div>
+      {data.groups.map(g => <button key={g.id} onClick={() => setGid(g.id)}
+        className={`w-full text-left px-3 py-2 rounded-lg text-sm ${gid === g.id ? 'text-white' : 'text-slate-600 hover:bg-slate-50'}`}
+        style={gid === g.id ? { background: C_PRIMARY } : {}}>{g.name}</button>)}
+    </div>
+    <div className="flex-1 card flex flex-col">
+      <div ref={boxRef} className="flex-1 overflow-auto p-4 space-y-3">
+        {msgs.length === 0 ? <div className="text-slate-300 text-sm text-center mt-8">还没有消息，发一条吧</div> :
+          msgs.map(m => { const mine = m.senderId === session.id; return <div key={m.id} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
+            <div className={`max-w-md ${mine ? 'items-end' : 'items-start'} flex flex-col`}>
+              <div className="text-xs text-slate-400 mb-0.5">{mine ? '我' : m.senderName} · {new Date(m.createdAt).toLocaleTimeString().slice(0, 5)}</div>
+              <div className={`px-3 py-2 rounded-2xl text-sm whitespace-pre-wrap ${mine ? 'text-white' : 'bg-slate-100 text-slate-700'}`} style={mine ? { background: C_PRIMARY } : {}}>{m.text}</div>
+            </div></div>; })}
+      </div>
+      <div className="border-t border-slate-100 p-3 flex gap-2">
+        <input className={inputCls} value={text} onChange={e => setText(e.target.value)} onKeyDown={e => e.key === 'Enter' && send()} placeholder="输入消息，回车发送…" disabled={!gid} />
+        <Btn onClick={send}>发送</Btn>
+      </div>
+    </div>
+    {showNew && <NewGroupModal employees={data.employees} onClose={() => setShowNew(false)} onCreated={onCreated} />}
+  </div>;
+}
+function NewGroupModal({ employees, onClose, onCreated }) {
+  const [name, setName] = useState(''); const [all, setAll] = useState(true); const [members, setMembers] = useState([]); const [busy, setBusy] = useState(false);
+  function toggle(id) { setMembers(m => m.includes(id) ? m.filter(x => x !== id) : m.concat(id)); }
+  async function create() {
+    if (!name) return alert('请填群名');
+    setBusy(true);
+    try { const r = await api('chatCreateGroup', { name, members: all ? 'all' : members }); onCreated(r.group); }
+    catch (e) { alert(e.message); setBusy(false); }
+  }
+  return <Modal title="新建群组" onClose={onClose}>
+    <Field label="群名"><input className={inputCls} value={name} onChange={e => setName(e.target.value)} /></Field>
+    <label className="flex items-center gap-2 mt-3 text-sm"><input type="checkbox" checked={all} onChange={e => setAll(e.target.checked)} /> 全员群（所有人可见）</label>
+    {!all && <div className="mt-3 grid grid-cols-2 gap-1 max-h-48 overflow-auto">
+      {employees.map(e => <label key={e.id} className="flex items-center gap-2 text-sm"><input type="checkbox" checked={members.includes(e.id)} onChange={() => toggle(e.id)} /> {e.name}（{e.role}）</label>)}
+    </div>}
+    <div className="flex justify-end gap-2 mt-5"><Btn kind="ghost" onClick={onClose}>取消</Btn><Btn onClick={create}>{busy ? '建群中…' : '建群'}</Btn></div>
+  </Modal>;
+}
+
+// =================== 我的工作台（管理员/员工通用）===================
+function MyWork({ session, onLogout, embedded }) {
+  const [month, setMonth] = useState(curMonth());
+  const [data, setData] = useState(null);
+  const [tab, setTab] = useState('work');
+  async function load() { try { setData((await api('myWorkspace', { month }))); } catch (e) { alert(e.message); } }
+  useEffect(() => { load(); }, [month]);
+  if (!data) return <div className="p-8 text-slate-400">加载中…</div>;
+  const cur = data.currency;
+  return <div className={embedded ? '' : 'min-h-screen max-w-2xl mx-auto p-5'}>
+    <div className="flex items-center justify-between mb-5">
+      <div><div className="text-xl font-bold text-slate-800">{data.me.name} 的工作台</div><div className="text-sm text-slate-400">{data.me.role}{data.me.isAdmin ? ' · 管理员' : ''}</div></div>
+      <div className="flex items-center gap-2">
+        {!embedded && <div className="flex bg-slate-100 rounded-lg p-0.5">
+          {[['work', '工作台'], ['board', '任务总表'], ['chat', '聊天']].map(([k, l]) => <button key={k} onClick={() => setTab(k)}
+            className={`px-3 py-1 rounded-md text-sm ${tab === k ? 'bg-white shadow text-slate-800' : 'text-slate-500'}`}>{l}</button>)}
+        </div>}
+        {tab === 'work' && <select className="border border-slate-200 rounded-lg px-2 py-1.5 text-sm bg-white" value={month} onChange={e => setMonth(e.target.value)}>{monthOptions().map(m => <option key={m}>{m}</option>)}</select>}
+        {!embedded && <button onClick={onLogout} className="text-xs text-slate-400">退出</button>}
+      </div>
+    </div>
+    {tab === 'chat' ? <Chat session={session} embedded /> : tab === 'board' ? <SheetView sheetId="tasks" session={session} embedded /> : <>
+    <div className="grid grid-cols-2 gap-4 mb-5">
+      <Stat label="本月绩效分" value={data.perf.perfScore} sub="满分 100" />
+      <Stat label="本月工资" value={data.finalized ? fmt(data.payslip.total, cur) : '未定薪'} sub={data.finalized ? '已发布' : '待管理员核算'} />
+    </div>
+    {(data.announcements || []).length > 0 && <div className="card p-4 mb-5">
+      <div className="font-semibold text-slate-700 mb-2">📣 公告通知</div>
+      <div className="space-y-2">{data.announcements.map(a => <div key={a.id} className="border-l-2 border-indigo-300 pl-3">
+        <div className="font-medium text-slate-700 text-sm">{a.title || '通知'}</div>
+        <div className="text-slate-600 text-sm whitespace-pre-wrap">{a.body}</div>
+        <div className="text-xs text-slate-300">{new Date(a.createdAt).toLocaleDateString()}</div></div>)}</div>
+    </div>}
+    {data.finalized && <div className="card p-4 mb-5">
+      <div className="font-semibold text-slate-700 mb-2">工资条</div>
+      <div className="text-sm text-slate-600 space-y-1">
+        <div className="flex justify-between"><span>底薪</span><span>{fmt(data.payslip.base, cur)}</span></div>
+        <div className="flex justify-between"><span>绩效</span><span>{fmt(data.payslip.perfAmount, cur)}</span></div>
+        <div className="flex justify-between"><span>分成</span><span>{fmt(data.payslip.commission, cur)}</span></div>
+        <div className="flex justify-between"><span>激励/额外</span><span>{fmt(data.payslip.incentive, cur)}</span></div>
+        <div className="flex justify-between font-bold text-slate-800 border-t border-slate-100 pt-1 mt-1"><span>应发合计</span><span>{fmt(data.payslip.total, cur)}</span></div>
+      </div></div>}
+    {data.me.baseDuties && <div className="card p-3 mb-5 text-sm text-slate-600"><span className="text-slate-400">📌 我的基础工作（底薪覆盖）：</span>{data.me.baseDuties}</div>}
+    {data.suggestion && <div className="card p-4 mb-5 border-l-4" style={{ borderColor: C_PRIMARY }}>
+      <div className="font-semibold text-slate-700 mb-1">💡 AI 给你的本周建议</div>
+      <div className="text-sm text-slate-600 whitespace-pre-wrap">{data.suggestion.text}</div></div>}
+    <MyTasks tasks={data.tasks} month={month} reload={load} />
+    <MyOkr okrs={data.okrs || []} month={month} reload={load} />
+    <MyReview colleagues={data.colleagues || []} myReviews={data.myReviews || []} month={month} reload={load} />
+    <MyLeave leaves={data.leaves || []} reload={load} />
+    <EmpExpenses data={data} month={month} reload={load} cur={cur} />
+    </>}
+  </div>;
+}
+
+const TASK_STATUS = { '进行中': 'amber', '已完成': 'green', '已归档': 'slate' };
+// 排序：未归档在前、已归档在后；同组按截止日期升序（无日期排最后），再按创建时间
+function byDue(a, b) {
+  const arch = s => (s === '已归档' ? 1 : 0);
+  if (arch(a.status) !== arch(b.status)) return arch(a.status) - arch(b.status);
+  const da = a.dueDate || '9999-99-99', db = b.dueDate || '9999-99-99';
+  if (da !== db) return da < db ? -1 : 1;
+  return (a.createdAt || 0) - (b.createdAt || 0);
+}
+function MyTasks({ tasks, month, reload }) {
+  const [edit, setEdit] = useState(null);
+  async function quickStatus(t, status) { await api('myTaskSave', { task: { id: t.id, status } }); reload(); }
+  async function del(t) { if (confirm('删除这条任务？')) { await api('myTaskDelete', { id: t.id }); reload(); } }
+  return <div className="card p-4 mb-5">
+    <div className="flex items-center justify-between mb-3">
+      <div className="font-semibold text-slate-700">我的任务（{month}）</div>
+      <Btn onClick={() => setEdit({ month })}>＋ 添加任务</Btn>
+    </div>
+    {tasks.length === 0 ? <div className="text-slate-300 text-sm">本月暂无任务，点右上角添加</div> :
+      <div className="space-y-2">{[...tasks].sort(byDue).map(t => <div key={t.id} className="border border-slate-100 rounded-xl p-3">
+        <div className="flex items-center justify-between">
+          <div className="font-medium text-slate-700">{t.title || '（未命名）'}</div>
+          <select className="border border-slate-200 rounded-md px-2 py-1 text-xs" value={t.status || '进行中'} onChange={e => quickStatus(t, e.target.value)}>
+            {Object.keys(TASK_STATUS).map(s => <option key={s}>{s}</option>)}</select>
+        </div>
+        <div className="text-xs text-slate-400 mt-1 flex flex-wrap gap-x-3">
+          {t.department && <span>部门：{t.department}</span>}
+          {t.collaborators && <span>配合：{t.collaborators}</span>}
+          {t.dueDate && <span>截止：{t.dueDate}</span>}
+          {t.points > 0 && <span>分值 {t.points}{t.scored ? ` · 得分 ${t.score}` : ''}</span>}
+        </div>
+        {t.note && <div className="text-sm text-slate-600 mt-1">当前情况：{t.note}</div>}
+        <div className="text-right mt-1"><button className="text-indigo-600 text-sm mr-3" onClick={() => setEdit(t)}>编辑</button><button className="text-rose-400 text-sm" onClick={() => del(t)}>删除</button></div>
+      </div>)}</div>}
+    {edit && <MyTaskModal t={edit} month={month} onClose={() => setEdit(null)} reload={reload} />}
+  </div>;
+}
+function MyTaskModal({ t, month, onClose, reload }) {
+  const [f, setF] = useState({ title: t.title || '', department: t.department || '', collaborators: t.collaborators || '', dueDate: t.dueDate || '', status: t.status || '进行中', note: t.note || '' });
+  const up = (k, v) => setF({ ...f, [k]: v });
+  async function save() {
+    if (!f.title) return alert('请填任务标题');
+    await api('myTaskSave', { task: { id: t.id, month, ...f } }); reload(); onClose();
+  }
+  return <Modal title={t.id ? '编辑任务' : '添加任务'} onClose={onClose}>
+    <Field label="任务"><input className={inputCls} value={f.title} onChange={e => up('title', e.target.value)} /></Field>
+    <div className="grid grid-cols-2 gap-3 mt-3">
+      <Field label="部门"><input className={inputCls} value={f.department} onChange={e => up('department', e.target.value)} placeholder="运营/社群…" /></Field>
+      <Field label="配合人员"><input className={inputCls} value={f.collaborators} onChange={e => up('collaborators', e.target.value)} /></Field>
+      <Field label="预计完成日期"><input className={inputCls} type="date" value={f.dueDate} onChange={e => up('dueDate', e.target.value)} /></Field>
+      <Field label="进度"><select className={inputCls} value={f.status} onChange={e => up('status', e.target.value)}>{Object.keys(TASK_STATUS).map(s => <option key={s}>{s}</option>)}</select></Field>
+    </div>
+    <Field label="当前情况"><textarea className={inputCls + ' mt-3'} rows="2" value={f.note} onChange={e => up('note', e.target.value)} /></Field>
+    <div className="flex justify-end gap-2 mt-4"><Btn kind="ghost" onClick={onClose}>取消</Btn><Btn onClick={save}>保存</Btn></div>
+  </Modal>;
+}
+function EmpExpenses({ data, month, reload, cur }) {
+  const [amount, setAmount] = useState(''); const [category, setCategory] = useState('交通'); const [note, setNote] = useState(''); const [photoUrl, setPhotoUrl] = useState('');
+  const [busy, setBusy] = useState(false);
+  const stMap = { pending: ['待审批', 'amber'], approved: ['已通过', 'green'], rejected: ['已驳回', 'slate'] };
+  async function submit() {
+    if (!amount) return alert('请填写金额');
+    setBusy(true);
+    try { await api('submitExpense', { expense: { month, amount: Number(amount), category, note, photoUrl } }); setAmount(''); setNote(''); setPhotoUrl(''); await reload(); }
+    catch (e) { alert(e.message); } setBusy(false);
+  }
+  return <div className="card p-4 mt-5">
+    <div className="font-semibold text-slate-700 mb-3">💳 报销</div>
+    <div className="grid grid-cols-2 gap-2 mb-2">
+      <Field label="金额"><input className={inputCls} type="number" value={amount} onChange={e => setAmount(e.target.value)} /></Field>
+      <Field label="类别"><select className={inputCls} value={category} onChange={e => setCategory(e.target.value)}>{['交通', '餐饮', '设备', '办公', '差旅', '其他'].map(c => <option key={c}>{c}</option>)}</select></Field>
+    </div>
+    <Field label="说明"><input className={inputCls} value={note} onChange={e => setNote(e.target.value)} /></Field>
+    <Field label="发票/凭证链接（可选）"><input className={inputCls + ' mt-2'} value={photoUrl} onChange={e => setPhotoUrl(e.target.value)} placeholder="图片或网盘链接" /></Field>
+    <div className="mt-2 text-right"><Btn onClick={submit}>{busy ? '提交中…' : '提交报销'}</Btn></div>
+    {(data.expenses || []).length > 0 && <div className="mt-3 space-y-2">
+      {data.expenses.map(e => <div key={e.id} className="flex items-center justify-between text-sm border-t border-slate-50 pt-2">
+        <span className="text-slate-600">{e.category} · {fmt(e.amount, cur)} <span className="text-slate-400">{e.note}</span></span>
+        <Badge color={stMap[e.status][1]}>{stMap[e.status][0]}</Badge></div>)}
+    </div>}
+  </div>;
+}
+function TaskCard({ t, stMap, reload }) {
+  const [note, setNote] = useState(t.note || '');
+  const [busy, setBusy] = useState(false);
+  async function submit() { setBusy(true); try { await api('submitTask', { taskId: t.id, note }); await reload(); } catch (e) { alert(e.message); } setBusy(false); }
+  return <div className="border border-slate-100 rounded-xl p-3">
+    <div className="flex items-center justify-between">
+      <div className="font-medium text-slate-700">{t.title} <span className="text-slate-400 text-sm">· {t.points}分</span></div>
+      <Badge color={stMap[t.status][1]}>{stMap[t.status][0]}</Badge>
+    </div>
+    {t.desc && <div className="text-sm text-slate-400 mt-1">{t.desc}</div>}
+    {t.due && <div className="text-xs text-slate-400 mt-1">截止 {t.due}</div>}
+    <textarea className={inputCls + ' mt-2'} rows="2" placeholder="填写完成情况…" value={note} onChange={e => setNote(e.target.value)} disabled={t.status === 'scored'} />
+    {t.status === 'scored' && <div className="text-sm text-emerald-600 mt-1">已打分：{t.score} / {t.points}</div>}
+    {t.status !== 'scored' && <div className="mt-2 text-right"><Btn onClick={submit}>{busy ? '…' : (t.status === 'submitted' ? '更新' : '提交')}</Btn></div>}
+  </div>;
+}
+
+// =================== ROOT ===================
+function App() {
+  const [session, setSession] = useState(null);
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    if (localStorage.getItem(TKEY)) api('me').then(r => setSession(r)).catch(() => localStorage.removeItem(TKEY)).finally(() => setReady(true));
+    else setReady(true);
+  }, []);
+  function logout() { localStorage.removeItem(TKEY); setSession(null); }
+  if (!ready) return <div className="min-h-screen flex items-center justify-center text-slate-400">加载中…</div>;
+  if (!session) return <Login onLogin={setSession} />;
+  return session.role === 'admin' ? <Admin session={session} onLogout={logout} /> : <MyWork session={session} onLogout={logout} />;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

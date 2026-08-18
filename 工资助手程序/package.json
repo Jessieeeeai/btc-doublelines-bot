@@ -1,0 +1,14 @@
+{
+  "name": "salary-assistant",
+  "version": "1.0.0",
+  "description": "智能工资助手 - 任务派发/绩效考核/自动算薪/看板",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0",
+    "@netlify/functions": "^2.8.2"
+  }
+}

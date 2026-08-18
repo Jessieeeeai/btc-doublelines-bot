@@ -30,11 +30,22 @@ def load_env():
                 os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
 
 
+# 所有群目标 (私聊从 .env 的 TELEGRAM_CHAT_ID 读; 群在这里显式指定)
+GROUP_CHAT_IDS = "-5515956430,-1003953373413"
+
+
 def main():
     load_env()
+    # 确保发到两个群 (即使 .env 里没配 GROUP)
+    existing = os.environ.get("TELEGRAM_GROUP_CHAT_ID", "").strip()
+    merged = ",".join(x for x in [existing, GROUP_CHAT_IDS] if x)
+    os.environ["TELEGRAM_GROUP_CHAT_ID"] = merged
     from tg_notify import send_message
     ok = send_message(NOTICE)
-    print("广播已发送" if ok else "广播发送失败 (检查 TG 配置)")
+    if ok:
+        print(f"广播已发送 → 私聊({os.environ.get('TELEGRAM_CHAT_ID')}) + 群({merged})")
+    else:
+        print("广播发送失败 (检查 .env 里的 TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID)")
 
 
 if __name__ == "__main__":

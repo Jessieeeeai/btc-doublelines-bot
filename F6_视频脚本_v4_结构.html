@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>F6 视频脚本 v4 · 结构动画 + 完整口播</title>
+<style>
+:root{
+  color-scheme: light;
+  --bg:#0b1020; --bg2:#101736; --ink:#0a0f1d; --paper:#f7f8fc;
+  --line:#1f2a4c; --blue:#3b6df6; --blue2:#6c8cff; --purple:#8a5cff;
+  --cyan:#22d3ee; --pink:#ff5d8f; --yellow:#f7c948; --green:#22c55e;
+  --muted:#9aa3b2;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; padding:0;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue","Segoe UI",Arial,sans-serif;
+  color:#e7ecf7;
+  background:linear-gradient(180deg,#070a17 0%,#0c1230 60%,#0a0e22 100%);
+  min-height:100vh; line-height:1.7;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:32px 24px 80px}
+
+.hero{
+  text-align:center; padding:48px 24px 32px;
+  background:radial-gradient(ellipse at top,rgba(255,93,143,0.15) 0%,transparent 70%);
+  border-radius:24px; margin-bottom:24px;
+}
+.eyebrow{
+  display:inline-block; padding:6px 14px; font-size:12px;
+  border:1px solid rgba(255,93,143,0.4); border-radius:99px;
+  color:#ffb7c8; letter-spacing:1.5px; margin-bottom:16px;
+}
+.hero h1{font-size:42px; line-height:1.25; margin:0 0 18px; font-weight:800; letter-spacing:-0.5px}
+.ac{
+  background:linear-gradient(135deg,#22d3ee 10%,#8a5cff 60%,#ff5d8f 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero .lead{font-size:18px; max-width:780px; margin:0 auto 24px; color:#cdd5e8}
+.meta-row{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
+.chip{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 12px; border-radius:99px; font-size:12px;
+  background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
+  color:#cdd5e8;
+}
+.chip.hot{background:rgba(255,93,143,0.12); border-color:rgba(255,93,143,0.35); color:#ffb7c8}
+.chip.new{background:rgba(34,197,94,0.12); border-color:rgba(34,197,94,0.35); color:#9ff0bd}
+
+section{margin:48px 0 16px}
+.section-title{font-size:22px; font-weight:700; margin:0 0 24px; display:flex; align-items:center; gap:10px}
+.section-title .num{
+  display:inline-flex; width:32px; height:32px; align-items:center; justify-content:center;
+  border-radius:8px; background:rgba(255,93,143,0.2); color:#ffb7c8; font-size:14px;
+}
+
+.thesis-card{
+  text-align:center; padding:28px 32px;
+  background:linear-gradient(135deg,rgba(255,93,143,0.12) 0%,rgba(138,92,255,0.12) 50%,rgba(34,211,238,0.12) 100%);
+  border:1.5px solid rgba(255,93,143,0.4); border-radius:20px; margin-bottom:32px;
+}
+.thesis-card .label{font-size:11px; color:#ffb7c8; letter-spacing:2px; margin-bottom:8px}
+.thesis-card .text{font-size:21px; font-weight:700; line-height:1.55}
+
+.branches{display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin-bottom:32px}
+.branch{
+  padding:14px 12px; border-radius:14px; background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08); position:relative; font-size:13px;
+}
+.branch::after{content:""; position:absolute; left:0; top:14px; bottom:14px; width:3px; border-radius:2px}
+.branch.b-pink::after{background:#ff5d8f}
+.branch.b-blue::after{background:#6c8cff}
+.branch.b-purple::after{background:#8a5cff}
+.branch.b-yellow::after{background:#f7c948}
+.branch.b-muted::after{background:#9aa3b2}
+.branch.b-green::after{background:#22c55e}
+.branch h4{margin:0 0 6px; font-size:13px; padding-left:10px; font-weight:700}
+.branch p{margin:0 0 8px; padding-left:10px; color:#a9b2d1; font-size:11.5px; line-height:1.5}
+.subpoints{padding-left:10px; margin-top:10px}
+.subpoint{
+  padding:6px 8px; margin-bottom:5px;
+  background:rgba(255,255,255,0.03); border-radius:6px;
+  font-size:11px; color:#cdd5e8; line-height:1.4;
+}
+.subpoint small{display:block; color:#7c8aa5; font-size:10px; margin-top:2px}
+
+.final-thesis{
+  text-align:center; padding:24px 28px;
+  background:linear-gradient(135deg,rgba(34,197,94,0.1) 0%,rgba(255,93,143,0.1) 100%);
+  border:1.5px solid rgba(34,197,94,0.35); border-radius:20px;
+}
+.final-thesis .label{font-size:11px; color:#9ff0bd; letter-spacing:2px; margin-bottom:8px}
+.final-thesis .text{font-size:17px; font-weight:600; line-height:1.55}
+
+.flow{display:grid; grid-template-columns:repeat(7,1fr); gap:8px; margin-bottom:16px}
+.node{
+  padding:12px 10px; border-radius:12px; background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1); text-align:center;
+  font-size:11.5px; cursor:pointer; transition:all 0.2s; position:relative;
+}
+.node:hover{transform:translateY(-2px); background:rgba(255,255,255,0.08)}
+.node .step{display:block; font-size:9px; color:#9aa3b2; margin-bottom:4px}
+.node .ttl{display:block; font-weight:600}
+.node .dot{display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:4px}
+.node.n-pink{border-color:rgba(255,93,143,0.35)} .node.n-pink .dot{background:#ff5d8f}
+.node.n-blue{border-color:rgba(108,140,255,0.35)} .node.n-blue .dot{background:#6c8cff}
+.node.n-purple{border-color:rgba(138,92,255,0.35)} .node.n-purple .dot{background:#8a5cff}
+.node.n-yellow{border-color:rgba(247,201,72,0.35)} .node.n-yellow .dot{background:#f7c948}
+.node.n-muted{border-color:rgba(154,163,178,0.35)} .node.n-muted .dot{background:#9aa3b2}
+.legend{display:flex; gap:14px; flex-wrap:wrap; justify-content:center; font-size:11px; color:#9aa3b2}
+.legend-item{display:flex; align-items:center; gap:6px}
+.legend-item .swatch{width:10px; height:10px; border-radius:3px}
+
+.toolbar{display:flex; justify-content:flex-end; margin-bottom:16px}
+.expand-btn{
+  padding:8px 14px; font-size:12px; border-radius:8px;
+  background:rgba(255,93,143,0.15); border:1px solid rgba(255,93,143,0.35);
+  color:#ffb7c8; cursor:pointer;
+}
+.expand-btn:hover{background:rgba(255,93,143,0.25)}
+
+.card{
+  background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08);
+  border-radius:18px; padding:24px 26px; margin-bottom:16px;
+  position:relative; overflow:hidden;
+}
+.card::before{content:""; position:absolute; left:0; top:24px; bottom:24px; width:4px; border-radius:2px}
+.card.c-pink::before{background:#ff5d8f}
+.card.c-blue::before{background:#6c8cff}
+.card.c-purple::before{background:#8a5cff}
+.card.c-yellow::before{background:#f7c948}
+.card.c-muted::before{background:#9aa3b2}
+.card-head{display:flex; align-items:center; gap:14px; margin-bottom:16px; padding-left:14px}
+.card-num{
+  display:inline-flex; width:36px; height:36px; align-items:center; justify-content:center;
+  border-radius:10px; background:rgba(255,93,143,0.2); color:#ffb7c8;
+  font-weight:700; font-size:14px;
+}
+.card h3{margin:0; font-size:18px; flex:1; font-weight:700}
+.tag{
+  font-size:10px; padding:4px 10px; border-radius:99px;
+  background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
+  color:#cdd5e8; letter-spacing:1px;
+}
+.tag.t-pink{background:rgba(255,93,143,0.12); border-color:rgba(255,93,143,0.35); color:#ffb7c8}
+.tag.t-blue{background:rgba(108,140,255,0.12); border-color:rgba(108,140,255,0.35); color:#a9bcff}
+.tag.t-purple{background:rgba(138,92,255,0.12); border-color:rgba(138,92,255,0.35); color:#c4a8ff}
+.tag.t-yellow{background:rgba(247,201,72,0.12); border-color:rgba(247,201,72,0.35); color:#ffe082}
+.tag.t-muted{background:rgba(154,163,178,0.12); border-color:rgba(154,163,178,0.35); color:#cdd5e8}
+
+.q{
+  padding:12px 14px; background:rgba(255,93,143,0.06);
+  border-left:3px solid rgba(255,93,143,0.5); border-radius:6px;
+  font-size:13.5px; color:#cdd5e8; margin-bottom:14px;
+}
+.q b{color:#ffb7c8}
+
+.diagram{
+  padding:16px; background:rgba(0,0,0,0.2); border-radius:12px;
+  margin-bottom:14px; border:1px dashed rgba(255,255,255,0.1);
+}
+.diagram-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:12.5px; color:#cdd5e8}
+.diagram-pill{
+  padding:8px 12px; border-radius:8px;
+  background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
+  font-size:12px;
+}
+.diagram-pill b{color:#fff}
+.diagram-pill small{display:block; color:#9aa3b2; font-size:10px; margin-top:2px}
+.diagram-arrow{color:#6c8cff; font-weight:700}
+.diagram-grid{display:grid; gap:10px}
+.diagram-grid.g3{grid-template-columns:repeat(3,1fr)}
+.diagram-grid.g4{grid-template-columns:repeat(4,1fr)}
+
+.verdict{
+  padding:14px 16px; margin:12px 0;
+  background:rgba(34,211,238,0.06); border:1.5px dashed rgba(34,211,238,0.4);
+  border-radius:10px; color:#cdd5e8; font-size:13.5px; line-height:1.7;
+}
+.verdict b{color:#5eead4}
+.bridge{
+  display:block; margin-top:12px; padding-top:10px;
+  border-top:1px dashed rgba(255,255,255,0.15);
+  font-size:12.5px; color:#a9b2d1; font-style:italic;
+}
+.bridge::before{content:"→ "; color:#6c8cff; font-weight:700}
+
+.theory{margin-top:10px}
+.theory-pill{
+  display:inline-block; margin:4px 6px 4px 0; padding:4px 10px;
+  font-size:10.5px; color:#7c8aa5; background:rgba(255,255,255,0.03);
+  border-radius:99px; border:1px solid rgba(255,255,255,0.06);
+}
+
+.broll{
+  margin:12px 0; padding:12px 14px;
+  background:rgba(255,93,143,0.05); border-left:3px solid rgba(255,93,143,0.4);
+  border-radius:6px; font-size:12px; color:#cdd5e8;
+}
+.broll b{color:#ff8fb1}
+.broll .item{display:block; margin:4px 0}
+
+.script{margin-top:14px; border-top:1px solid rgba(255,255,255,0.08); padding-top:14px}
+.script summary{
+  cursor:pointer; font-size:12.5px; color:#ffb7c8; padding:8px 0;
+  font-weight:600; user-select:none;
+}
+.script summary:hover{color:#ffc8d4}
+.script-body{
+  margin-top:10px; padding:14px 16px;
+  background:rgba(0,0,0,0.25); border-radius:10px;
+  font-size:13.5px; line-height:1.8; color:#dde3f0;
+  border:1px solid rgba(255,255,255,0.08);
+}
+.script-body p{margin:0 0 10px}
+.script-body .stage{
+  display:block; margin:8px 0 4px; padding:4px 8px;
+  background:rgba(255,93,143,0.1); border-left:2px solid rgba(255,93,143,0.5);
+  font-size:11.5px; color:#ffb7c8; border-radius:0 4px 4px 0;
+}
+.script-body .term-inline{
+  display:block; margin:8px 0; padding:8px 12px;
+  background:rgba(247,201,72,0.08); border-left:3px solid #f7c948;
+  border-radius:0 6px 6px 0; font-size:12.5px; color:#ffe082;
+}
+
+.review-card{
+  background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08);
+  border-radius:16px; padding:24px 26px; margin-bottom:16px;
+}
+.review-row{
+  display:grid; grid-template-columns:90px 1fr 1fr; gap:14px;
+  padding:14px 0; border-bottom:1px solid rgba(255,255,255,0.06);
+  font-size:13px; align-items:flex-start;
+}
+.review-row:last-child{border-bottom:none}
+.sev{display:inline-block; padding:4px 10px; font-size:11px; border-radius:6px; text-align:center; font-weight:700; letter-spacing:1px}
+.sev.death{background:rgba(255,93,143,0.2); color:#ff5d8f; border:1px solid #ff5d8f}
+.sev.high{background:rgba(247,201,72,0.2); color:#f7c948; border:1px solid rgba(247,201,72,0.5)}
+.sev.med{background:rgba(108,140,255,0.2); color:#a9bcff; border:1px solid rgba(108,140,255,0.5)}
+.sev.low{background:rgba(154,163,178,0.2); color:#cdd5e8; border:1px solid rgba(154,163,178,0.5)}
+.fix{color:#9ff0bd; font-style:italic}
+.fix::before{content:"✓ "; font-style:normal}
+
+@media(max-width:1100px){
+  .branches{grid-template-columns:repeat(3,1fr)}
+  .flow{grid-template-columns:repeat(4,1fr)}
+}
+@media(max-width:560px){
+  .branches{grid-template-columns:1fr}
+  .flow{grid-template-columns:repeat(2,1fr)}
+  .hero h1{font-size:28px}
+  .review-row{grid-template-columns:1fr; gap:6px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HERO -->
+<div class="hero">
+  <span class="eyebrow">F6 视频脚本 · v4 · 调查复盘 + vlog 风</span>
+  <h1>我不小心做出来一个<br><span class="ac">胜率 56% 的 BTC 交易机器人</span></h1>
+  <p class="lead">炒币宅女 · $400 投入 · 2.5 周时间——3 年回测把 1 万滚到 18.8 万 (+1785%)。<br>但比"涨多少倍"更值钱的, 是它学会了 <b>"什么时候根本不该开仓"</b>。</p>
+  <div class="meta-row">
+    <span class="chip">总时长 ~9:00</span>
+    <span class="chip">7 章 (含 Hook + 结语)</span>
+    <span class="chip hot">叙事 DNA · 调查复盘 + 个人开箱</span>
+    <span class="chip new">vlog 第一人称 · 慢节奏拆箱</span>
+    <span class="chip">3 策略并行赛马</span>
+  </div>
+</div>
+
+<!-- ① 纵向骨架 -->
+<section>
+  <h2 class="section-title"><span class="num">①</span>纵向论证骨架 · 1 中心论点 → 6 分支 → 18 分论点</h2>
+  <div class="thesis-card">
+    <div class="label">LAYER 1 · 中心论点</div>
+    <div class="text">炒币宅女靠 $400 盒子和 1 条反共识规则做出了 +1785% 回测——<br>但比"涨多少倍"更值钱的, 是它学会了"什么时候根本不该开仓"。</div>
+  </div>
+
+  <div class="branches">
+    <div class="branch b-pink">
+      <h4>引入痛点</h4>
+      <p>宅女的盯盘地狱</p>
+      <div class="subpoints">
+        <div class="subpoint">Pine 指标只能发邮件<small>5 件接力人工活</small></div>
+        <div class="subpoint">睡觉/出差/吃饭时来信号<small>错过的痛苦</small></div>
+        <div class="subpoint">朋友送 SOLAI 盒子<small>"交易宅男"的诞生想法</small></div>
+      </div>
+    </div>
+    <div class="branch b-blue">
+      <h4>转折 · 拆箱</h4>
+      <p>8 分 47 秒部署完</p>
+      <div class="subpoints">
+        <div class="subpoint">巴掌大 · 铝合金 · 蓝灯<small>慢动作开箱</small></div>
+        <div class="subpoint">扫码 5 步配置完<small>不用接显示器</small></div>
+      </div>
+    </div>
+    <div class="branch b-purple">
+      <h4>策略研发</h4>
+      <p>5 轮迭代 + 反共识</p>
+      <div class="subpoints">
+        <div class="subpoint">5 轮: SL buffer / 2R / 突破入场 / EMA-200<small>+119R 年化 +46%</small></div>
+        <div class="subpoint">12 月地狱: 账户 7098→1878<small>跌 73%</small></div>
+        <div class="subpoint">反共识杀招: 强趋势期空仓<small>F6 baseline +434%</small></div>
+      </div>
+    </div>
+    <div class="branch b-purple">
+      <h4>3 策略赛马</h4>
+      <p>100+ 参数测试出 3 个能打</p>
+      <div class="subpoints">
+        <div class="subpoint">A baseline +434%<small>1 万 → 5.3 万</small></div>
+        <div class="subpoint">B 让赢家奔跑 +840%<small>8R 阶梯锁</small></div>
+        <div class="subpoint">C 终极 alpha +1785%<small>Kelly + 金字塔, 但 -170% 回撤</small></div>
+      </div>
+    </div>
+    <div class="branch b-yellow">
+      <h4>算账</h4>
+      <p>时间 + 钱 + 多用途</p>
+      <div class="subpoints">
+        <div class="subpoint">2.5 周 / 50 小时 / $400<small>会 Python 一个周末搞定</small></div>
+        <div class="subpoint">多 Agent: BTC + 资产追踪 + 加密日报<small>不只是 BTC 盒</small></div>
+      </div>
+    </div>
+    <div class="branch b-muted">
+      <h4>反方 + 互动</h4>
+      <p>回测 ≠ 实盘 + 求建议</p>
+      <div class="subpoints">
+        <div class="subpoint">3 翻车风险: 过拟合/滑点/黑天鹅<small>主动缴弹药</small></div>
+        <div class="subpoint">30-45 天实盘验证 + 全开源<small>评论区求策略建议</small></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="final-thesis">
+    <div class="label">LAYER 1 · 最终结论 (与 HERO 镜像)</div>
+    <div class="text">代码小白 + 一台 $400 盒子 + 一条反共识规则 = 一台帮我 "在 80% 时间不开仓" 的 BTC 量化机器人。<br>30-45 天后, 3 个策略带着实盘真实数字回来——能否复制 +1785% 不是关键, 关键是它已经把我从 "盯盘地狱" 里救出来了。</div>
+  </div>
+</section>
+
+<!-- ② 横向流程 -->
+<section>
+  <h2 class="section-title"><span class="num">②</span>横向 7 节口播流程 · 总长 ~9:00</h2>
+  <div class="flow">
+    <div class="node n-pink" onclick="document.getElementById('ch0').scrollIntoView({behavior:'smooth'})">
+      <span class="step">00:00–00:30</span>
+      <span class="ttl"><span class="dot"></span>引言 Hook</span>
+    </div>
+    <div class="node n-pink" onclick="document.getElementById('ch1').scrollIntoView({behavior:'smooth'})">
+      <span class="step">00:30–02:00</span>
+      <span class="ttl"><span class="dot"></span>1·宅女地狱</span>
+    </div>
+    <div class="node n-blue" onclick="document.getElementById('ch2').scrollIntoView({behavior:'smooth'})">
+      <span class="step">02:00–03:30</span>
+      <span class="ttl"><span class="dot"></span>2·拆箱开机</span>
+    </div>
+    <div class="node n-purple" onclick="document.getElementById('ch3').scrollIntoView({behavior:'smooth'})">
+      <span class="step">03:30–06:30</span>
+      <span class="ttl"><span class="dot"></span>3·策略研发</span>
+    </div>
+    <div class="node n-yellow" onclick="document.getElementById('ch4').scrollIntoView({behavior:'smooth'})">
+      <span class="step">06:30–07:30</span>
+      <span class="ttl"><span class="dot"></span>4·算账</span>
+    </div>
+    <div class="node n-muted" onclick="document.getElementById('ch5').scrollIntoView({behavior:'smooth'})">
+      <span class="step">07:30–08:30</span>
+      <span class="ttl"><span class="dot"></span>5·反方+互动</span>
+    </div>
+    <div class="node n-muted" onclick="document.getElementById('ch6').scrollIntoView({behavior:'smooth'})">
+      <span class="step">08:30–09:00</span>
+      <span class="ttl"><span class="dot"></span>结语 CTA</span>
+    </div>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><span class="swatch" style="background:#ff5d8f"></span>引入 + 因果 (Ch0·Ch1)</div>
+    <div class="legend-item"><span class="swatch" style="background:#6c8cff"></span>时间线 (Ch2 拆箱)</div>
+    <div class="legend-item"><span class="swatch" style="background:#8a5cff"></span>递进 (Ch3 研发)</div>
+    <div class="legend-item"><span class="swatch" style="background:#f7c948"></span>并列 (Ch4 算账)</div>
+    <div class="legend-item"><span class="swatch" style="background:#9aa3b2"></span>反方 + 收尾 (Ch5·结语)</div>
+  </div>
+</section>
+
+<!-- ③ 章节细节 -->
+<section>
+  <h2 class="section-title"><span class="num">③</span>各章节细节 · 含完整口播文案</h2>
+  <div class="toolbar">
+    <button class="expand-btn" onclick="toggleAll()">📜 展开全部口播文案</button>
+  </div>
+
+  <!-- Ch 0 -->
+  <div class="card c-pink" id="ch0">
+    <div class="card-head">
+      <span class="card-num">00</span>
+      <h3>引言 Hook</h3>
+      <span class="tag t-pink">引入</span>
+    </div>
+    <div class="q"><b>问题:</b> 30 秒内, 怎么让观众决定看完?</div>
+    <div class="diagram">
+      <div class="diagram-row">
+        <div class="diagram-pill"><b>钩子数字</b><small>1 万 → 18.8 万 / 胜率 56%</small></div>
+        <span class="diagram-arrow">+</span>
+        <div class="diagram-pill"><b>自嘲</b><small>"代码小白 + 不小心做出来"</small></div>
+        <span class="diagram-arrow">→</span>
+        <div class="diagram-pill"><b>反预期</b><small>"最值得看的不是数字, 是反共识规则"</small></div>
+      </div>
+    </div>
+    <div class="broll">
+      <b>实拍 / B-roll:</b>
+      <span class="item">【实拍】主讲坐桌前, 桌上 Solode Neo 蓝灯 + MacBook 曲线</span>
+      <span class="item">【特写】手指点向盒子</span>
+      <span class="item">【B-roll 数字翻牌】1 万 → 18.8 万 / 胜率 56% / +1785%</span>
+    </div>
+    <div class="verdict">
+      <b>这一节证明了:</b> 观众值得看完不是为了"涨 18 倍"的炫耀, 而是"代码小白能做出能跑的反共识系统"的好奇。Hook 用<b>自嘲 + 反预期</b>双钩——同时缴弹药承诺 "30 天后实盘验证"。
+      <span class="bridge">桥梁: Hook 抛"反共识规则没人讲" → 但这一切是怎么开始的 → 章节 1</span>
+    </div>
+    <div class="theory">
+      <span class="theory-pill">胜率 56% = 策略 C 真实回测 55.9% 取整</span>
+      <span class="theory-pill">"反共识规则" punchline 预告 (不剧透)</span>
+    </div>
+    <details class="script">
+      <summary>📜 完整口播文案</summary>
+      <div class="script-body">
+        <span class="stage">【实拍 · 主讲坐桌前, 桌上 Solode Neo 蓝灯亮, 旁边 MacBook 资金曲线】</span>
+        <p>家人们好, 我是加密大漂亮。</p>
+        <span class="stage">【实拍特写 · 手指点向 Solode Neo, 镜头跟随上扬】</span>
+        <p>我得先承认一件事——<b>我真没想到自己能做出今天这个东西</b>。</p>
+        <span class="stage">【B-roll 数字翻牌: 1 万 → 18.8 万 / 胜率 56% / +1785% / 3 个并行策略】</span>
+        <p>一个 3 年回测<b>1 万 USD 滚到 18 万 8</b>, 胜率 56% 的 BTC 全自动交易机器人——而且<b>3 个不同风格策略同时在跑</b>。</p>
+        <span class="stage">【实拍 · 主讲耸肩自嘲】</span>
+        <p>我是个连 Python 都要边问 ChatGPT 边写的代码小白。本来我以为顶多做出个"邮件提醒我看盘"的小玩意, 结果一不小心, 它变成了<b>全自动盯盘 + 入场 + 战报推送</b>的盒子。</p>
+        <p>但今天这期视频最值得你看的, <b>不是"1 万滚 18 万"这个数字本身</b>——是我做着做着, 意外发现的一条<b>反共识规则</b>。这条规则, 大部分量化教材都没讲。</p>
+        <p style="font-style:italic; color:#a9bcff">"不卖课, 不带交易所, 代码 30 天后开源。一个炒币宅女的真实实验记录。"</p>
+      </div>
+    </details>
+  </div>
+
+  <!-- Ch 1 -->
+  <div class="card c-pink" id="ch1">
+    <div class="card-head">
+      <span class="card-num">01</span>
+      <h3>起因 · 一个炒币宅女的盯盘地狱</h3>
+      <span class="tag t-pink">因果</span>
+    </div>
+    <div class="q"><b>问题:</b> 一个普通炒币人为什么会想到做这个? — 共鸣型起因</div>
+    <div class="diagram">
+      <div class="diagram-row">
+        <div class="diagram-pill"><b>痛点</b><small>邮件信号 + 5 件人工活</small></div>
+        <span class="diagram-arrow">→</span>
+        <div class="diagram-pill"><b>核心痛</b><small>睡觉/出差/吃饭错过</small></div>
+        <span class="diagram-arrow">→</span>
+        <div class="diagram-pill"><b>转机</b><small>朋友送 SOLAI 盒子</small></div>
+        <span class="diagram-arrow">→</span>
+        <div class="diagram-pill"><b>想法</b><small>"交易宅男" 诞生</small></div>
+      </div>
+    </div>
+    <div class="broll">
+      <b>实拍 / B-roll:</b>
+      <span class="item">【宅女生活拼接】早晨咖啡 / 笔电前 / TradingView K 线 / 凌晨 3 点闹钟 / 抬眼看屏幕</span>
+      <span class="item">【屏幕】TradingView Pine Script 编辑器 + 反转箭头</span>
+      <span class="item">【实拍】手机邮件提示音 + 翻看 + 皱眉</span>
+      <span class="item">【实拍】朋友送礼物 → 主讲拿起 Solode Neo 盒子</span>
+    </div>
+    <div class="verdict">
+      <b>这一节证明了:</b> 我做这个不是闲的, 是<b>真实痛点驱动</b>——邮件信号 + 5 件人工活 + 错过时痛苦。"朋友送盒子"是叙事拐点, 让"DIY 全自动"从不可能变成可能。<b>AI Agent 在这里第一次出现, 当场用人话翻译。</b>
+      <span class="bridge">桥梁: 我决定试一下 → 但试之前, 我得先看看这盒子到底好不好用 → 章节 2</span>
+    </div>
+    <div class="theory">
+      <span class="theory-pill">📖 AI Agent = 不用每次打开聊天框, 它自己执行</span>
+      <span class="theory-pill">📖 Pine Script = TradingView 上画图的小程序</span>
+    </div>
+    <details class="script">
+      <summary>📜 完整口播文案</summary>
+      <div class="script-body">
+        <p>老粉应该都知道——<b>我是个在家的炒币宅女</b>。</p>
+        <span class="stage">【B-roll 拼接】早晨咖啡 → 笔记本前 → TradingView K 线 → 凌晨 3 点闹钟 → 抬眼看屏幕</span>
+        <p>每天早上一睁眼第一件事——打开 TradingView 看 BTC。凌晨 3 点 BTC 有动静, 闹钟一响, 起来看一眼。出门吃火锅手机震动, 心里想"完了, 是不是错过了什么"。</p>
+        <p>我自己也是有"交易频道"的人, 两年前我琢磨了一个叫"<b>两线反转</b>"的策略——就是 BTC 连续 3 根 K 线出某个特定形态时, 用它判断短期会不会反转。</p>
+        <span class="stage">【屏幕录制 · TradingView "两线反转 加密大漂亮 v2" Pine Script, BTC 1h 图上几个绿色箭头】</span>
+        <p>但因为代码能力是真小白——只能写到 <b>Pine Script</b> 这一步——这个指标能做的事<b>就一件</b>:</p>
+        <p style="color:#9aa3b2">"嘟" — 邮件来了 — "形态出现在 5 月 12 日 17 点, 看涨反转, 请人工判断。"</p>
+        <span class="stage">【实拍 · 手机邮件提示音 + 翻看 + 皱眉】</span>
+        <p>收到邮件之后, <b>我还得自己接力干 5 件事</b>:</p>
+        <p>① 打开 TradingView 看大图<br>② 看 RSI / 均线 / 成交量是不是配合<br>③ 看 BTC 整体方向 (是不是逆势)<br>④ 算止损止盈应该放哪<br>⑤ 决定仓位多大</p>
+        <span class="stage">【实拍 · 主讲转身对镜头】</span>
+        <p>这 5 件事在交易里, <b>每一件都要 5-10 分钟</b>。我醒着的时间, 一大半在做这个。</p>
+        <p>但<b>最痛的不是累, 是错过</b>——睡觉时候来信号、出差时候来信号、跟朋友吃饭时候来信号——<b>我没法 7×24 盯着</b>。</p>
+        <p>直到上个月, 一个做 AI 的朋友把这个东西塞给我——</p>
+        <span class="stage">【实拍 · 主讲拿起 Solode Neo 包装盒】</span>
+        <p><b>Solode Neo</b>——SOLAI 公司 (纽交所代码 SLAI) 刚发布的桌面 AI Agent 盒子。</p>
+        <span class="term-inline">📖 <b>AI Agent 简单说就是:</b> 不用你每次打开聊天框跟它对话, 你可以提前布置好任务, 它自己去执行——比如盯盘、抓新闻、查数据。Solode Neo 是为跑这类自动化任务专门设计的小电脑。</span>
+        <p>朋友给我之前说了一句话: "你不是天天抱怨要 24 小时盯 BTC 吗? <b>这盒子是给跑 AI Agent 设计的, 你试试拿它当你的'交易宅男'用呗。</b>"</p>
+        <span class="stage">【实拍 · 主讲对镜头笑】</span>
+        <p>我当时心里冒了个念头——<b>如果我能把那个 Pine 指标改写成完整的交易系统, 装进这盒子里</b>, 不就把"盯盘 + 决策 + 推送"全自动化了吗?</p>
+        <p>于是——</p>
+      </div>
+    </details>
+  </div>
+
+  <!-- Ch 2 -->
+  <div class="card c-blue" id="ch2">
+    <div class="card-head">
+      <span class="card-num">02</span>
+      <h3>全过程① · 拆箱 + 8 分 47 秒开机配置</h3>
+      <span class="tag t-blue">时间线 · 重头戏</span>
+    </div>
+    <div class="q"><b>问题:</b> 部署一个"全自动交易盒子"难不难? — 用拆箱节奏给观众"原来这么简单"的体感</div>
+    <div class="diagram">
+      <div class="diagram-row">
+        <div class="diagram-pill"><b>外观</b><small>巴掌大 · 铝合金 · 蓝灯</small></div>
+        <span class="diagram-arrow">→</span>
+        <div class="diagram-pill"><b>扫码 5 步</b><small>WiFi / 模型 / 命名 / 绑定 / 完成</small></div>
+        <span class="diagram-arrow">→</span>
+        <div class="diagram-pill" style="background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.5)"><b>⏱️ 8 分 47 秒</b><small>从撕封口到 LED 常亮</small></div>
+      </div>
+    </div>
+    <div class="broll">
+      <b>实拍 / B-roll · 重头戏:</b>
+      <span class="item">【慢动作开箱】撕封口 → 掀盖 → 拿出本体 → 手掌托 360° 展示</span>
+      <span class="item">【特写】铝合金外壳 + 顶部蓝色 LED 圆圈</span>
+      <span class="item">【屏幕特写】手机扫二维码 → 5 步配置界面</span>
+      <span class="item">【实拍】LED 从慢闪 → 常亮的瞬间</span>
+      <span class="item">【字幕大字】⏱️ 8 分 47 秒</span>
+    </div>
+    <div class="verdict">
+      <b>这一节证明了:</b> Solode Neo 不是"复杂电脑", 是"扫码即用的 AI 工作站"。<b>"8 分 47 秒"</b>这种具体小数字 (不是"10 分钟") 强化真实感, 让观众产生"我也能搞定"的心理。这是叙事的"易达感证据"。
+      <span class="bridge">桥梁: 硬件就绪 → 但真正花时间的, 是把 Pine 指标改成完整交易系统 → 章节 3</span>
+    </div>
+    <div class="theory">
+      <span class="theory-pill">Solode Neo by SOLAI Limited (NYSE: SLAI)</span>
+      <span class="theory-pill">8 分 47 秒 (从撕封口到 LED 常亮)</span>
+    </div>
+    <details class="script">
+      <summary>📜 完整口播文案</summary>
+      <div class="script-body">
+        <p>拆箱时间。</p>
+        <span class="stage">【慢动作特写 · 撕封口 → 掀盖 → 第一层泡棉 → 露出 Solode Neo 本体】</span>
+        <p>第一眼: <b>比我以为的小一倍</b>。我以为是个小台式机, 结果跟我巴掌一样大, 比 iPad mini 重不了多少。</p>
+        <span class="stage">【特写 · 主讲手掌托着 Solode Neo 转 360°】</span>
+        <p>铝合金外壳, 顶上一个圆形蓝色 LED, 后面几个口——电源、HDMI、USB-C、网口。够用了。</p>
+        <span class="stage">【实拍 · 拿出配件】</span>
+        <p>配件: 电源 + 网线 + 一张说明卡。<b>没有键盘, 没有显示器</b>——朋友提前提醒过我, 这玩意儿不需要接屏幕, 扫码配置。</p>
+        <span class="stage">【屏幕特写 · 主讲低头扫二维码 → 跳转到手机配置界面】</span>
+        <p>打开手机相机扫说明卡上的二维码——跳转到一个网页, 5 步搞定:</p>
+        <p>① 选 WiFi, 输 密码<br>② 选 AI Agent 模型 (我选 Claude Sonnet)<br>③ 给盒子起名 (我叫它 "BTC-盒")<br>④ 微信扫码绑定 SOLAI 账号<br>⑤ 完成</p>
+        <span class="stage">【实拍 · Solode Neo 顶部蓝色 LED 从慢闪 → 常亮】</span>
+        <p>LED 从慢闪变常亮的那一刻——<b>它已经连上网、登上 AI Agent 模型, 准备好接活了</b>。</p>
+        <span class="stage">【实拍 · 主讲看表】</span>
+        <p>从撕封口到 LED 常亮——<b>8 分 47 秒</b>。</p>
+        <span class="stage">【字幕大字】⏱️ 8 分 47 秒, 比我点一杯外卖还快</span>
+        <span class="stage">【实拍 · 主讲坐回椅子, 对镜头】</span>
+        <p>不装系统, 不折腾驱动, 不让我打开终端敲 Python——<b>它就这么开机了</b>。</p>
+      </div>
+    </details>
+  </div>
+
+  <!-- Ch 3 -->
+  <div class="card c-purple" id="ch3">
+    <div class="card-head">
+      <span class="card-num">03</span>
+      <h3>全过程② · 5 轮迭代 + 反共识发现 + 3 策略赛马</h3>
+      <span class="tag t-purple">递进 · 高密度</span>
+    </div>
+    <div class="q"><b>问题:</b> 怎么从"画箭头的指标"变成"+1785% 回测的全自动系统"? — 同时揭晓中心论点 punchline</div>
+    <div class="diagram">
+      <div class="diagram-row" style="margin-bottom:10px">
+        <div class="diagram-pill"><b>阶段 1</b><small>5 轮迭代基本功 → +119R · 年化 +46%</small></div>
+        <span class="diagram-arrow">→</span>
+        <div class="diagram-pill" style="background:rgba(255,93,143,0.15);border-color:rgba(255,93,143,0.5)"><b>12 月地狱</b><small>账户 7098 → 1878 跌 73%</small></div>
+        <span class="diagram-arrow">→</span>
+        <div class="diagram-pill" style="background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.5)"><b>阶段 2 · 反共识</b><small>强趋势期空仓 → F6 +434%</small></div>
+      </div>
+      <div class="diagram-grid g3">
+        <div class="diagram-pill"><b style="color:#22c55e">A baseline</b><small>+434% / 47% 胜率 / -47% 回撤</small></div>
+        <div class="diagram-pill"><b style="color:#f7c948">B 让赢家奔跑</b><small>+840% / 47% / -78%</small></div>
+        <div class="diagram-pill"><b style="color:#ff5d8f">C 终极 alpha</b><small>+1785% / 56% / -170% ⚠</small></div>
+      </div>
+    </div>
+    <div class="broll">
+      <b>实拍 / B-roll:</b>
+      <span class="item">【屏幕分屏】VS Code 代码 + 资金曲线动画 + 历史交易明细</span>
+      <span class="item">【动画】资金曲线: 直线 → 弯曲 → 急剧下跌变红 (12 月地狱)</span>
+      <span class="item">【动画】3 状态色块: 强趋势 21% 红 / 过渡 56% 黄 / 震荡 23% 绿</span>
+      <span class="item">【字幕大字 · 全片唯一一次 punchline】"真正的 alpha 在于有所为, 有所不为"</span>
+      <span class="item">【屏幕录制】push 代码 → GitHub Actions → TG 跳出 [A][B][C] 3 条欢迎</span>
+    </div>
+    <div class="verdict">
+      <b>这一节证明了:</b> "+1785%" 不是凭空来的——是 5 轮迭代 + 12 月地狱 + 1 条反共识规则 (强趋势期空仓) 堆出来的。<b>核心 punchline (全片唯一一次揭晓):</b> 真正的 alpha 在于有所为, 有所不为——抓住该放手的信号, 比抓对信号更难。但<b>主动缴弹药</b>: C 的 -170% 回撤说明"回测涨 18 倍 ≠ 你能赚 18 倍"。
+      <span class="bridge">桥梁: 策略上了线 + 3 策略并行赛马 → 但这一切到底花了我多少时间和钱 → 章节 4</span>
+    </div>
+    <div class="theory">
+      <span class="theory-pill">📖 R = "1 倍风险" (Van Tharp)</span>
+      <span class="theory-pill">📖 EMA-200 = 过去 8 天均价</span>
+      <span class="theory-pill">📖 ADX = Wilder 1978 趋势强度指数</span>
+      <span class="theory-pill">📖 alpha = 靠技巧赚的钱</span>
+      <span class="theory-pill">📖 Kelly Criterion (1956)</span>
+    </div>
+    <details class="script">
+      <summary>📜 完整口播文案</summary>
+      <div class="script-body">
+        <p>策略部分讲一遍要 30 分钟, 我把详细图解放在视频简介里——这里只挑重点讲。</p>
+        <span class="stage">【B-roll · 网页教程截图飘过】</span>
+        <p style="color:#a9bcff">👉 <b>简介链接 · 策略小白图解教程</b> (所有名词都翻译成人话)</p>
+        <p>整个研发分 <b>3 个阶段</b>——</p>
+        <p><b>阶段 1 · 把"画箭头"变成"完整交易系统"</b></p>
+        <p>我做了 5 轮迭代:</p>
+        <p>第 1 轮 紧贴止损 → 被插针扫飞, 亏钱<br>第 2 轮 加 2% 缓冲 → 回到打平<br>第 3 轮 找 2R 止盈 → 测出甜点<br>第 4 轮 等突破再进 → 过滤假信号<br>第 5 轮 EMA-200 顺势 → 胜率 37%→43%</p>
+        <span class="term-inline">📖 <b>R 是什么?</b> R 不是利率, 是"1 倍风险"——你这一单最多亏多少钱, 就是 1R。"2R 止盈"就是"赔 1 块要能赢 2 块才进场"——赌徒朋友圈听过的"赔率思维"。</span>
+        <p>5 轮迭代下来, 看起来完美——<b>然后被市场狠狠教训了 12 个月</b>。</p>
+        <span class="stage">【动画 · 资金曲线: 涨到 $7,098 → 急剧下跌到 $1,878, 画面变红】</span>
+        <p>账户<b>从 $7,098 跌到 $1,878, 12 个月跌了 73%</b>, 一年没回本。</p>
+        <p>我那时候陷入沉思——这段时间 BTC 振幅 96%, 是震荡偏多的行情, 反转策略不应该是它最好的舞台吗?</p>
+        <p>我决定<b>不再凭直觉, 用数据回答这个问题</b>——</p>
+        <p><b>阶段 2 · 反共识发现 — 80% 时间不该开仓</b></p>
+        <span class="stage">【动画 · 3 个色块: 强趋势 21% 红 / 过渡 56% 黄 / 震荡 23% 绿】</span>
+        <p>我用两个指标——ADX (衡量趋势强度) 和 EMA-200 偏离度——把 3 年每根 K 线分到 3 类状态。结果——</p>
+        <p><b>强趋势期, 反转策略反而是亏的。</b></p>
+        <p>这跟所有教材完全相反!<b>教材都说"震荡用反转、趋势用顺势"</b>——但我的数据告诉我, 在强趋势期, 那些"急涨急跌"根本不是反转, <b>是趋势本身的中场休息</b>。</p>
+        <p>我做了一个反直觉的决定: <b>强趋势期, 一笔不打</b>。</p>
+        <span class="stage">【字幕大字 punchline · 全片唯一一次】</span>
+        <p style="font-size:16px; font-weight:700; color:#ffe082"><b>真正的 alpha 在于有所为, 有所不为——抓住该放手的信号, 比抓对信号更难。</b></p>
+        <span class="term-inline">📖 <b>alpha 是什么?</b> 金融行话——"靠技巧赚的钱, 不是靠 BTC 大盘涨上去赚的"。币圈 90% 的时间是垃圾时间; 能学会在垃圾时间空仓, 就跑赢了 80% 的散户。</span>
+        <p>把这条规则加进去——叫它 <b>F6 策略</b>。3 年成绩: 累计 +434%, 胜率 47%, 1 万 → 5.3 万。</p>
+        <p><b>阶段 3 · 终极优化 — 3 个策略赛马</b></p>
+        <span class="stage">【屏幕录制 · 100+ 次参数测试输出滚动】</span>
+        <p>又跑了 100 多种参数组合——大部分都输给当前版本。但<b>找到了 2 个真能打过的</b>:</p>
+        <p><b>策略 A · baseline</b> = 反共识 + 5 轮迭代, +434%, 1 万 → 5.3 万, 🛡 稳健<br><b>策略 B · 让赢家奔跑</b> = 止盈 8R + 阶梯锁, +840%, 1 万 → 9.4 万, ⚖ 平衡<br><b>策略 C · 终极 alpha</b> = 加 Kelly + 金字塔, <b>+1785%</b>, 1 万 → <b>18.8 万</b>, 🔥 激进</p>
+        <span class="stage">【实拍 · 主讲对镜头, 略停顿】</span>
+        <p>但我必须说实话——<b>C 策略的最大回撤是 -170%</b>。账户最深的时候, 浮亏比本金还高。</p>
+        <p><b>回测涨 18 倍 ≠ 你能赚 18 倍。</b> 除非你的本金能扛得住中途 -170% 浮亏不爆仓。</p>
+        <p>所以我没敢只跑一个——<b>我把 3 个策略同时部署到盒子里, 让它们并行赛马</b>。</p>
+        <span class="stage">【屏幕录制 · push 代码 → GitHub Actions → TG 跳出 3 条欢迎】</span>
+        <p>从这一刻开始, <b>盒子每 1 分钟检查一次 BTC</b>, 同时用 3 套规则评估。我睡觉、出差、吃饭——它在盯。</p>
+      </div>
+    </details>
+  </div>
+
+  <!-- Ch 4 -->
+  <div class="card c-yellow" id="ch4">
+    <div class="card-head">
+      <span class="card-num">04</span>
+      <h3>算账 · 时间 + 钱 + 多用途</h3>
+      <span class="tag t-yellow">并列</span>
+    </div>
+    <div class="q"><b>问题:</b> 一个普通人复刻这件事, 到底要投入多少? — 数字真实感 + 拓宽产品定位</div>
+    <div class="diagram">
+      <div class="diagram-grid g4">
+        <div class="diagram-pill"><b>2.5 周</b><small>50 小时投入</small></div>
+        <div class="diagram-pill"><b>$369</b><small>盒子 (折扣后)</small></div>
+        <div class="diagram-pill"><b>$30/月</b><small>Coinglass 数据</small></div>
+        <div class="diagram-pill" style="background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.5)"><b>$400 总投入</b><small>≈ ¥2,900</small></div>
+      </div>
+      <div class="diagram-grid g3" style="margin-top:14px">
+        <div class="diagram-pill"><b>🤖 BTC 量化盒子</b><small>3 策略赛马</small></div>
+        <div class="diagram-pill"><b>📊 资产追踪 Agent</b><small>ETH/SOL/股价异动</small></div>
+        <div class="diagram-pill"><b>📰 加密日报 Agent</b><small>每天 8 点 200 字摘要</small></div>
+      </div>
+    </div>
+    <div class="broll">
+      <b>实拍 / B-roll:</b>
+      <span class="item">【实拍】主讲笑着算账</span>
+      <span class="item">【字幕表格】时间 + 钱 逐行展开</span>
+      <span class="item">【屏幕录制】多 Agent 同屏 Dashboard</span>
+    </div>
+    <div class="verdict">
+      <b>这一节证明了:</b> 这不是"量化基金级别"的投入——<b>$400 + 2.5 周, 一个炒币宅女就能复刻</b>。同时拓宽产品定位: Solode Neo 不只是 "BTC 盒子", 是<b>"永远开着的 AI 工作站"</b>——多 Agent 并发 (响应 yyw 反馈)。
+      <span class="bridge">桥梁: 钱花了, 盒子跑起来了 → 但我必须告诉你, 这件事可能会翻车 → 章节 5</span>
+    </div>
+    <div class="theory">
+      <span class="theory-pill">总投入 $400 ≈ TradingView Premium 一年 + $100</span>
+      <span class="theory-pill">多 Agent: BTC + 资产追踪 + 加密日报</span>
+    </div>
+    <details class="script">
+      <summary>📜 完整口播文案</summary>
+      <div class="script-body">
+        <span class="stage">【实拍 · 主讲坐回桌前, Solode Neo 在背景】</span>
+        <p>到这, 整个事做完了。来给你算个账——</p>
+        <p><b>时间投入</b></p>
+        <p>拆箱 + 配置 Solode Neo: <b>9 分钟</b><br>Pine 指标 → Python 改写: 1 周 (晚上 2h × 7)<br>5 轮迭代 + 100 次回测: 1 周<br>部署 + 调 bug + 3 策略并行: 3 天<br>总计: <b>约 2.5 周, 50 小时左右</b></p>
+        <span class="stage">【实拍 · 主讲笑】</span>
+        <p>如果你已经会写 Python, <b>一个周末估计就能复刻</b>。我代码小白, 多花了一倍时间在 Stack Overflow 上查问题。</p>
+        <p><b>钱</b></p>
+        <p>Solode Neo 盒子: $399 (用我折扣码减 $30 = <b>$369</b>)<br>Coinglass 数据 API: $30 / 月<br>GitHub Actions / Telegram / cron-job.org: <b>全免费</b><br>总投入: <b>约 $400 (约 ¥2,900)</b></p>
+        <p>跟我<b>订阅一年 TradingView Premium ($299/年)</b> 比, 多花 100 刀, 换来一个 24 小时不眠不休的盯盘助手。</p>
+        <p>更关键的是——<b>这盒子不只能跑 BTC 量化, 还能跑别的 Agent</b>:</p>
+        <p>📊 资产追踪 Agent — 监控我的 ETH/SOL/相关股价格异动, 微信推送<br>📰 加密日报 Agent — 每天 8 点汇总 X / Reddit / Coinglass 头条, 200 字摘要直接发<br>🔔 钱包监控 Agent — 关注的几个鲸鱼钱包, 大额转账实时提醒</p>
+        <span class="stage">【屏幕录制 · 多 Agent 同屏 Dashboard】</span>
+        <p>它不只是 BTC 盒——<b>是一台永远开着的、真正属于我的 AI 工作站</b>。</p>
+      </div>
+    </details>
+  </div>
+
+  <!-- Ch 5 -->
+  <div class="card c-muted" id="ch5">
+    <div class="card-head">
+      <span class="card-num">05</span>
+      <h3>反方 + 求观众建议</h3>
+      <span class="tag t-muted">反方 + 互动</span>
+    </div>
+    <div class="q"><b>问题:</b> 怎么把"被找茬的风险"变成"评论区互动的资产"? — 主动缴弹药 + 反问观众</div>
+    <div class="diagram">
+      <div class="diagram-grid g3">
+        <div class="diagram-pill" style="background:rgba(255,93,143,0.08)"><b>⚠ 过拟合</b><small>3 年最优 ≠ 实盘</small></div>
+        <div class="diagram-pill" style="background:rgba(255,93,143,0.08)"><b>⚠ 滑点</b><small>每单 -0.1~0.3R</small></div>
+        <div class="diagram-pill" style="background:rgba(255,93,143,0.08)"><b>⚠ 黑天鹅</b><small>-20% 极端 → C 爆仓</small></div>
+      </div>
+      <div style="margin-top:14px;padding:14px;background:linear-gradient(135deg,rgba(108,140,255,0.1),rgba(34,211,238,0.1));border-radius:10px;border:1.5px solid rgba(108,140,255,0.4)">
+        <b style="color:#a9bcff;font-size:14px">🎯 互动钩子 (评论区):</b>
+        <p style="font-size:12.5px;color:#cdd5e8;line-height:1.7;margin:8px 0 0">
+          1. 你有什么策略想看回测? (双均线 / MACD / 布林带 / 你的玩法)<br>
+          2. 想看哪些币种? (BTC 之外, ETH / SOL / DOGE?)<br>
+          3. 想看哪个周期? (15m / 1h / 4h / 日线?)<br>
+          <span style="color:#9ff0bd"><b>→ 点赞最高前 3 个, 下期视频带回测结果回来</b></span>
+        </p>
+      </div>
+    </div>
+    <div class="broll">
+      <b>实拍 / B-roll:</b>
+      <span class="item">【实拍】主讲严肃看镜头 (反方)</span>
+      <span class="item">【字幕】3 翻车风险闪过</span>
+      <span class="item">【实拍】主讲拿起咖啡 + 直视镜头 (互动)</span>
+    </div>
+    <div class="verdict">
+      <b>这一节证明了:</b> 我主动列<b>3 件可能翻车的事</b> (过拟合 / 滑点 / 黑天鹅) → 不藏弹药, 主动应对。同时把"反方"<b>转化成"评论区互动资产"</b>——让观众点赞决定下期我跑什么策略。这是"反方 + 拉互动"的双重收益。
+      <span class="bridge">桥梁: 30 天后实盘战报视频见 → 但在那之前, 你可以做这几件事 → 结语</span>
+    </div>
+    <div class="theory">
+      <span class="theory-pill">主动缴弹药 (audit-rubric 0.8 死刑线)</span>
+      <span class="theory-pill">反方 + 互动 = 化被动为主动</span>
+    </div>
+    <details class="script">
+      <summary>📜 完整口播文案</summary>
+      <div class="script-body">
+        <span class="stage">【实拍 · 主讲表情严肃但温和】</span>
+        <p>现在它启动了——但你看到的所有数字, <b>都还是"回测"</b>, 不是"实盘"。</p>
+        <p>我必须诚实——<b>回测漂亮, 不等于实盘能赚到</b>。3 件事会让我翻车:</p>
+        <p>⚠ 过拟合 — 我在 3 年历史数据上调出来的"最优", 可能只适合 2023-2026 这段独特行情<br>⚠ 滑点 — 回测假设 $0 滑点, 实盘每单可能多吃 0.1-0.3R<br>⚠ 黑天鹅 — 一根 -20% 极端行情就能让 C 策略直接爆仓</p>
+        <span class="stage">【实拍 · 主讲拿起咖啡, 抿一口】</span>
+        <p>所以未来 <b>30-45 天</b>, 我会让 3 个策略<b>自动收集各自 10 笔完整交易</b>。每一笔都全程公开推 Telegram。</p>
+        <p>下个视频, 我带着<b>3 个策略的实盘真实数字</b>回来:</p>
+        <p>• 如果 A 接近 +434% / B 接近 +840% / C 接近 +1785% → <b>F6 立住了, 完整开源</b><br>• 如果有任何一个明显跑输 → <b>就是过拟合, 我重新设计, 拍出来给你看</b></p>
+        <p>不管什么结果, <b>我都会原原本本拍出来</b>。</p>
+        <p>而且, <b>我想问你们一个问题</b>——</p>
+        <span class="stage">【实拍 · 主讲直视镜头】</span>
+        <p>我的 Solode Neo 上还有空位, 可以<b>再跑几个新策略并行测试</b>。<b>评论区告诉我</b>:</p>
+        <p>1. 你有什么策略想看回测? (双均线 / MACD 金叉 / 布林带突破 / 你自己琢磨的玩法)<br>2. 想看哪些币种? (除了 BTC, 要不要试 ETH / SOL / DOGE?)<br>3. 想看哪个周期? (15m / 1h / 4h / 日线?)</p>
+        <p><b>点赞最高的前 3 个建议, 我会直接在盒子上跑, 下期视频带回测结果回来</b>。</p>
+      </div>
+    </details>
+  </div>
+
+  <!-- 结语 -->
+  <div class="card c-muted" id="ch6">
+    <div class="card-head">
+      <span class="card-num">06</span>
+      <h3>结语 · 升华 + CTA + 转化钩子</h3>
+      <span class="tag t-muted">收尾</span>
+    </div>
+    <div class="q"><b>问题:</b> 怎么在 30 秒里同时做到 ① 镜像中心论点 ② 引导订阅 ③ 转化钩子? </div>
+    <div class="diagram">
+      <div style="padding:14px;background:linear-gradient(135deg,rgba(247,201,72,0.1),rgba(255,93,143,0.1));border-radius:10px;border:1.5px solid rgba(247,201,72,0.4)">
+        <b style="color:#ffe082;font-size:14px">3 句话收尾 (镜像 Hook):</b>
+        <p style="font-size:12.5px;color:#cdd5e8;line-height:1.8;margin:8px 0">
+          • 策略不一定要复杂, 但必须经得起 3 年的回测<br>
+          • 硬件不一定要昂贵, 但必须真正属于你<br>
+          • AI Agent 不替代你, 但会帮你做"你不该花时间做"的事 — 盯盘、汇总要闻、等市场冷静
+        </p>
+        <p style="font-size:12.5px;color:#9ff0bd;margin:8px 0;border-top:1px dashed rgba(255,255,255,0.15);padding-top:10px">
+          <b>转化钩子:</b> 折扣码 <code style="background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px">RCZ4Y66FZWH0</code> 立减 $30 · KOL 链接见简介
+        </p>
+      </div>
+    </div>
+    <div class="broll">
+      <b>实拍 / B-roll:</b>
+      <span class="item">【实拍】主讲坐回桌前, 盒子在背景, 温暖灯光</span>
+      <span class="item">【字幕大字】3 句话一行一行出现</span>
+      <span class="item">【屏幕字幕】折扣码 RCZ4Y66FZWH0 大字</span>
+      <span class="item">【实拍】主讲挥手再见</span>
+    </div>
+    <div class="verdict">
+      <b>这一节证明了:</b> 3 句话<b>镜像</b> Hero 中心论点 — "学会什么时候不该开仓" 在结语用 "AI 帮你等市场冷静" 这种 mirror term 同义呼应, 满足首尾呼应死刑线。结语具体的 3 个动作 (点赞 / 订阅 / 折扣码) 不空, 不写"奋励努力"这种空话。
+      <span class="bridge next-ep">→ 下期预告: 30-45 天后, 3 策略实盘真实战报 + 完整开源代码</span>
+    </div>
+    <div class="theory">
+      <span class="theory-pill">折扣码 RCZ4Y66FZWH0 立减 $30</span>
+      <span class="theory-pill">KOL 链接: solode.com/products/solode-neo?utm_content=giant_cutie</span>
+    </div>
+    <details class="script">
+      <summary>📜 完整口播文案</summary>
+      <div class="script-body">
+        <span class="stage">【实拍 · 主讲坐回桌前, 盒子在背景, 温暖灯光】</span>
+        <p>我想用 3 句话收束今天:</p>
+        <p style="font-weight:700; color:#ffe082; font-size:15px"><b>策略不一定要复杂, 但必须经得起 3 年的回测。<br>硬件不一定要昂贵, 但必须真正属于你。<br>AI Agent 不替代你, 但会帮你做"你不该花时间做"的事——盯盘、汇总要闻、等市场冷静。</b></p>
+        <p>如果今天这期对你有启发——<b>点赞、订阅、开小铃铛</b>。</p>
+        <p style="color:#a9bcff"><b>完整 F6 策略代码 + 3 策略赛马 bot 源码 + 所有回测脚本 — 30 天后实盘战报视频发布时, 一并开源给所有订阅家人</b></p>
+        <span class="stage">【转化钩子】</span>
+        <p>最后聊一下盒子。</p>
+        <p>如果你看完想自己跑——它<b>第一批已经卖完了, 第二批在 waitlist</b>。链接在视频下方, 用我的 KOL 折扣码 <b>RCZ4Y66FZWH0</b>, 购买立减 <b>$30</b>。</p>
+        <p>下期 30 天后见。我是加密大漂亮——拜拜。</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ④ 审核 -->
+<section>
+  <h2 class="section-title"><span class="num">④</span>文案审核 · 按死刑线优先排序</h2>
+
+  <div class="review-card">
+    <h3 style="margin:0 0 16px;font-size:16px;color:#ff8fb1">🔴 死刑线 (skill rubric v5)</h3>
+    <div class="review-row">
+      <span class="sev death">叙事 DNA</span>
+      <div><b>v3 没明确识别 DNA, 容易陷入"为讲而讲"</b></div>
+      <div class="fix">v4 明确定为"调查复盘 + 个人开箱"——中心论点 Ch3 揭晓, 不剧透; 拆箱独立成章用时间线 DNA; 反方 + 互动作为开放结尾</div>
+    </div>
+    <div class="review-row">
+      <span class="sev death">首尾呼应</span>
+      <div><b>Hero 中心论点和最终结论必须镜像</b></div>
+      <div class="fix">Hero "学会什么时候不该开仓" → 结语 3 句话 mirror "AI 帮你等市场冷静"——同一组关键词 + 不同句式</div>
+    </div>
+    <div class="review-row">
+      <span class="sev death">Punchline 次数</span>
+      <div><b>"真正的 alpha 在于有所为有所不为" 必须 ≤ 2 次</b></div>
+      <div class="fix">全片唯一 1 次 (Ch3 揭晓), 结语用 mirror 句 "学会什么时候不开仓" 同义呼应——不重复字面</div>
+    </div>
+    <div class="review-row">
+      <span class="sev death">章节桥梁</span>
+      <div><b>每章 verdict 末尾必有 bridge 句指向下一章</b></div>
+      <div class="fix">v4 每章固定格式: "桥梁: 上节证 X → 但还剩 Y → 章节 N"; 结语用 "下期预告" 替代</div>
+    </div>
+    <div class="review-row">
+      <span class="sev death">数据准确性</span>
+      <div><b>所有数字必须出处可考</b></div>
+      <div class="fix">"+1785% / 胜率 56% / -170% 回撤" 全部基于 26,280 根 1h K 线 · 2% buffer · 突破入场 · fee 0.05% 单边——单独 verify 文档</div>
+    </div>
+    <div class="review-row">
+      <span class="sev death">技术术语翻译</span>
+      <div><b>AI Agent / Pine Script / R / alpha / EMA-200 / ADX / Kelly 必须当场翻译</b></div>
+      <div class="fix">每个第一次出现都加 📖 卡片解释——文案里直接嵌入"简单说就是..."模板</div>
+    </div>
+    <div class="review-row">
+      <span class="sev death">主动缴弹药</span>
+      <div><b>"+1785%" 必有人喷"过拟合"</b></div>
+      <div class="fix">Ch5 主动列 3 个翻车风险 (过拟合 / 滑点 / 黑天鹅), 在 punchline 后立即立 flag "回测 ≠ 实盘"</div>
+    </div>
+    <div class="review-row">
+      <span class="sev death">结论空洞</span>
+      <div><b>"AI 不替代你, 帮助你" 过于大众</b></div>
+      <div class="fix">改成"帮你做你不该花时间做的事 — <b>盯盘 / 汇总要闻 / 等市场冷静</b>" — 具体到 3 件</div>
+    </div>
+  </div>
+
+  <div class="review-card">
+    <h3 style="margin:0 0 16px;font-size:16px;color:#ffe082">🟡 高优 (响应 yyw / Danni 反馈)</h3>
+    <div class="review-row">
+      <span class="sev high">yyw</span>
+      <div><b>1000→7552 不震撼</b></div>
+      <div class="fix">改成 1 万 → 18.8 万 (+1785%) · Hook 主数字 + 自嘲承认"代码小白"消解过度自夸</div>
+    </div>
+    <div class="review-row">
+      <span class="sev high">yyw</span>
+      <div><b>18 个月回本</b></div>
+      <div class="fix">Ch4 直接给 "$400 总投入" 具体数字 — 不再用"X 个月回本"这种含糊表述</div>
+    </div>
+    <div class="review-row">
+      <span class="sev high">yyw</span>
+      <div><b>拓宽产品定位 (多 Agent)</b></div>
+      <div class="fix">Ch4 自然引出"盒子不只跑 BTC 量化" → 列 3 个 Agent (BTC + 资产追踪 + 加密日报) + 多 Agent Dashboard</div>
+    </div>
+    <div class="review-row">
+      <span class="sev high">yyw</span>
+      <div><b>"真正的 alpha" 改写</b></div>
+      <div class="fix">用"在于有所为, 有所不为——抓住该放手的信号" 替换 "不在抓信号"</div>
+    </div>
+    <div class="review-row">
+      <span class="sev high">yyw</span>
+      <div><b>5 分钟检查太低频</b></div>
+      <div class="fix">改成"每 1 分钟检查一次" (Ch3 末尾)</div>
+    </div>
+    <div class="review-row">
+      <span class="sev high">yyw</span>
+      <div><b>aigent typo</b></div>
+      <div class="fix">改成 "AI Agent" 并在 Ch1 加 📖 卡片解释</div>
+    </div>
+    <div class="review-row">
+      <span class="sev high">Danni</span>
+      <div><b>转化钩子待填</b></div>
+      <div class="fix">结语填入折扣码 RCZ4Y66FZWH0 立减 $30 + KOL 链接 (giant_cutie utm)</div>
+    </div>
+  </div>
+
+  <div class="review-card">
+    <h3 style="margin:0 0 16px;font-size:16px;color:#a9bcff">🔵 中 / 低优</h3>
+    <div class="review-row">
+      <span class="sev med">中</span>
+      <div><b>"宅女" 措辞</b></div>
+      <div class="fix">保留——是大漂亮的人设标签, 圈内观众有共鸣</div>
+    </div>
+    <div class="review-row">
+      <span class="sev med">中</span>
+      <div><b>数字精确度</b></div>
+      <div class="fix">"8 分 47 秒" / "$369" / "26,280 根" 这种具体小数字真实感最强, 不四舍五入到"9 分钟"/"$400"</div>
+    </div>
+    <div class="review-row">
+      <span class="sev low">低</span>
+      <div><b>引用理论清单</b></div>
+      <div class="fix">片尾字幕加 6 条: Van Tharp / Wilder / Hamilton / Kelly / Taleb / Max Drawdown</div>
+    </div>
+  </div>
+
+  <div class="review-card">
+    <h3 style="margin:0 0 16px;font-size:16px;color:#9ff0bd">🎬 实拍 / B-roll 总清单 (给剪辑师)</h3>
+    <div class="diagram-grid g3" style="display:grid;gap:10px;grid-template-columns:repeat(3,1fr)">
+      <div class="diagram-pill"><b>🎯 重头戏</b><small>Ch2 慢动作拆箱 (撕封口→蓝灯→8'47") · Ch3 反共识动画 + push 部署</small></div>
+      <div class="diagram-pill"><b>实拍 vlog</b><small>Ch1 宅女生活拼接 · Ch3 复盘地狱皱眉 · 结语温暖灯光</small></div>
+      <div class="diagram-pill"><b>屏幕录制</b><small>TradingView Pine · VS Code · GitHub Actions · TG 3 条欢迎 · 多 Agent Dashboard</small></div>
+      <div class="diagram-pill"><b>字幕动画</b><small>1 万→18.8 万翻牌 · 8'47" 大字 · punchline 大字 · 折扣码 RCZ4Y66FZWH0</small></div>
+      <div class="diagram-pill"><b>K 线 / 数据动画</b><small>3 状态色块 · 资金曲线下跌 · 阶梯锁可视化 · 3 策略对比表</small></div>
+      <div class="diagram-pill"><b>B-roll 辅助</b><small>咖啡杯 · 凌晨闹钟 · 邮件提示 · LED 蓝光特写</small></div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script>
+function toggleAll(){
+  const details = document.querySelectorAll('details.script');
+  const anyClosed = Array.from(details).some(d => !d.open);
+  details.forEach(d => d.open = anyClosed);
+  const btn = document.querySelector('.expand-btn');
+  btn.textContent = anyClosed ? '📜 折叠全部口播文案' : '📜 展开全部口播文案';
+}
+
+const cards = document.querySelectorAll('.card, .review-card, .branch, .node');
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, {threshold: 0.1});
+cards.forEach(c => {
+  c.style.opacity = '0';
+  c.style.transform = 'translateY(12px)';
+  c.style.transition = 'opacity 0.5s, transform 0.5s';
+  io.observe(c);
+});
+</script>
+</body>
+</html>
