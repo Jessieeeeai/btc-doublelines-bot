@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-08-18 10:52 UTC",
+  "updated_at": "2026-08-18 11:00 UTC",
   "next_event_id": 5,
   "events": [
     {
@@ -89,7 +89,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 64170.8,
-      "sl": 64249.4,
+      "sl": 64242.9,
       "tp": null,
       "L": 95.2,
       "neck_lo": 64202.7,
@@ -103,7 +103,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 64170.8,
-      "sl": 64249.4,
+      "sl": 64242.9,
       "tp": null,
       "L": 95.2,
       "neck_lo": 64202.7,
@@ -131,7 +131,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 64170.8,
-      "sl": 64249.4,
+      "sl": 64242.9,
       "tp": null,
       "L": 95.2,
       "neck_lo": 64202.7,
