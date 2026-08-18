@@ -8,7 +8,7 @@
 三匹马共享同一信号源: second模式 ratio=0.7, L>=0.1%价格, 突破缓冲0.25L,
 形态确认后3根K线内有效, 串行单持仓 (与回测口径完全一致)。
 
-⚠️ 全部输出为纸面验证, 非实盘指令。红线: 每马前向>=30笔且净期望为正才谈实盘。
+⚠️ 全部输出为纸面验证, 非实盘指令。
 与 F6 双线反战机器人完全独立: 不同文件、不同state、不同workflow。
 """
 import os, sys, json, time
@@ -17,6 +17,7 @@ from datetime import datetime
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from tg_notify import send_message
+import neckline_feed
 
 COINGLASS_BASE = "https://open-api-v4.coinglass.com"
 N_BARS = 300
@@ -137,7 +138,7 @@ def footer(horse, state):
     s = stats(state)
     pos = state["position"]
     line = (f"\n━━━━━━━━━━━━━━━\n📊 <b>[{horse['code']}] 前向战绩</b> "
-            f"{s['n']}/30笔 · {s['wins']}胜{s['n']-s['wins']}败 "
+            f"已完成 {s['n']} 笔 · {s['wins']}胜{s['n']-s['wins']}败 "
             f"(胜率 {s['wr']*100:.0f}%) · 累计 <b>${s['total']:+,.2f}</b>")
     if pos:
         line += f"\n⏳ 持仓: {'📈多' if pos['direction']=='long' else '📉空'} @${pos['entry']:,.0f}"
@@ -191,7 +192,6 @@ def process_horse(horse, bars):
                      f"━━━━━━━━━━━━━━━\n"
                      f"标的: BTCUSDT 1h · 重叠颈线突破\n"
                      f"当前 BTC: <code>${bars[-1]['close']:,.2f}</code>\n"
-                     f"红线: 前向≥30笔且净期望为正, 才有资格谈实盘\n"
                      f"<i>等待重叠形态...</i>" + PAPER_MARK))
         return
 
@@ -229,14 +229,21 @@ def process_horse(horse, bars):
                 gross = (exit_price - pos["entry"]) if d == "long" else (pos["entry"] - exit_price)
                 pnl = gross / pos["entry"] * pos["notional"]
                 t = {"seq": pos["seq"], "direction": d, "entry": pos["entry"],
-                     "entry_time": pos["entry_time"], "exit": round(exit_price, 2),
-                     "exit_time": bar["date"] + " UTC", "exit_reason": exit_reason,
+                     "entry_time": pos["entry_time"], "entry_ts": pos["entry_ts"],
+                     "exit": round(exit_price, 2),
+                     "exit_time": bar["date"] + " UTC", "exit_ts": bar["ts"],
+                     "exit_reason": exit_reason,
                      "pnl_usd": round(pnl, 2), "notional": pos["notional"],
-                     "L": pos["L"], "bars_held": max(1, (bar["ts"] - pos["entry_ts"]) // 3600)}
+                     "L": pos["L"], "level": pos["level"], "tp": pos.get("tp"),
+                     "neck_lo": pos.get("neck_lo"), "neck_hi": pos.get("neck_hi"),
+                     "bars_held": max(1, (bar["ts"] - pos["entry_ts"]) // 3600)}
                 state["trades"].append(t)
                 state["position"] = None
                 state["active"] = []
                 msgs.append(("exit", t))
+                neckline_feed.emit(horse["code"], "close", t,
+                                   reason=exit_reason.lower(), exit_price=t["exit"],
+                                   pnl_usd=t["pnl_usd"])
                 exited = True
             elif horse["exit"] == "trail":
                 fav = bar["high"] if d == "long" else bar["low"]
@@ -246,6 +253,13 @@ def process_horse(horse, bars):
                 if (d == "long" and new_sl > pos["sl"]) or (d == "short" and new_sl < pos["sl"]):
                     pos["sl"] = round(new_sl, 2)
                     pos["trailed"] = True
+                    # 跟踪线首次越过入场价 = 该单已保本, 通知一次 + 记feed
+                    crossed = pos["sl"] >= pos["entry"] if d == "long" else pos["sl"] <= pos["entry"]
+                    if crossed and not pos.get("be_notified"):
+                        pos["be_notified"] = True
+                        msgs.append(("bemove", {"seq": pos["seq"], "sl": pos["sl"],
+                                                "entry": pos["entry"], "direction": d}))
+                        neckline_feed.emit(horse["code"], "move_stop", pos, sl=pos["sl"])
 
         # 3) 空仓: 清过期 + 找触发 (最新形态优先); 出场当根不开新仓 (与回测一致)
         if state["position"] is None and not exited:
@@ -290,6 +304,8 @@ def process_horse(horse, bars):
                 state["position"] = pos
                 state["active"] = []
                 msgs.append(("entry", pos))
+                neckline_feed.emit(horse["code"],
+                                   "open_long" if d == "long" else "open_short", pos)
                 break
 
         # 4) 本根K线与上一根是否构成新形态 (下一根起可触发)
@@ -304,8 +320,22 @@ def process_horse(horse, bars):
     for kind, payload in msgs[-8:]:   # 单轮最多补发8条, 防止久停后刷屏
         if kind == "entry":
             send(horse, fmt_entry(horse, payload, state))
+        elif kind == "bemove":
+            send(horse, (f"🔒 <b>#{payload['seq']:03d} 已保本 — {horse['name']}</b>\n"
+                         f"跟踪止损推到 <code>${payload['sl']:,.2f}</code>"
+                         f" (入场 ${payload['entry']:,.2f}), 此单最差打平"
+                         + footer(horse, state)))
         else:
             send(horse, fmt_exit(horse, payload, state))
+            # 关单图文战报 (matplotlib缺失或失败自动降级, 不影响主流程)
+            try:
+                import neckline_report
+                neckline_report.send_trade_report(horse["code"], horse["name"],
+                                                  payload, closed,
+                                                  footer=footer(horse, state),
+                                                  sl_mult=SL_MULT)
+            except Exception as e:
+                print(f"  [{horse['code']}] 战报失败: {e}")
 
 
 def main():
@@ -324,6 +354,10 @@ def main():
             print(f"[{horse['code']}] ok")
         except Exception as e:
             print(f"[{horse['code']}] ERROR: {e}")
+    # 信号源落盘 (独立文件, 不碰 F6 的 signals_feed.json)
+    states = [(h["code"], load_state(h["state_file"])) for h in HORSES]
+    added = neckline_feed.flush(states)
+    print(f"feed: +{added} events -> {neckline_feed.FEED_FILE}")
     print("done")
 
 
