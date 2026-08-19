@@ -21,6 +21,11 @@ import signal_feed
 SIGNAL_FEED_FILE = "signals_feed.json"  # 给外部执行端订阅的可执行信号源
 MAX_SIGNALS = 1_000_000  # 长期实盘: 不再限制信号数 (原为30, 会导致收满后停止开新单)
 N_BARS = 300
+FETCH_BARS = 750           # 实际拉取根数: 信号逻辑仍用最后 N_BARS 根 (行为不变), 多拉的用于30日宽度标注+K线归档
+TIME_STOP_DAYS = 14        # 时间止损: 入场后 N 天未触及 +2R 则按收盘价了结 (2026-08 三年回测验证: A -1.1R / B +14.2R / C +5.2R)
+EXPOSURE_WARN_N = 4        # 软警告: 同方向持仓达到 N 笔时发提示 (不拦单)
+BARS_ARCHIVE_FILE = "bars_archive.csv"
+CURRENT_WIDTH30 = None     # 本轮 30 日区间宽度% (main 里计算, 信号卡标注用)
 COINGLASS_BASE = "https://open-api-v4.coinglass.com"
 
 
@@ -132,6 +137,19 @@ def save_state(state, path):
 
 def labeled_send(code, text):
     send_message(f"[{code}] {text}")
+
+
+def maybe_warn_exposure(strategy, state, direction):
+    """同方向持仓达到 EXPOSURE_WARN_N 笔时发软警告 (不拦单)。
+    三年回测: 硬性并发上限会砍掉 44-59% 利润, 故只提示不拦。"""
+    n_dir = sum(1 for s in state.get("signals", [])
+                if s.get("status") == "entered" and s.get("direction") == direction)
+    if n_dir >= EXPOSURE_WARN_N:
+        d_cn = "多" if direction == "long" else "空"
+        labeled_send(strategy.code,
+                     f"⚠️ <b>敞口提示</b>: 当前同向{d_cn}单已达 <b>{n_dir}</b> 笔 "
+                     f"(合计名义 ${NOTIONAL_USD * n_dir:,.0f})。这些仓位止损相近, "
+                     f"可能同时触发, 请注意集中度风险。<i>(软警告, 系统不拦单)</i>")
 
 
 def apply_f6_filter(bars, sig, ema200, adx):
@@ -303,6 +321,36 @@ def update_signal_status(strategy: StrategyConfig, bars, sig_rec):
             if bar["ts"] <= start_ts:
                 continue
             sl = sig_rec["current_sl"]
+
+            # --- 2R 触及跟踪 (时间止损判据; 兼容旧记录: B/C 用 stair_2r_locked 兜底,
+            #     A 的 TP 即 2R, 触及即平仓, 所以未平仓 = 从未触及 2R) ---
+            if not sig_rec.get("touched_2r"):
+                if sig_rec.get("stair_2r_locked"):
+                    sig_rec["touched_2r"] = True
+                elif direction == "long" and bar["high"] >= entry + 2 * r:
+                    sig_rec["touched_2r"] = True
+                elif direction == "short" and bar["low"] <= entry - 2 * r:
+                    sig_rec["touched_2r"] = True
+
+            # --- 时间止损: 入场 TIME_STOP_DAYS 天后仍未触及过 +2R, 按本根收盘价了结 ---
+            if (TIME_STOP_DAYS and not sig_rec.get("touched_2r")
+                    and bar["ts"] + 3600 > entry_ts + TIME_STOP_DAYS * 86400):
+                px = bar["close"]
+                main_r = (px - entry) / r if direction == "long" else (entry - px) / r
+                pyramid_r = 0
+                if sig_rec["pyramid_entered"]:
+                    pe = sig_rec["pyramid_entry_price"]
+                    pyramid_r = 0.5 * ((px - pe) / r if direction == "long" else (pe - px) / r)
+                total_r = main_r + pyramid_r
+                sig_rec["status"] = "sl_hit" if main_r < 0 else "tp_hit"
+                sig_rec["time_stopped"] = True
+                sig_rec["exit_price"] = round(px, 2)
+                sig_rec["exit_time"] = bar["date"] + " UTC"
+                sig_rec["exit_ts"] = bar["ts"]
+                sig_rec["result_r_raw"] = round(total_r, 3)
+                sig_rec["result_r"] = round(total_r * sig_rec["size_multiplier"], 3)
+                changed = True
+                break
 
             # H 阶梯锁: 多
             if strategy.use_stair and direction == "long":
@@ -597,6 +645,9 @@ def fmt_signal_formed(strategy, n, sig, state=None):
          f"🎯 止盈目标: <code>${sig['tp']:,.2f}</code> · 赢约 <b>${tp_dollar:+,.0f}</b>\n"
          f"⚖️ 仓位: <b>${NOTIONAL_USD * sig['size_multiplier']:,.0f}</b> ({sig['size_multiplier']}× × $10k)\n"
          f"⏰ 突破窗口: {sig['expires_at']} 前有效")
+    if CURRENT_WIDTH30 is not None:
+        tag = " · ⚠️ 历史压缩区" if CURRENT_WIDTH30 < 10 else ""
+        s += f"\n📏 30日区间宽度: <b>{CURRENT_WIDTH30:.1f}%</b>{tag}"
     if state is not None:
         s += fmt_stats_footer(strategy, state)
     return s
@@ -623,8 +674,10 @@ def fmt_exit(strategy, n, sig, outcome, state=None):
     r_val = sig.get("result_r") or 0
     exit_dollar = r_to_dollar(sig, r_val) * sig.get("size_multiplier", 1.0)
     extra = ""
+    if sig.get("time_stopped"):
+        extra = f"\n⏱ 时间止损: 入场 {TIME_STOP_DAYS} 天未走出行情, 按收盘价离场"
     if sig.get("pyramid_entered"):
-        extra = f"\n金字塔加仓: ${sig['pyramid_entry_price']:.2f}"
+        extra += f"\n金字塔加仓: ${sig['pyramid_entry_price']:.2f}"
     if sig.get("stair_4r_locked"):
         extra += "\n阶梯锁: 达到 +4R, SL 已升到 +2R"
     elif sig.get("stair_2r_locked"):
@@ -753,6 +806,7 @@ def process_strategy(strategy: StrategyConfig, bars, ema200, adx):
                 signal_feed.emit(strategy.code, i,
                                  "open_long" if sig["direction"] == "long" else "open_short",
                                  sig, NOTIONAL_USD)
+                maybe_warn_exposure(strategy, state, sig["direction"])
             elif new_status == "expired":
                 labeled_send(strategy.code, f"⏰ [#{i:03d}] 突破窗口已过, 信号作废 — {strategy.name}" + fmt_stats_footer(strategy, state))
             elif new_status == "invalidated":
@@ -766,8 +820,10 @@ def process_strategy(strategy: StrategyConfig, bars, ema200, adx):
             if new_status == "sl_hit" and cd_triggered:
                 labeled_send(strategy.code, fmt_cooldown(strategy, strategy.cd_pause_hours, state))
             send_close_report(strategy, i, sig, bars, state)
-            # 平仓原因: 真打到TP / 阶梯锁价出场 / 止损
-            if new_status == "sl_hit":
+            # 平仓原因: 时间止损 / 真打到TP / 阶梯锁价出场 / 止损
+            if sig.get("time_stopped"):
+                reason = "time"
+            elif new_status == "sl_hit":
                 reason = "sl"
             elif abs((sig.get("exit_price") or 0) - (sig.get("tp") or 0)) < 1:
                 reason = "tp"
@@ -819,6 +875,7 @@ def process_strategy(strategy: StrategyConfig, bars, ema200, adx):
                 signal_feed.emit(strategy.code, n,
                                  "open_long" if sig_rec["direction"] == "long" else "open_short",
                                  sig_rec, NOTIONAL_USD)
+                maybe_warn_exposure(strategy, state, sig_rec["direction"])
                 time.sleep(0.3)
             # 注意: 若 sig_rec 立刻 tp_hit/sl_hit, status 已更新, 但本轮不发出场消息
             #       (出场消息由下一轮 process 时检测 old_status != new_status 触发)
@@ -979,6 +1036,29 @@ def maybe_send_summary_report(strategies_data, latest_btc):
     return False
 
 
+def archive_bars(bars):
+    """把本轮拉到的 K 线增量追加进 BARS_ARCHIVE_FILE (只追加比档案里更新的完整K线)。"""
+    last = 0
+    if os.path.exists(BARS_ARCHIVE_FILE):
+        with open(BARS_ARCHIVE_FILE) as f:
+            for _line in f:
+                pass
+        try:
+            last = int(_line.split(",")[0])
+        except Exception:
+            last = 0
+    new = [b for b in bars[:-1] if b["ts"] > last]  # 最后一根可能未收盘, 不归档
+    if not new:
+        return 0
+    write_header = not os.path.exists(BARS_ARCHIVE_FILE)
+    with open(BARS_ARCHIVE_FILE, "a") as f:
+        if write_header:
+            f.write("ts,date,open,high,low,close\n")
+        for b in new:
+            f.write(f"{b['ts']},{b['date']},{b['open']},{b['high']},{b['low']},{b['close']}\n")
+    return len(new)
+
+
 def main():
     api_key = os.environ.get("COINGLASS_API_KEY")
     if not api_key:
@@ -995,11 +1075,29 @@ def main():
     os.environ["COINGLASS_API_KEY"] = api_key  # 给关单战报拉长历史用
 
     print(f"[{datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}] 赛马 bot 启动")
-    bars = fetch_btc_1h_bars(api_key, N_BARS)
+    bars_full = fetch_btc_1h_bars(api_key, FETCH_BARS)
+    bars = bars_full[-N_BARS:]  # 信号逻辑仍只用最后 N_BARS 根, 与历史行为一致
     if len(bars) < 250:
         print(f"  数据不足 {len(bars)} 根")
         sys.exit(1)
-    print(f"  拉到 {len(bars)} 根, 最新 {bars[-1]['date']} ${bars[-1]['close']:.2f}")
+    print(f"  拉到 {len(bars_full)} 根 (信号用 {len(bars)}), 最新 {bars[-1]['date']} ${bars[-1]['close']:.2f}")
+
+    # 30日区间宽度 (信号卡标注用, 观察模式不拦单)
+    global CURRENT_WIDTH30
+    try:
+        w = bars_full[-720:]
+        lo = min(b["low"] for b in w); hi = max(b["high"] for b in w)
+        CURRENT_WIDTH30 = (hi - lo) / lo * 100
+        print(f"  30日区间宽度: {CURRENT_WIDTH30:.1f}%")
+    except Exception as e:
+        print(f"  宽度计算失败: {e}")
+
+    # K线归档 (增量追加, 供日后复盘/回测)
+    try:
+        added_bars = archive_bars(bars_full)
+        print(f"  K线归档 +{added_bars} 根")
+    except Exception as e:
+        print(f"  K线归档失败: {e}")
 
     ema200 = _compute_ema(bars, 200)
     adx = _compute_adx(bars, 14)
