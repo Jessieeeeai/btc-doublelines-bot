@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updated_at": "2026-08-20 00:45 UTC",
+  "updated_at": "2026-08-20 01:00 UTC",
   "next_event_id": 94,
   "events": [
     {
@@ -1779,6 +1779,20 @@
   ],
   "open_positions": [
     {
+      "strategy": "B",
+      "signal_no": 24,
+      "pos_id": "B-024",
+      "direction": "long",
+      "entry_price": 63536.5,
+      "sl": 65687.76,
+      "tp": 80746.58,
+      "size_mult": 1.0,
+      "r_dollar": 2151.26,
+      "stair_2r_locked": true,
+      "pyramid_entered": false,
+      "notional_usd": 10000
+    },
+    {
       "strategy": "C",
       "signal_no": 13,
       "pos_id": "C-013",
@@ -1788,6 +1802,20 @@
       "tp": 57724.8,
       "size_mult": 1.0,
       "r_dollar": 2398.65,
+      "stair_2r_locked": true,
+      "pyramid_entered": true,
+      "notional_usd": 10000
+    },
+    {
+      "strategy": "C",
+      "signal_no": 26,
+      "pos_id": "C-026",
+      "direction": "long",
+      "entry_price": 63536.5,
+      "sl": 65687.76,
+      "tp": 80746.58,
+      "size_mult": 2.0,
+      "r_dollar": 2151.26,
       "stair_2r_locked": true,
       "pyramid_entered": true,
       "notional_usd": 10000

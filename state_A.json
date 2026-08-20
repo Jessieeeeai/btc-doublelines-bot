@@ -822,7 +822,7 @@
       "pyramid_entered": false,
       "pyramid_entry_price": null,
       "last_checked_ts": 1787104800,
-      "close_notified": false,
+      "close_notified": true,
       "touched_2r": true
     },
     {
