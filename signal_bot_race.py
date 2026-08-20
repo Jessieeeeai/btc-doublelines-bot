@@ -22,7 +22,7 @@ SIGNAL_FEED_FILE = "signals_feed.json"  # 给外部执行端订阅的可执行�
 MAX_SIGNALS = 1_000_000  # 长期实盘: 不再限制信号数 (原为30, 会导致收满后停止开新单)
 N_BARS = 300
 FETCH_BARS = 750           # 实际拉取根数: 信号逻辑仍用最后 N_BARS 根 (行为不变), 多拉的用于30日宽度标注+K线归档
-TIME_STOP_DAYS = 14        # 时间止损: 入场后 N 天未触及 +2R 则按收盘价了结 (2026-08 三年回测验证: A -1.1R / B +14.2R / C +5.2R)
+TIME_STOP_DAYS = 0         # 时间止损已停用 (2026-08-20 应要求关闭; 设为0=不触发, 代码保留)
 EXPOSURE_WARN_N = 4        # 软警告: 同方向持仓达到 N 笔时发提示 (不拦单)
 BARS_ARCHIVE_FILE = "bars_archive.csv"
 CURRENT_WIDTH30 = None     # 本轮 30 日区间宽度% (main 里计算, 信号卡标注用)
