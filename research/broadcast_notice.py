@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """全渠道广播一条通知: 中文TG(私聊+群) + 英文TG群 + Discord。
-文案改 NOTICE_CN / NOTICE_EN 即可复用。由「广播通知」workflow 触发。"""
+文案改 NOTICE_CN / NOTICE_EN / DISCORD_TEXT 即可复用。由「广播通知」workflow 触发。"""
 import json
 import os
 import sys
@@ -11,25 +11,19 @@ REPO = os.path.dirname(HERE)
 sys.path.insert(0, REPO)
 
 NOTICE_CN = (
-    "📢 <b>通知</b>\n"
-    "━━━━━━━━━━━━━━━\n"
-    "信号策略做了一次<b>微调</b>，接下来推送的信号均为调整后的版本。\n"
-    "推送节奏和格式不变，无需任何操作。"
+    "📢 <b>[B] #024 / [C] #026 恢复为持仓中</b>, "
+    "止损已锁定 <b>$65,688 (保底+1R)</b>, 继续等 8R 止盈或锁价出场。"
 )
 
 NOTICE_EN = (
-    "📢 <b>Notice</b>\n"
-    "━━━━━━━━━━━━━━━\n"
-    "The signal strategy has received a <b>minor adjustment</b>. "
-    "All signals from now on are the updated version.\n"
-    "Delivery cadence and format remain unchanged — no action needed."
+    "📢 <b>[B] #024 / [C] #026 are restored as OPEN</b>, "
+    "stops locked at <b>$65,688 (+1R secured)</b>, continuing toward the 8R target."
 )
 
 DISCORD_TEXT = (
-    "📢 **Notice / 通知**\n"
-    "The signal strategy has received a minor adjustment — all signals from now on "
-    "are the updated version. No action needed.\n"
-    "信号策略做了一次微调，接下来推送的信号均为调整后的版本，无需任何操作。"
+    "📢 **[B] #024 / [C] #026 restored as OPEN**, stops locked at **$65,688 (+1R secured)**, "
+    "continuing toward the 8R target.\n"
+    "[B] #024 / [C] #026 恢复为持仓中, 止损已锁保底 +1R ($65,688), 继续等 8R。"
 )
 
 # 中文群兜底 (与 Secrets 里的 GROUP 合并去重)
@@ -78,7 +72,7 @@ def main():
     ok_cn = send_message(NOTICE_CN)
     print(f"[中文TG] {'已发送' if ok_cn else '失败'} → 私聊+群({merged})")
 
-    # 2) 英文 TG 群 (单独目标, 不带中文群)
+    # 2) 英文 TG 群 (单独目标)
     en_chat = os.environ.get("TG_EN_CHAT_ID")
     if en_chat:
         ok_en = send_message(NOTICE_EN, chat_id=en_chat)
