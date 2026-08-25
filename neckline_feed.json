@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-08-25 21:50 UTC",
-  "next_event_id": 184,
+  "updated_at": "2026-08-25 22:00 UTC",
+  "next_event_id": 187,
   "events": [
     {
       "ts": 1787040000,
@@ -3708,50 +3708,73 @@
       "pnl_usd": 92.03,
       "dedup": "N-C-018:close",
       "event_id": 183
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1787691600,
+      "time": "2026-08-25 22:00 UTC",
       "strategy": "N-A",
       "signal_no": 25,
       "pos_id": "N-A-025",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 79121.5,
-      "sl": 78507.65,
+      "sl": null,
       "tp": null,
       "L": 251.7,
       "neck_lo": 79211.4,
       "neck_hi": 79463.1,
-      "notional_usd": 8385.0
+      "notional_usd": 8385.0,
+      "reason": "trail",
+      "exit_price": 78507.65,
+      "pnl_usd": 65.05,
+      "dedup": "N-A-025:close",
+      "event_id": 184
     },
     {
+      "ts": 1787691600,
+      "time": "2026-08-25 22:00 UTC",
       "strategy": "N-D",
       "signal_no": 26,
       "pos_id": "N-D-026",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 79121.5,
-      "sl": 78507.65,
+      "sl": null,
       "tp": null,
       "L": 251.7,
       "neck_lo": 79211.4,
       "neck_hi": 79463.1,
-      "notional_usd": 8385.0
+      "notional_usd": 8385.0,
+      "reason": "trail",
+      "exit_price": 78507.65,
+      "pnl_usd": 65.05,
+      "dedup": "N-D-026:close",
+      "event_id": 185
     },
     {
+      "ts": 1787691600,
+      "time": "2026-08-25 22:00 UTC",
       "strategy": "N-E",
       "signal_no": 7,
       "pos_id": "N-E-007",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 79121.5,
-      "sl": 78507.65,
+      "sl": null,
       "tp": null,
       "L": 251.7,
       "neck_lo": 79211.4,
       "neck_hi": 79463.1,
-      "notional_usd": 8385.0
+      "notional_usd": 8385.0,
+      "reason": "trail",
+      "exit_price": 78507.65,
+      "pnl_usd": 65.05,
+      "dedup": "N-E-007:close",
+      "event_id": 186
     }
-  ]
+  ],
+  "open_positions": []
 }
