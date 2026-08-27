@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-08-27 07:45 UTC",
-  "next_event_id": 223,
+  "updated_at": "2026-08-27 08:00 UTC",
+  "next_event_id": 226,
   "events": [
     {
       "ts": 1787040000,
@@ -4497,50 +4497,73 @@
       "notional_usd": 6298.0,
       "dedup": "N-D-032:open",
       "event_id": 222
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1787814000,
+      "time": "2026-08-27 08:00 UTC",
       "strategy": "N-A",
       "signal_no": 31,
       "pos_id": "N-A-031",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 78573.43,
-      "sl": 79065.55,
+      "sl": null,
       "tp": null,
       "L": 332.7,
       "neck_lo": 78656.6,
       "neck_hi": 78989.3,
-      "notional_usd": 6298.0
+      "notional_usd": 6298.0,
+      "reason": "trail",
+      "exit_price": 79065.55,
+      "pnl_usd": -39.45,
+      "dedup": "N-A-031:close",
+      "event_id": 223
     },
     {
+      "ts": 1787814000,
+      "time": "2026-08-27 08:00 UTC",
       "strategy": "N-C",
       "signal_no": 21,
       "pos_id": "N-C-021",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 78573.43,
-      "sl": 79072.48,
+      "sl": null,
       "tp": 77575.33,
       "L": 332.7,
       "neck_lo": 78656.6,
       "neck_hi": 78989.3,
-      "notional_usd": 10000.0
+      "notional_usd": 10000.0,
+      "reason": "sl",
+      "exit_price": 79072.48,
+      "pnl_usd": -63.51,
+      "dedup": "N-C-021:close",
+      "event_id": 224
     },
     {
+      "ts": 1787814000,
+      "time": "2026-08-27 08:00 UTC",
       "strategy": "N-D",
       "signal_no": 32,
       "pos_id": "N-D-032",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 78573.43,
-      "sl": 79065.55,
+      "sl": null,
       "tp": null,
       "L": 332.7,
       "neck_lo": 78656.6,
       "neck_hi": 78989.3,
-      "notional_usd": 6298.0
+      "notional_usd": 6298.0,
+      "reason": "trail",
+      "exit_price": 79065.55,
+      "pnl_usd": -39.45,
+      "dedup": "N-D-032:close",
+      "event_id": 225
     }
-  ]
+  ],
+  "open_positions": []
 }
