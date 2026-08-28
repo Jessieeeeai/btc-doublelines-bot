@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "strategy": "B",
-  "updated_at": "2026-08-28 16:15 UTC",
-  "next_event_id": 101,
+  "updated_at": "2026-08-28 16:30 UTC",
+  "next_event_id": 104,
   "events": [
     {
       "ts": 1782982800,
@@ -706,22 +706,28 @@
       "notional_usd": 10000,
       "dedup": "B-039:open",
       "event_id": 98
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1787932800,
+      "time": "2026-08-28 16:30 UTC",
       "strategy": "B",
       "signal_no": 39,
       "pos_id": "B-039",
+      "action": "close",
       "direction": "long",
       "entry_price": 78953.0,
       "sl": 77008.11,
       "tp": 94512.15,
       "size_mult": 1.0,
       "r_dollar": 1944.89,
-      "stair_2r_locked": false,
-      "pyramid_entered": false,
-      "notional_usd": 10000
+      "notional_usd": 10000,
+      "reason": "sl",
+      "exit_price": 77008.11,
+      "result_r": -1.0,
+      "dollar_pl": -246.34,
+      "dedup": "B-039:close",
+      "event_id": 102
     }
-  ]
+  ],
+  "open_positions": []
 }
