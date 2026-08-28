@@ -74,6 +74,10 @@ def _load(path):
         with open(path) as f:
             d = json.load(f)
         d.setdefault("next_event_id", (d["events"][-1]["event_id"] + 1) if d.get("events") else 1)
+        try:
+            d["next_event_id"] = max(1, int(d["next_event_id"]))
+        except Exception:
+            d["next_event_id"] = (d["events"][-1]["event_id"] + 1) if d.get("events") else 1
         return d
     except Exception:
         return {"schema": SCHEMA, "paper": True, "updated_at": None,
@@ -128,6 +132,7 @@ def flush(states_by_code, path=FEED_FILE):
         for code, state in states_by_code:
             sub = {
                 "schema": SCHEMA, "paper": True, "strategy": code,
+                "next_event_id": feed["next_event_id"],
                 "updated_at": feed["updated_at"],
                 "events": [e for e in feed["events"] if e.get("strategy") == code],
                 "open_positions": [p for p in snap if p.get("strategy") == code],
