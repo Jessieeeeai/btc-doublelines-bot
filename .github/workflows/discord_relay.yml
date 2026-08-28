@@ -26,9 +26,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install deps (matplotlib for close-report charts)
+        run: pip install --quiet matplotlib
+
       - name: Relay to Discord
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          COINGLASS_API_KEY: ${{ secrets.COINGLASS_API_KEY }}
         run: python3 discord_relay.py
 
       - name: Commit relay state
