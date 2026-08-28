@@ -55,6 +55,37 @@ def fmt(e):
                 f" (+{e.get('add_size', 0)}x)\n\U0001F550 {t}{footer}")
     return f"{head} {a} · {t}"
 
+def try_close_chart(e, token, chat_id):
+    """close 事件: 生成蜡烛图战报 + 英文时间线 caption 发图 (与中文侧同标准)。
+    任一环节失败返回 False, 调用方降级为纯文字。"""
+    try:
+        api_key = os.environ.get("COINGLASS_API_KEY")
+        if not api_key:
+            print("  [chart] no COINGLASS_API_KEY, fallback to text")
+            return False
+        code = e.get("strategy")
+        no = e.get("signal_no") or 0
+        state = json.load(open(f"state_{code}.json"))
+        sig = state["signals"][no - 1]
+        # 确认 state 里这笔确实是该次平仓 (防重开/错位)
+        if sig.get("status") not in ("tp_hit", "sl_hit") or not sig.get("exit_ts"):
+            return False
+        if abs((sig.get("exit_price") or 0) - (e.get("exit_price") or -1)) >= 1:
+            return False
+        import signal_bot_race as sbr
+        from trade_report import render_chart, build_caption_en
+        from tg_notify import send_photo
+        hours = int((time.time() - (sig["entry_ts"] - 24 * 3600)) // 3600) + 8
+        bars = sbr.fetch_btc_1h_bars(api_key, min(hours, 990))
+        pl = e.get("dollar_pl") or 0
+        png = render_chart(code, no, sig, bars, pl)
+        cap = build_caption_en(code, no, sig, bars, pl)
+        return send_photo(png, cap, bot_token=token, chat_id=chat_id)
+    except Exception as ex:
+        print(f"  [chart] failed, fallback to text: {type(ex).__name__}: {ex}")
+        return False
+
+
 def main():
     token = os.environ.get("TELEGRAM_BOT_TOKEN")
     chat_id = os.environ.get("TG_EN_CHAT_ID")
@@ -69,7 +100,11 @@ def main():
     print(f"feed events={len(feed.get('events', []))} last={last} new={len(new)}")
     for e in new:
         try:
-            ok = post(token, chat_id, fmt(e))
+            ok = False
+            if e.get("action") == "close":
+                ok = try_close_chart(e, token, chat_id)  # 图版战报优先
+            if not ok:
+                ok = post(token, chat_id, fmt(e))
         except Exception as ex:
             print(f"[FAIL] event {e['event_id']}: {type(ex).__name__}: {ex}")
             break

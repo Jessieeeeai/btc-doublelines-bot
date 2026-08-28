@@ -266,3 +266,50 @@ def send_trade_report(code, strategy_name, sig_no, sig, bars, dollar_pl, footer=
     except Exception as e:
         print(f"  [report] 出图失败, 降级纯文字: {type(e).__name__}: {e}")
     send_message(caption)
+
+
+def build_caption_en(code, sig_no, sig, bars, dollar_pl):
+    """English caption for the close-report chart (EN TG relay). Mirrors build_caption."""
+    ev = derive_events(sig, bars)
+    short = sig["direction"] == "short"
+    entry, r = sig["entry_price"], sig["r_dollar"]
+    rr = sig.get("result_r") or 0
+    hold_h = ((sig.get("exit_ts") or 0) - (sig.get("entry_ts") or 0)) / 3600
+
+    real_tp = sig["status"] == "tp_hit" and abs((sig.get("exit_price") or 0) - sig["tp"]) < 1
+    if sig["status"] == "sl_hit":
+        how = "🛑 Stopped out"
+    elif real_tp:
+        how = "🎯 Take-profit target hit"
+    else:
+        how = "🔒 Trailing stop hit — profit locked in"
+
+    lines = [
+        f"🧾 <b>[{code}] #{sig_no:03d} Trade recap</b>",
+        f"{'📉 SHORT' if short else '📈 LONG'} · size {sig.get('size_multiplier', 1.0):.2f}x",
+        "━━━━━━━━━━━━━━━",
+        f"🔔 {_fmt_t(sig['signal_ts'])} Signal formed",
+        f"✅ {_fmt_t(sig['entry_ts'])} Entered <code>${entry:,.0f}</code>"
+        f" (SL ${sig['sl0']:,.0f} / TP ${sig['tp']:,.0f})",
+    ]
+    lock1 = entry - r if short else entry + r
+    lock2 = entry - 2 * r if short else entry + 2 * r
+    mid = []
+    if "lock2r" in ev:
+        mid.append((ev["lock2r"]["ts"],
+                    f"🪜 {_fmt_t(ev['lock2r']['ts'])} +2R reached, SL locked to ${lock1:,.0f}"))
+    if "pyr" in ev:
+        mid.append((ev["pyr"]["ts"],
+                    f"🔺 {_fmt_t(ev['pyr']['ts'])} Pyramid add 0.5x @ "
+                    f"<code>${sig.get('pyramid_entry_price') or 0:,.0f}</code>"))
+    if "lock4r" in ev:
+        mid.append((ev["lock4r"]["ts"],
+                    f"🪜 {_fmt_t(ev['lock4r']['ts'])} +4R reached, SL locked to ${lock2:,.0f}"))
+    lines.extend(t[1] for t in sorted(mid))
+    lines.append(how)
+    lines.append(f"🏁 {_fmt_t(sig['exit_ts'])} Exit <code>${sig['exit_price']:,.0f}</code>")
+    lines.append("━━━━━━━━━━━━━━━")
+    money = ("+" if dollar_pl >= 0 else "-") + f"${abs(dollar_pl):,.2f}"
+    lines.append(f"💰 <b>{money}</b> ({rr:+.1f}R) · held {hold_h:.0f}h")
+    lines.append("<i>📋 Paper trading — not financial advice</i>")
+    return "\n".join(lines)
