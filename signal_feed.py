@@ -123,5 +123,25 @@ def flush(path, states_by_code, notional_usd):
     feed["schema"] = SCHEMA
     with open(path, "w") as f:
         json.dump(feed, f, indent=2, ensure_ascii=False)
+    _write_per_strategy_feeds(path, feed, states_by_code)
     _buffer.clear()
     return added
+
+
+def _write_per_strategy_feeds(main_path, feed, states_by_code):
+    """从主 feed 派生每个策略的子 feed: signals_feed_A/B/C.json。
+    事件沿用主 feed 的全局 event_id (文件内单调递增、允许跳号),
+    消费端仍按 "只处理比上次大的 event_id" 追即可。"""
+    import os as _os
+    base, ext = _os.path.splitext(main_path)
+    for code, _state in states_by_code:
+        sub = {
+            "schema": feed["schema"],
+            "strategy": code,
+            "updated_at": feed["updated_at"],
+            "events": [e for e in feed["events"] if e.get("strategy") == code],
+            "open_positions": [p for p in feed["open_positions"]
+                               if p.get("strategy") == code],
+        }
+        with open(f"{base}_{code}{ext}", "w") as f:
+            json.dump(sub, f, indent=2, ensure_ascii=False)
