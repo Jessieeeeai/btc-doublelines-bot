@@ -26,10 +26,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install deps (matplotlib for close-report charts)
+        run: pip install --quiet matplotlib
+
       - name: Relay to English TG group
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TG_EN_CHAT_ID: ${{ secrets.TG_EN_CHAT_ID }}
+          COINGLASS_API_KEY: ${{ secrets.COINGLASS_API_KEY }}
         run: python3 tg_en_relay.py
 
       - name: Commit relay state
