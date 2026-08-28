@@ -2,7 +2,7 @@
   "schema": 1,
   "paper": true,
   "strategy": "N-A",
-  "next_event_id": 240,
+  "next_event_id": 245,
   "updated_at": "2026-08-28 08:00 UTC",
   "events": [
     {
@@ -20,9 +20,10 @@
       "L": 95.2,
       "neck_lo": 64202.7,
       "neck_hi": 64297.9,
-      "notional_usd": 17977.0,
+      "notional_usd": 17977,
       "dedup": "N-A-001:open",
-      "event_id": 1
+      "event_id": 163,
+      "master_event_id": 1
     },
     {
       "ts": 1787050800,
@@ -39,12 +40,13 @@
       "L": 95.2,
       "neck_lo": 64202.7,
       "neck_hi": 64297.9,
-      "notional_usd": 17977.0,
+      "notional_usd": 17977,
       "reason": "trail",
       "exit_price": 64242.9,
       "pnl_usd": -20.2,
       "dedup": "N-A-001:close",
-      "event_id": 5
+      "event_id": 164,
+      "master_event_id": 5
     },
     {
       "ts": 1787058000,
@@ -60,10 +62,11 @@
       "tp": null,
       "L": 131.5,
       "neck_lo": 64194.5,
-      "neck_hi": 64326.0,
-      "notional_usd": 13011.0,
+      "neck_hi": 64326,
+      "notional_usd": 13011,
       "dedup": "N-A-002:open",
-      "event_id": 9
+      "event_id": 165,
+      "master_event_id": 9
     },
     {
       "ts": 1787061600,
@@ -79,13 +82,14 @@
       "tp": null,
       "L": 131.5,
       "neck_lo": 64194.5,
-      "neck_hi": 64326.0,
-      "notional_usd": 13011.0,
+      "neck_hi": 64326,
+      "notional_usd": 13011,
       "reason": "sl",
       "exit_price": 64358.87,
-      "pnl_usd": -40.0,
+      "pnl_usd": -40,
       "dedup": "N-A-002:close",
-      "event_id": 13
+      "event_id": 166,
+      "master_event_id": 13
     },
     {
       "ts": 1787079600,
@@ -102,9 +106,10 @@
       "L": 110.3,
       "neck_lo": 64634.4,
       "neck_hi": 64744.7,
-      "notional_usd": 15660.0,
+      "notional_usd": 15660,
       "dedup": "N-A-003:open",
-      "event_id": 19
+      "event_id": 167,
+      "master_event_id": 19
     },
     {
       "ts": 1787083200,
@@ -121,12 +126,13 @@
       "L": 110.3,
       "neck_lo": 64634.4,
       "neck_hi": 64744.7,
-      "notional_usd": 15660.0,
+      "notional_usd": 15660,
       "reason": "sl",
       "exit_price": 64606.82,
-      "pnl_usd": -40.0,
+      "pnl_usd": -40,
       "dedup": "N-A-003:close",
-      "event_id": 23
+      "event_id": 168,
+      "master_event_id": 23
     },
     {
       "ts": 1787122800,
@@ -143,9 +149,10 @@
       "L": 76.2,
       "neck_lo": 64209.2,
       "neck_hi": 64285.4,
-      "notional_usd": 22504.0,
+      "notional_usd": 22504,
       "dedup": "N-A-004:open",
-      "event_id": 28
+      "event_id": 169,
+      "master_event_id": 28
     },
     {
       "ts": 1787122800,
@@ -162,9 +169,10 @@
       "L": 76.2,
       "neck_lo": 64209.2,
       "neck_hi": 64285.4,
-      "notional_usd": 22504.0,
+      "notional_usd": 22504,
       "dedup": "N-A-004:stop:64368.2",
-      "event_id": 31
+      "event_id": 170,
+      "master_event_id": 31
     },
     {
       "ts": 1787130000,
@@ -181,12 +189,13 @@
       "L": 76.2,
       "neck_lo": 64209.2,
       "neck_hi": 64285.4,
-      "notional_usd": 22504.0,
+      "notional_usd": 22504,
       "reason": "trail",
       "exit_price": 64368.2,
       "pnl_usd": 18.58,
       "dedup": "N-A-004:close",
-      "event_id": 33
+      "event_id": 171,
+      "master_event_id": 33
     },
     {
       "ts": 1787158800,
@@ -200,12 +209,13 @@
       "entry_price": 68407.35,
       "sl": 68546.85,
       "tp": null,
-      "L": 93.0,
+      "L": 93,
       "neck_lo": 68430.6,
       "neck_hi": 68523.6,
-      "notional_usd": 19615.0,
+      "notional_usd": 19615,
       "dedup": "N-A-005:open",
-      "event_id": 36
+      "event_id": 172,
+      "master_event_id": 36
     },
     {
       "ts": 1787158800,
@@ -219,12 +229,13 @@
       "entry_price": 68407.35,
       "sl": 68149.7,
       "tp": null,
-      "L": 93.0,
+      "L": 93,
       "neck_lo": 68430.6,
       "neck_hi": 68523.6,
-      "notional_usd": 19615.0,
+      "notional_usd": 19615,
       "dedup": "N-A-005:stop:68149.7",
-      "event_id": 40
+      "event_id": 173,
+      "master_event_id": 40
     },
     {
       "ts": 1787166000,
@@ -238,15 +249,16 @@
       "entry_price": 68407.35,
       "sl": null,
       "tp": null,
-      "L": 93.0,
+      "L": 93,
       "neck_lo": 68430.6,
       "neck_hi": 68523.6,
-      "notional_usd": 19615.0,
+      "notional_usd": 19615,
       "reason": "trail",
       "exit_price": 68149.7,
       "pnl_usd": 73.88,
       "dedup": "N-A-005:close",
-      "event_id": 44
+      "event_id": 174,
+      "master_event_id": 44
     },
     {
       "ts": 1787184000,
@@ -263,9 +275,10 @@
       "L": 86.8,
       "neck_lo": 69227.1,
       "neck_hi": 69313.9,
-      "notional_usd": 21301.0,
+      "notional_usd": 21301,
       "dedup": "N-A-006:open",
-      "event_id": 47
+      "event_id": 175,
+      "master_event_id": 47
     },
     {
       "ts": 1787184000,
@@ -282,9 +295,10 @@
       "L": 86.8,
       "neck_lo": 69227.1,
       "neck_hi": 69313.9,
-      "notional_usd": 21301.0,
+      "notional_usd": 21301,
       "dedup": "N-A-006:stop:69737.7",
-      "event_id": 51
+      "event_id": 176,
+      "master_event_id": 51
     },
     {
       "ts": 1787191200,
@@ -301,12 +315,13 @@
       "L": 86.8,
       "neck_lo": 69227.1,
       "neck_hi": 69313.9,
-      "notional_usd": 21301.0,
+      "notional_usd": 21301,
       "reason": "trail",
       "exit_price": 69737.7,
       "pnl_usd": 123.53,
       "dedup": "N-A-006:close",
-      "event_id": 55
+      "event_id": 177,
+      "master_event_id": 55
     },
     {
       "ts": 1787194800,
@@ -323,9 +338,10 @@
       "L": 302.2,
       "neck_lo": 69389.2,
       "neck_hi": 69691.4,
-      "notional_usd": 6116.0,
+      "notional_usd": 6116,
       "dedup": "N-A-007:open",
-      "event_id": 58
+      "event_id": 178,
+      "master_event_id": 58
     },
     {
       "ts": 1787202000,
@@ -342,12 +358,13 @@
       "L": 302.2,
       "neck_lo": 69389.2,
       "neck_hi": 69691.4,
-      "notional_usd": 6116.0,
+      "notional_usd": 6116,
       "reason": "trail",
       "exit_price": 69608.3,
       "pnl_usd": -28.57,
       "dedup": "N-A-007:close",
-      "event_id": 61
+      "event_id": 179,
+      "master_event_id": 61
     },
     {
       "ts": 1787227200,
@@ -364,9 +381,10 @@
       "L": 81.9,
       "neck_lo": 71896.2,
       "neck_hi": 71978.1,
-      "notional_usd": 23403.0,
+      "notional_usd": 23403,
       "dedup": "N-A-008:open",
-      "event_id": 64
+      "event_id": 180,
+      "master_event_id": 64
     },
     {
       "ts": 1787230800,
@@ -383,12 +401,13 @@
       "L": 81.9,
       "neck_lo": 71896.2,
       "neck_hi": 71978.1,
-      "notional_usd": 23403.0,
+      "notional_usd": 23403,
       "reason": "sl",
       "exit_price": 71998.57,
-      "pnl_usd": -40.0,
+      "pnl_usd": -40,
       "dedup": "N-A-008:close",
-      "event_id": 68
+      "event_id": 181,
+      "master_event_id": 68
     },
     {
       "ts": 1787238000,
@@ -404,10 +423,11 @@
       "tp": null,
       "L": 129.3,
       "neck_lo": 71663.7,
-      "neck_hi": 71793.0,
-      "notional_usd": 14813.0,
+      "neck_hi": 71793,
+      "notional_usd": 14813,
       "dedup": "N-A-009:open",
-      "event_id": 72
+      "event_id": 182,
+      "master_event_id": 72
     },
     {
       "ts": 1787238000,
@@ -423,10 +443,11 @@
       "tp": null,
       "L": 129.3,
       "neck_lo": 71663.7,
-      "neck_hi": 71793.0,
-      "notional_usd": 14813.0,
+      "neck_hi": 71793,
+      "notional_usd": 14813,
       "dedup": "N-A-009:stop:72693.95",
-      "event_id": 75
+      "event_id": 183,
+      "master_event_id": 75
     },
     {
       "ts": 1787245200,
@@ -442,13 +463,14 @@
       "tp": null,
       "L": 129.3,
       "neck_lo": 71663.7,
-      "neck_hi": 71793.0,
-      "notional_usd": 14813.0,
+      "neck_hi": 71793,
+      "notional_usd": 14813,
       "reason": "trail",
       "exit_price": 72693.95,
       "pnl_usd": 179.14,
       "dedup": "N-A-009:close",
-      "event_id": 78
+      "event_id": 184,
+      "master_event_id": 78
     },
     {
       "ts": 1787248800,
@@ -465,9 +487,10 @@
       "L": 105.8,
       "neck_lo": 72700.1,
       "neck_hi": 72805.9,
-      "notional_usd": 18317.0,
+      "notional_usd": 18317,
       "dedup": "N-A-010:open",
-      "event_id": 80
+      "event_id": 185,
+      "master_event_id": 80
     },
     {
       "ts": 1787248800,
@@ -484,9 +507,10 @@
       "L": 105.8,
       "neck_lo": 72700.1,
       "neck_hi": 72805.9,
-      "notional_usd": 18317.0,
+      "notional_usd": 18317,
       "dedup": "N-A-010:stop:72438.8",
-      "event_id": 84
+      "event_id": 186,
+      "master_event_id": 84
     },
     {
       "ts": 1787256000,
@@ -503,12 +527,13 @@
       "L": 105.8,
       "neck_lo": 72700.1,
       "neck_hi": 72805.9,
-      "notional_usd": 18317.0,
+      "notional_usd": 18317,
       "reason": "trail",
       "exit_price": 72438.8,
       "pnl_usd": 59.19,
       "dedup": "N-A-010:close",
-      "event_id": 88
+      "event_id": 187,
+      "master_event_id": 88
     },
     {
       "ts": 1787281200,
@@ -525,9 +550,10 @@
       "L": 692.5,
       "neck_lo": 74410.7,
       "neck_hi": 75103.2,
-      "notional_usd": 2859.0,
+      "notional_usd": 2859,
       "dedup": "N-A-011:open",
-      "event_id": 93
+      "event_id": 188,
+      "master_event_id": 93
     },
     {
       "ts": 1787288400,
@@ -544,12 +570,13 @@
       "L": 692.5,
       "neck_lo": 74410.7,
       "neck_hi": 75103.2,
-      "notional_usd": 2859.0,
+      "notional_usd": 2859,
       "reason": "sl",
       "exit_price": 75276.32,
-      "pnl_usd": -40.0,
+      "pnl_usd": -40,
       "dedup": "N-A-011:close",
-      "event_id": 96
+      "event_id": 189,
+      "master_event_id": 96
     },
     {
       "ts": 1787310000,
@@ -561,14 +588,15 @@
       "action": "open_short",
       "direction": "short",
       "entry_price": 77558.4,
-      "sl": 79611.0,
+      "sl": 79611,
       "tp": null,
       "L": 1368.4,
       "neck_lo": 77900.5,
       "neck_hi": 79268.9,
-      "notional_usd": 1511.0,
+      "notional_usd": 1511,
       "dedup": "N-A-012:open",
-      "event_id": 99
+      "event_id": 190,
+      "master_event_id": 99
     },
     {
       "ts": 1787346000,
@@ -585,12 +613,13 @@
       "L": 1368.4,
       "neck_lo": 77900.5,
       "neck_hi": 79268.9,
-      "notional_usd": 1511.0,
+      "notional_usd": 1511,
       "reason": "trail",
       "exit_price": 78289.6,
       "pnl_usd": -14.25,
       "dedup": "N-A-012:close",
-      "event_id": 102
+      "event_id": 191,
+      "master_event_id": 102
     },
     {
       "ts": 1787432400,
@@ -604,12 +633,13 @@
       "entry_price": 77307.3,
       "sl": 77445.3,
       "tp": null,
-      "L": 92.0,
+      "L": 92,
       "neck_lo": 77330.3,
       "neck_hi": 77422.3,
-      "notional_usd": 22408.0,
+      "notional_usd": 22408,
       "dedup": "N-A-013:open",
-      "event_id": 104
+      "event_id": 192,
+      "master_event_id": 104
     },
     {
       "ts": 1787432400,
@@ -621,14 +651,15 @@
       "action": "move_stop",
       "direction": "short",
       "entry_price": 77307.3,
-      "sl": 76910.0,
+      "sl": 76910,
       "tp": null,
-      "L": 92.0,
+      "L": 92,
       "neck_lo": 77330.3,
       "neck_hi": 77422.3,
-      "notional_usd": 22408.0,
+      "notional_usd": 22408,
       "dedup": "N-A-013:stop:76910.0",
-      "event_id": 106
+      "event_id": 193,
+      "master_event_id": 106
     },
     {
       "ts": 1787439600,
@@ -642,15 +673,16 @@
       "entry_price": 77307.3,
       "sl": null,
       "tp": null,
-      "L": 92.0,
+      "L": 92,
       "neck_lo": 77330.3,
       "neck_hi": 77422.3,
-      "notional_usd": 22408.0,
+      "notional_usd": 22408,
       "reason": "trail",
-      "exit_price": 76910.0,
+      "exit_price": 76910,
       "pnl_usd": 115.16,
       "dedup": "N-A-013:close",
-      "event_id": 108
+      "event_id": 194,
+      "master_event_id": 108
     },
     {
       "ts": 1787450400,
@@ -666,10 +698,11 @@
       "tp": null,
       "L": 105.9,
       "neck_lo": 77202.1,
-      "neck_hi": 77308.0,
-      "notional_usd": 19434.0,
+      "neck_hi": 77308,
+      "notional_usd": 19434,
       "dedup": "N-A-014:open",
-      "event_id": 110
+      "event_id": 195,
+      "master_event_id": 110
     },
     {
       "ts": 1787450400,
@@ -685,10 +718,11 @@
       "tp": null,
       "L": 105.9,
       "neck_lo": 77202.1,
-      "neck_hi": 77308.0,
-      "notional_usd": 19434.0,
+      "neck_hi": 77308,
+      "notional_usd": 19434,
       "dedup": "N-A-014:stop:77000.95",
-      "event_id": 112
+      "event_id": 196,
+      "master_event_id": 112
     },
     {
       "ts": 1787457600,
@@ -704,13 +738,14 @@
       "tp": null,
       "L": 105.9,
       "neck_lo": 77202.1,
-      "neck_hi": 77308.0,
-      "notional_usd": 19434.0,
+      "neck_hi": 77308,
+      "notional_usd": 19434,
       "reason": "trail",
       "exit_price": 77000.95,
       "pnl_usd": 43.98,
       "dedup": "N-A-014:close",
-      "event_id": 114
+      "event_id": 197,
+      "master_event_id": 114
     },
     {
       "ts": 1787490000,
@@ -724,12 +759,13 @@
       "entry_price": 77319.25,
       "sl": 77179.75,
       "tp": null,
-      "L": 93.0,
-      "neck_lo": 77203.0,
-      "neck_hi": 77296.0,
-      "notional_usd": 22170.0,
+      "L": 93,
+      "neck_lo": 77203,
+      "neck_hi": 77296,
+      "notional_usd": 22170,
       "dedup": "N-A-015:open",
-      "event_id": 116
+      "event_id": 198,
+      "master_event_id": 116
     },
     {
       "ts": 1787493600,
@@ -743,15 +779,16 @@
       "entry_price": 77319.25,
       "sl": null,
       "tp": null,
-      "L": 93.0,
-      "neck_lo": 77203.0,
-      "neck_hi": 77296.0,
-      "notional_usd": 22170.0,
+      "L": 93,
+      "neck_lo": 77203,
+      "neck_hi": 77296,
+      "notional_usd": 22170,
       "reason": "sl",
       "exit_price": 77179.75,
-      "pnl_usd": -40.0,
+      "pnl_usd": -40,
       "dedup": "N-A-015:close",
-      "event_id": 119
+      "event_id": 199,
+      "master_event_id": 119
     },
     {
       "ts": 1787497200,
@@ -766,11 +803,12 @@
       "sl": 77538.87,
       "tp": null,
       "L": 268.7,
-      "neck_lo": 77203.0,
+      "neck_lo": 77203,
       "neck_hi": 77471.7,
-      "notional_usd": 7655.0,
+      "notional_usd": 7655,
       "dedup": "N-A-016:open",
-      "event_id": 122
+      "event_id": 200,
+      "master_event_id": 122
     },
     {
       "ts": 1787518800,
@@ -785,14 +823,15 @@
       "sl": null,
       "tp": null,
       "L": 268.7,
-      "neck_lo": 77203.0,
+      "neck_lo": 77203,
       "neck_hi": 77471.7,
-      "notional_usd": 7655.0,
+      "notional_usd": 7655,
       "reason": "trail",
       "exit_price": 77478.15,
       "pnl_usd": -33.97,
       "dedup": "N-A-016:close",
-      "event_id": 124
+      "event_id": 201,
+      "master_event_id": 124
     },
     {
       "ts": 1787526000,
@@ -809,9 +848,10 @@
       "L": 230.3,
       "neck_lo": 77578.4,
       "neck_hi": 77808.7,
-      "notional_usd": 8976.0,
+      "notional_usd": 8976,
       "dedup": "N-A-017:open",
-      "event_id": 126
+      "event_id": 202,
+      "master_event_id": 126
     },
     {
       "ts": 1787526000,
@@ -828,9 +868,10 @@
       "L": 230.3,
       "neck_lo": 77578.4,
       "neck_hi": 77808.7,
-      "notional_usd": 8976.0,
+      "notional_usd": 8976,
       "dedup": "N-A-017:stop:77450.25",
-      "event_id": 128
+      "event_id": 203,
+      "master_event_id": 128
     },
     {
       "ts": 1787533200,
@@ -847,12 +888,13 @@
       "L": 230.3,
       "neck_lo": 77578.4,
       "neck_hi": 77808.7,
-      "notional_usd": 8976.0,
+      "notional_usd": 8976,
       "reason": "trail",
       "exit_price": 77450.25,
       "pnl_usd": 8.17,
       "dedup": "N-A-017:close",
-      "event_id": 131
+      "event_id": 204,
+      "master_event_id": 131
     },
     {
       "ts": 1787544000,
@@ -869,9 +911,10 @@
       "L": 536.4,
       "neck_lo": 76925.2,
       "neck_hi": 77461.6,
-      "notional_usd": 3818.0,
+      "notional_usd": 3818,
       "dedup": "N-A-018:open",
-      "event_id": 135
+      "event_id": 205,
+      "master_event_id": 135
     },
     {
       "ts": 1787554800,
@@ -888,12 +931,13 @@
       "L": 536.4,
       "neck_lo": 76925.2,
       "neck_hi": 77461.6,
-      "notional_usd": 3818.0,
+      "notional_usd": 3818,
       "reason": "sl",
       "exit_price": 77595.7,
-      "pnl_usd": -40.0,
+      "pnl_usd": -40,
       "dedup": "N-A-018:close",
-      "event_id": 137
+      "event_id": 206,
+      "master_event_id": 137
     },
     {
       "ts": 1787558400,
@@ -910,9 +954,10 @@
       "L": 140.7,
       "neck_lo": 77314.8,
       "neck_hi": 77455.5,
-      "notional_usd": 14647.0,
+      "notional_usd": 14647,
       "dedup": "N-A-019:open",
-      "event_id": 139
+      "event_id": 207,
+      "master_event_id": 139
     },
     {
       "ts": 1787562000,
@@ -929,12 +974,13 @@
       "L": 140.7,
       "neck_lo": 77314.8,
       "neck_hi": 77455.5,
-      "notional_usd": 14647.0,
+      "notional_usd": 14647,
       "reason": "sl",
       "exit_price": 77490.67,
-      "pnl_usd": -40.0,
+      "pnl_usd": -40,
       "dedup": "N-A-019:close",
-      "event_id": 141
+      "event_id": 208,
+      "master_event_id": 141
     },
     {
       "ts": 1787580000,
@@ -948,12 +994,13 @@
       "entry_price": 79291.55,
       "sl": 78420.05,
       "tp": null,
-      "L": 581.0,
+      "L": 581,
       "neck_lo": 78565.3,
       "neck_hi": 79146.3,
-      "notional_usd": 3639.0,
+      "notional_usd": 3639,
       "dedup": "N-A-020:open",
-      "event_id": 143
+      "event_id": 209,
+      "master_event_id": 143
     },
     {
       "ts": 1787587200,
@@ -967,15 +1014,16 @@
       "entry_price": 79291.55,
       "sl": null,
       "tp": null,
-      "L": 581.0,
+      "L": 581,
       "neck_lo": 78565.3,
       "neck_hi": 79146.3,
-      "notional_usd": 3639.0,
+      "notional_usd": 3639,
       "reason": "trail",
       "exit_price": 79103.3,
       "pnl_usd": -8.64,
       "dedup": "N-A-020:close",
-      "event_id": 146
+      "event_id": 210,
+      "master_event_id": 146
     },
     {
       "ts": 1787605200,
@@ -991,10 +1039,11 @@
       "tp": null,
       "L": 186.9,
       "neck_lo": 78715.1,
-      "neck_hi": 78902.0,
-      "notional_usd": 11264.0,
+      "neck_hi": 78902,
+      "notional_usd": 11264,
       "dedup": "N-A-021:open",
-      "event_id": 148
+      "event_id": 211,
+      "master_event_id": 148
     },
     {
       "ts": 1787608800,
@@ -1010,13 +1059,14 @@
       "tp": null,
       "L": 186.9,
       "neck_lo": 78715.1,
-      "neck_hi": 78902.0,
-      "notional_usd": 11264.0,
+      "neck_hi": 78902,
+      "notional_usd": 11264,
       "reason": "sl",
       "exit_price": 78668.38,
-      "pnl_usd": -40.0,
+      "pnl_usd": -40,
       "dedup": "N-A-021:close",
-      "event_id": 151
+      "event_id": 212,
+      "master_event_id": 151
     },
     {
       "ts": 1787616000,
@@ -1033,9 +1083,10 @@
       "L": 240.3,
       "neck_lo": 78703.9,
       "neck_hi": 78944.2,
-      "notional_usd": 8767.0,
+      "notional_usd": 8767,
       "dedup": "N-A-022:open",
-      "event_id": 154
+      "event_id": 213,
+      "master_event_id": 154
     },
     {
       "ts": 1787616000,
@@ -1052,9 +1103,10 @@
       "L": 240.3,
       "neck_lo": 78703.9,
       "neck_hi": 78944.2,
-      "notional_usd": 8767.0,
+      "notional_usd": 8767,
       "dedup": "N-A-022:stop:79597.55",
-      "event_id": 157
+      "event_id": 214,
+      "master_event_id": 157
     },
     {
       "ts": 1787626800,
@@ -1071,12 +1123,13 @@
       "L": 240.3,
       "neck_lo": 78703.9,
       "neck_hi": 78944.2,
-      "notional_usd": 8767.0,
+      "notional_usd": 8767,
       "reason": "trail",
       "exit_price": 80910.05,
       "pnl_usd": 211.48,
       "dedup": "N-A-022:close",
-      "event_id": 160
+      "event_id": 215,
+      "master_event_id": 160
     },
     {
       "ts": 1787630400,
@@ -1093,9 +1146,10 @@
       "L": 172.7,
       "neck_lo": 80457.7,
       "neck_hi": 80630.4,
-      "notional_usd": 12417.0,
+      "notional_usd": 12417,
       "dedup": "N-A-023:open",
-      "event_id": 162
+      "event_id": 216,
+      "master_event_id": 162
     },
     {
       "ts": 1787634000,
@@ -1112,12 +1166,13 @@
       "L": 172.7,
       "neck_lo": 80457.7,
       "neck_hi": 80630.4,
-      "notional_usd": 12417.0,
+      "notional_usd": 12417,
       "reason": "sl",
       "exit_price": 80673.57,
-      "pnl_usd": -40.0,
+      "pnl_usd": -40,
       "dedup": "N-A-023:close",
-      "event_id": 165
+      "event_id": 217,
+      "master_event_id": 165
     },
     {
       "ts": 1787648400,
@@ -1133,10 +1188,11 @@
       "tp": null,
       "L": 237.4,
       "neck_lo": 79661.6,
-      "neck_hi": 79899.0,
-      "notional_usd": 8942.0,
+      "neck_hi": 79899,
+      "notional_usd": 8942,
       "dedup": "N-A-024:open",
-      "event_id": 168
+      "event_id": 218,
+      "master_event_id": 168
     },
     {
       "ts": 1787648400,
@@ -1152,10 +1208,11 @@
       "tp": null,
       "L": 237.4,
       "neck_lo": 79661.6,
-      "neck_hi": 79899.0,
-      "notional_usd": 8942.0,
+      "neck_hi": 79899,
+      "notional_usd": 8942,
       "dedup": "N-A-024:stop:79314.1",
-      "event_id": 171
+      "event_id": 219,
+      "master_event_id": 171
     },
     {
       "ts": 1787655600,
@@ -1171,13 +1228,14 @@
       "tp": null,
       "L": 237.4,
       "neck_lo": 79661.6,
-      "neck_hi": 79899.0,
-      "notional_usd": 8942.0,
+      "neck_hi": 79899,
+      "notional_usd": 8942,
       "reason": "trail",
       "exit_price": 79314.1,
       "pnl_usd": 32.37,
       "dedup": "N-A-024:close",
-      "event_id": 173
+      "event_id": 220,
+      "master_event_id": 173
     },
     {
       "ts": 1787677200,
@@ -1194,9 +1252,10 @@
       "L": 251.7,
       "neck_lo": 79211.4,
       "neck_hi": 79463.1,
-      "notional_usd": 8385.0,
+      "notional_usd": 8385,
       "dedup": "N-A-025:open",
-      "event_id": 176
+      "event_id": 221,
+      "master_event_id": 176
     },
     {
       "ts": 1787677200,
@@ -1213,9 +1272,10 @@
       "L": 251.7,
       "neck_lo": 79211.4,
       "neck_hi": 79463.1,
-      "notional_usd": 8385.0,
+      "notional_usd": 8385,
       "dedup": "N-A-025:stop:79054.75",
-      "event_id": 180
+      "event_id": 222,
+      "master_event_id": 180
     },
     {
       "ts": 1787691600,
@@ -1232,12 +1292,13 @@
       "L": 251.7,
       "neck_lo": 79211.4,
       "neck_hi": 79463.1,
-      "notional_usd": 8385.0,
+      "notional_usd": 8385,
       "reason": "trail",
       "exit_price": 78507.65,
       "pnl_usd": 65.05,
       "dedup": "N-A-025:close",
-      "event_id": 184
+      "event_id": 223,
+      "master_event_id": 184
     },
     {
       "ts": 1787695200,
@@ -1254,9 +1315,10 @@
       "L": 367.9,
       "neck_lo": 78168.8,
       "neck_hi": 78536.7,
-      "notional_usd": 5699.0,
+      "notional_usd": 5699,
       "dedup": "N-A-026:open",
-      "event_id": 187
+      "event_id": 224,
+      "master_event_id": 187
     },
     {
       "ts": 1787702400,
@@ -1273,12 +1335,13 @@
       "L": 367.9,
       "neck_lo": 78168.8,
       "neck_hi": 78536.7,
-      "notional_usd": 5699.0,
+      "notional_usd": 5699,
       "reason": "trail",
       "exit_price": 78396.95,
       "pnl_usd": -16.8,
       "dedup": "N-A-026:close",
-      "event_id": 190
+      "event_id": 225,
+      "master_event_id": 190
     },
     {
       "ts": 1787706000,
@@ -1295,9 +1358,10 @@
       "L": 87.2,
       "neck_lo": 78505.5,
       "neck_hi": 78592.7,
-      "notional_usd": 24041.0,
+      "notional_usd": 24041,
       "dedup": "N-A-027:open",
-      "event_id": 192
+      "event_id": 226,
+      "master_event_id": 192
     },
     {
       "ts": 1787706000,
@@ -1314,9 +1378,10 @@
       "L": 87.2,
       "neck_lo": 78505.5,
       "neck_hi": 78592.7,
-      "notional_usd": 24041.0,
+      "notional_usd": 24041,
       "dedup": "N-A-027:stop:79069.2",
-      "event_id": 195
+      "event_id": 227,
+      "master_event_id": 195
     },
     {
       "ts": 1787713200,
@@ -1333,12 +1398,13 @@
       "L": 87.2,
       "neck_lo": 78505.5,
       "neck_hi": 78592.7,
-      "notional_usd": 24041.0,
+      "notional_usd": 24041,
       "reason": "trail",
       "exit_price": 79069.2,
       "pnl_usd": 139.05,
       "dedup": "N-A-027:close",
-      "event_id": 198
+      "event_id": 228,
+      "master_event_id": 198
     },
     {
       "ts": 1787724000,
@@ -1354,10 +1420,11 @@
       "tp": null,
       "L": 256.9,
       "neck_lo": 78792.1,
-      "neck_hi": 79049.0,
-      "notional_usd": 8212.0,
+      "neck_hi": 79049,
+      "notional_usd": 8212,
       "dedup": "N-A-028:open",
-      "event_id": 201
+      "event_id": 229,
+      "master_event_id": 201
     },
     {
       "ts": 1787731200,
@@ -1373,13 +1440,14 @@
       "tp": null,
       "L": 256.9,
       "neck_lo": 78792.1,
-      "neck_hi": 79049.0,
-      "notional_usd": 8212.0,
+      "neck_hi": 79049,
+      "notional_usd": 8212,
       "reason": "sl",
       "exit_price": 78727.88,
-      "pnl_usd": -40.0,
+      "pnl_usd": -40,
       "dedup": "N-A-028:close",
-      "event_id": 203
+      "event_id": 230,
+      "master_event_id": 203
     },
     {
       "ts": 1787745600,
@@ -1394,11 +1462,12 @@
       "sl": 78748.13,
       "tp": null,
       "L": 238.5,
-      "neck_lo": 78450.0,
+      "neck_lo": 78450,
       "neck_hi": 78688.5,
-      "notional_usd": 8765.0,
+      "notional_usd": 8765,
       "dedup": "N-A-029:open",
-      "event_id": 205
+      "event_id": 231,
+      "master_event_id": 205
     },
     {
       "ts": 1787745600,
@@ -1413,11 +1482,12 @@
       "sl": 78207.75,
       "tp": null,
       "L": 238.5,
-      "neck_lo": 78450.0,
+      "neck_lo": 78450,
       "neck_hi": 78688.5,
-      "notional_usd": 8765.0,
+      "notional_usd": 8765,
       "dedup": "N-A-029:stop:78207.75",
-      "event_id": 208
+      "event_id": 232,
+      "master_event_id": 208
     },
     {
       "ts": 1787752800,
@@ -1432,14 +1502,15 @@
       "sl": null,
       "tp": null,
       "L": 238.5,
-      "neck_lo": 78450.0,
+      "neck_lo": 78450,
       "neck_hi": 78688.5,
-      "notional_usd": 8765.0,
+      "notional_usd": 8765,
       "reason": "trail",
       "exit_price": 78207.75,
       "pnl_usd": 20.42,
       "dedup": "N-A-029:close",
-      "event_id": 210
+      "event_id": 233,
+      "master_event_id": 210
     },
     {
       "ts": 1787760000,
@@ -1456,9 +1527,10 @@
       "L": 216.2,
       "neck_lo": 77764.5,
       "neck_hi": 77980.7,
-      "notional_usd": 9625.0,
+      "notional_usd": 9625,
       "dedup": "N-A-030:open",
-      "event_id": 212
+      "event_id": 234,
+      "master_event_id": 212
     },
     {
       "ts": 1787760000,
@@ -1475,9 +1547,10 @@
       "L": 216.2,
       "neck_lo": 77764.5,
       "neck_hi": 77980.7,
-      "notional_usd": 9625.0,
+      "notional_usd": 9625,
       "dedup": "N-A-030:stop:78259.4",
-      "event_id": 215
+      "event_id": 235,
+      "master_event_id": 215
     },
     {
       "ts": 1787767200,
@@ -1494,12 +1567,13 @@
       "L": 216.2,
       "neck_lo": 77764.5,
       "neck_hi": 77980.7,
-      "notional_usd": 9625.0,
+      "notional_usd": 9625,
       "reason": "trail",
       "exit_price": 78259.4,
       "pnl_usd": 27.71,
       "dedup": "N-A-030:close",
-      "event_id": 217
+      "event_id": 236,
+      "master_event_id": 217
     },
     {
       "ts": 1787792400,
@@ -1516,9 +1590,10 @@
       "L": 332.7,
       "neck_lo": 78656.6,
       "neck_hi": 78989.3,
-      "notional_usd": 6298.0,
+      "notional_usd": 6298,
       "dedup": "N-A-031:open",
-      "event_id": 220
+      "event_id": 237,
+      "master_event_id": 220
     },
     {
       "ts": 1787814000,
@@ -1535,12 +1610,13 @@
       "L": 332.7,
       "neck_lo": 78656.6,
       "neck_hi": 78989.3,
-      "notional_usd": 6298.0,
+      "notional_usd": 6298,
       "reason": "trail",
       "exit_price": 79065.55,
       "pnl_usd": -39.45,
       "dedup": "N-A-031:close",
-      "event_id": 223
+      "event_id": 238,
+      "master_event_id": 223
     },
     {
       "ts": 1787839200,
@@ -1557,9 +1633,10 @@
       "L": 192.7,
       "neck_lo": 79247.4,
       "neck_hi": 79440.1,
-      "notional_usd": 11000.0,
+      "notional_usd": 11000,
       "dedup": "N-A-032:open",
-      "event_id": 226
+      "event_id": 239,
+      "master_event_id": 226
     },
     {
       "ts": 1787839200,
@@ -1576,9 +1653,10 @@
       "L": 192.7,
       "neck_lo": 79247.4,
       "neck_hi": 79440.1,
-      "notional_usd": 11000.0,
+      "notional_usd": 11000,
       "dedup": "N-A-032:stop:80477.75",
-      "event_id": 229
+      "event_id": 240,
+      "master_event_id": 229
     },
     {
       "ts": 1787846400,
@@ -1595,12 +1673,13 @@
       "L": 192.7,
       "neck_lo": 79247.4,
       "neck_hi": 79440.1,
-      "notional_usd": 11000.0,
+      "notional_usd": 11000,
       "reason": "trail",
       "exit_price": 80477.75,
       "pnl_usd": 136.28,
       "dedup": "N-A-032:close",
-      "event_id": 232
+      "event_id": 241,
+      "master_event_id": 232
     },
     {
       "ts": 1787864400,
@@ -1615,11 +1694,12 @@
       "sl": 79830.95,
       "tp": null,
       "L": 188.2,
-      "neck_lo": 79878.0,
+      "neck_lo": 79878,
       "neck_hi": 80066.2,
-      "notional_usd": 11352.0,
+      "notional_usd": 11352,
       "dedup": "N-A-033:open",
-      "event_id": 234
+      "event_id": 242,
+      "master_event_id": 234
     },
     {
       "ts": 1787864400,
@@ -1634,11 +1714,12 @@
       "sl": 80117.2,
       "tp": null,
       "L": 188.2,
-      "neck_lo": 79878.0,
+      "neck_lo": 79878,
       "neck_hi": 80066.2,
-      "notional_usd": 11352.0,
+      "notional_usd": 11352,
       "dedup": "N-A-033:stop:80117.2",
-      "event_id": 237
+      "event_id": 243,
+      "master_event_id": 237
     },
     {
       "ts": 1787871600,
@@ -1653,14 +1734,15 @@
       "sl": null,
       "tp": null,
       "L": 188.2,
-      "neck_lo": 79878.0,
+      "neck_lo": 79878,
       "neck_hi": 80066.2,
-      "notional_usd": 11352.0,
+      "notional_usd": 11352,
       "reason": "trail",
       "exit_price": 80117.2,
       "pnl_usd": 0.56,
       "dedup": "N-A-033:close",
-      "event_id": 239
+      "event_id": 244,
+      "master_event_id": 239
     }
   ],
   "open_positions": []
