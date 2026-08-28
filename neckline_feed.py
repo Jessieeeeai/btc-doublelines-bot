@@ -94,6 +94,7 @@ def flush(states_by_code, path=FEED_FILE):
     并按马拆分写出单马feed (总feed的过滤视图, event_id全局一致)。
     返回新增事件数。永不抛异常。"""
     try:
+        pending = list(_buffer)
         feed = _load(path)
         existing = {e.get("dedup") for e in feed["events"]}
         added = 0
@@ -128,16 +129,31 @@ def flush(states_by_code, path=FEED_FILE):
         with open(path, "w") as f:
             json.dump(feed, f, indent=2, ensure_ascii=False)
 
-        # 单马feed: 总feed的过滤视图 (event_id 与总feed一致, 消费端按各自文件记id即可)
+        # 单马feed: 各自独立连续编号 (平台要求文件内无断档)。
+        # 从自己文件最后一条的id+1继续编; 事件附带 master_event_id 便于与总表对账。
         for code, state in states_by_code:
-            sub = {
-                "schema": SCHEMA, "paper": True, "strategy": code,
-                "next_event_id": feed["next_event_id"],
-                "updated_at": feed["updated_at"],
-                "events": [e for e in feed["events"] if e.get("strategy") == code],
-                "open_positions": [p for p in snap if p.get("strategy") == code],
-            }
-            with open(_horse_feed_path(code), "w") as f:
+            sp = _horse_feed_path(code)
+            sub = _load(sp)
+            sub["strategy"] = code
+            # 无视存储的next值, 一律按自己文件最后一条重算 (自愈: 修掉历史上写入的全局编号)
+            sub["next_event_id"] = (sub["events"][-1]["event_id"] + 1) if sub["events"] else 1
+            sub_existing = {e.get("dedup") for e in sub["events"]}
+            for ev in pending:
+                if ev.get("strategy") != code or ev.get("dedup") in sub_existing:
+                    continue
+                e2 = dict(ev)
+                e2["master_event_id"] = ev.get("event_id")
+                e2["event_id"] = sub["next_event_id"]
+                sub["next_event_id"] += 1
+                sub["events"].append(e2)
+                sub_existing.add(e2.get("dedup"))
+            if len(sub["events"]) > MAX_EVENTS:
+                sub["events"] = sub["events"][-MAX_EVENTS:]
+            sub["open_positions"] = [p for p in snap if p.get("strategy") == code]
+            sub["updated_at"] = feed["updated_at"]
+            sub["schema"] = SCHEMA
+            sub["paper"] = True
+            with open(sp, "w") as f:
                 json.dump(sub, f, indent=2, ensure_ascii=False)
 
         _buffer.clear()
