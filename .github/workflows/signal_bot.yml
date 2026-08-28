@@ -37,10 +37,10 @@ jobs:
 
       - name: Commit state files if changed
         run: |
-          if [ -n "$(git status --porcelain state_A.json state_B.json state_C.json signals_feed.json bars_archive.csv 2>/dev/null)" ]; then
+          if [ -n "$(git status --porcelain state_A.json state_B.json state_C.json signals_feed.json signals_feed_A.json signals_feed_B.json signals_feed_C.json bars_archive.csv 2>/dev/null)" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add state_A.json state_B.json state_C.json signals_feed.json bars_archive.csv 2>/dev/null || true
+            git add state_A.json state_B.json state_C.json signals_feed.json signals_feed_A.json signals_feed_B.json signals_feed_C.json bars_archive.csv 2>/dev/null || true
             git commit -m "update race states $(date -u +'%Y-%m-%d %H:%M UTC')"
             # 防 push race (并发触发导致 non-fast-forward): pull --rebase 后重试
             pushed=0
