@@ -130,19 +130,37 @@ def flush(path, states_by_code, notional_usd):
 
 def _write_per_strategy_feeds(main_path, feed, states_by_code):
     """从主 feed 派生每个策略的子 feed: signals_feed_A/B/C.json。
-    事件沿用主 feed 的全局 event_id (文件内单调递增、允许跳号),
-    消费端仍按 "只处理比上次大的 event_id" 追即可。"""
+    每个子 feed 维护自己独立且连续的 event_id (部分订阅平台要求文件内无跳号);
+    原全局编号保留在 master_event_id 便于与主 feed 对账。
+    历史事件不重编 (已被消费端按旧编号同步过, 都在水位之下)。"""
     import os as _os
     base, ext = _os.path.splitext(main_path)
     for code, _state in states_by_code:
-        sub = {
-            "schema": feed["schema"],
-            "strategy": code,
-            "updated_at": feed["updated_at"],
-            "next_event_id": feed.get("next_event_id", 1),
-            "events": [e for e in feed["events"] if e.get("strategy") == code],
-            "open_positions": [p for p in feed["open_positions"]
-                               if p.get("strategy") == code],
-        }
-        with open(f"{base}_{code}{ext}", "w") as f:
+        sp = f"{base}_{code}{ext}"
+        try:
+            with open(sp) as f:
+                sub = json.load(f)
+        except Exception:
+            sub = {"events": []}
+        sub["strategy"] = code
+        # 自愈: 无视存储的 next 值, 一律按自己文件最后一条重算
+        # (顺带修掉历史上写入的全局编号造成的虚高 next)
+        sub["next_event_id"] = (sub["events"][-1]["event_id"] + 1) if sub.get("events") else 1
+        existing = {e.get("dedup") for e in sub.get("events", [])}
+        for ev in feed["events"]:
+            if ev.get("strategy") != code or ev.get("dedup") in existing:
+                continue
+            e2 = dict(ev)
+            e2["master_event_id"] = ev.get("event_id")
+            e2["event_id"] = sub["next_event_id"]
+            sub["next_event_id"] += 1
+            sub["events"].append(e2)
+            existing.add(e2.get("dedup"))
+        if len(sub["events"]) > MAX_EVENTS:
+            sub["events"] = sub["events"][-MAX_EVENTS:]
+        sub["open_positions"] = [p for p in feed["open_positions"]
+                                 if p.get("strategy") == code]
+        sub["updated_at"] = feed["updated_at"]
+        sub["schema"] = feed["schema"]
+        with open(sp, "w") as f:
             json.dump(sub, f, indent=2, ensure_ascii=False)
