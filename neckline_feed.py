@@ -7,7 +7,7 @@
 ⚠️ 纸面验证阶段: 所有事件带 "paper": true 标记。执行端在红线通过前不应消费。
 
 事件字段:
-  event_id, ts, time, strategy(N-A/N-B/N-C/N-D), signal_no, pos_id, paper,
+  event_id, ts, time, strategy(N-A/N-C/N-D/N-E), signal_no, pos_id, paper,
   action: open_long | open_short | move_stop | close
   direction, entry_price, sl, tp(可为null=跟踪出场), L, neck_lo, neck_hi, notional_usd
   close 额外: reason(tp|sl|trail), exit_price, pnl_usd
@@ -80,8 +80,15 @@ def _load(path):
                 "next_event_id": 1, "events": [], "open_positions": []}
 
 
+def _horse_feed_path(code):
+    """单马feed文件名: N-A -> neckline_feed_N_A.json"""
+    return f"neckline_feed_{code.replace('-', '_')}.json"
+
+
 def flush(states_by_code, path=FEED_FILE):
-    """缓冲事件去重后追加, 重建持仓快照, 落盘。返回新增事件数。永不抛异常。"""
+    """缓冲事件去重后追加进总feed, 重建持仓快照, 落盘;
+    并按马拆分写出单马feed (总feed的过滤视图, event_id全局一致)。
+    返回新增事件数。永不抛异常。"""
     try:
         feed = _load(path)
         existing = {e.get("dedup") for e in feed["events"]}
@@ -116,6 +123,18 @@ def flush(states_by_code, path=FEED_FILE):
         feed["schema"] = SCHEMA
         with open(path, "w") as f:
             json.dump(feed, f, indent=2, ensure_ascii=False)
+
+        # 单马feed: 总feed的过滤视图 (event_id 与总feed一致, 消费端按各自文件记id即可)
+        for code, state in states_by_code:
+            sub = {
+                "schema": SCHEMA, "paper": True, "strategy": code,
+                "updated_at": feed["updated_at"],
+                "events": [e for e in feed["events"] if e.get("strategy") == code],
+                "open_positions": [p for p in snap if p.get("strategy") == code],
+            }
+            with open(_horse_feed_path(code), "w") as f:
+                json.dump(sub, f, indent=2, ensure_ascii=False)
+
         _buffer.clear()
         return added
     except Exception as e:
