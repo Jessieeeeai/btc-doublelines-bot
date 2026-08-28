@@ -139,6 +139,7 @@ def _write_per_strategy_feeds(main_path, feed, states_by_code):
             "schema": feed["schema"],
             "strategy": code,
             "updated_at": feed["updated_at"],
+            "next_event_id": feed.get("next_event_id", 1),
             "events": [e for e in feed["events"] if e.get("strategy") == code],
             "open_positions": [p for p in feed["open_positions"]
                                if p.get("strategy") == code],
