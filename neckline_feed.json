@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-08-29 20:45 UTC",
-  "next_event_id": 287,
+  "updated_at": "2026-08-29 21:00 UTC",
+  "next_event_id": 289,
   "events": [
     {
       "ts": 1787040000,
@@ -5791,23 +5791,53 @@
       "notional_usd": 13414.0,
       "dedup": "N-D-042:stop:78082.25",
       "event_id": 286
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1788033600,
+      "time": "2026-08-29 21:00 UTC",
       "strategy": "N-A",
       "signal_no": 39,
       "pos_id": "N-A-039",
       "paper": true,
+      "action": "close",
       "direction": "long",
       "entry_price": 78017.97,
-      "sl": 78082.25,
+      "sl": null,
       "tp": null,
       "L": 155.1,
       "neck_lo": 77824.1,
       "neck_hi": 77979.2,
-      "notional_usd": 13414.0
+      "notional_usd": 13414.0,
+      "reason": "trail",
+      "exit_price": 78082.25,
+      "pnl_usd": 11.05,
+      "dedup": "N-A-039:close",
+      "event_id": 287
     },
+    {
+      "ts": 1788033600,
+      "time": "2026-08-29 21:00 UTC",
+      "strategy": "N-D",
+      "signal_no": 42,
+      "pos_id": "N-D-042",
+      "paper": true,
+      "action": "close",
+      "direction": "long",
+      "entry_price": 78017.97,
+      "sl": null,
+      "tp": null,
+      "L": 155.1,
+      "neck_lo": 77824.1,
+      "neck_hi": 77979.2,
+      "notional_usd": 13414.0,
+      "reason": "trail",
+      "exit_price": 78082.25,
+      "pnl_usd": 11.05,
+      "dedup": "N-D-042:close",
+      "event_id": 288
+    }
+  ],
+  "open_positions": [
     {
       "strategy": "N-C",
       "signal_no": 28,
@@ -5821,20 +5851,6 @@
       "neck_lo": 77824.1,
       "neck_hi": 77979.2,
       "notional_usd": 10000.0
-    },
-    {
-      "strategy": "N-D",
-      "signal_no": 42,
-      "pos_id": "N-D-042",
-      "paper": true,
-      "direction": "long",
-      "entry_price": 78017.97,
-      "sl": 78082.25,
-      "tp": null,
-      "L": 155.1,
-      "neck_lo": 77824.1,
-      "neck_hi": 77979.2,
-      "notional_usd": 13414.0
     }
   ]
 }
