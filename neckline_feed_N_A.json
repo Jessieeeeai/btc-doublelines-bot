@@ -3,7 +3,7 @@
   "paper": true,
   "strategy": "N-A",
   "next_event_id": 261,
-  "updated_at": "2026-08-30 10:45 UTC",
+  "updated_at": "2026-08-30 11:00 UTC",
   "events": [
     {
       "ts": 1787040000,
@@ -2091,7 +2091,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 78072.55,
-      "sl": 78170.3,
+      "sl": 78150.9,
       "tp": null,
       "L": 145.0,
       "neck_lo": 78108.8,
