@@ -30,6 +30,8 @@ jobs:
           COINGLASS_API_KEY: ${{ secrets.COINGLASS_API_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.NECKLINE_TG_BOT_TOKEN != '' && secrets.NECKLINE_TG_BOT_TOKEN || secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.NECKLINE_TG_CHAT_ID != '' && secrets.NECKLINE_TG_CHAT_ID || secrets.TELEGRAM_CHAT_ID }}
+          # 同步播报到群 "cutie，双线反转助手以及大老虎"
+          TELEGRAM_GROUP_CHAT_ID: "-5515956430"
         run: |
           python3 neckline_bot.py
 
