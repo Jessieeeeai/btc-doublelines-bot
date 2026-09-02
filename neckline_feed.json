@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-09-02 02:45 UTC",
-  "next_event_id": 332,
+  "updated_at": "2026-09-02 03:00 UTC",
+  "next_event_id": 334,
   "events": [
     {
       "ts": 1787040000,
@@ -6706,6 +6706,44 @@
       "notional_usd": 12867.0,
       "dedup": "N-D-050:open",
       "event_id": 331
+    },
+    {
+      "ts": 1788310800,
+      "time": "2026-09-02 03:00 UTC",
+      "strategy": "N-A",
+      "signal_no": 45,
+      "pos_id": "N-A-045",
+      "paper": true,
+      "action": "move_stop",
+      "direction": "short",
+      "entry_price": 77179.4,
+      "sl": 77153.4,
+      "tp": null,
+      "L": 160.0,
+      "neck_lo": 77240.1,
+      "neck_hi": 77400.1,
+      "notional_usd": 12867.0,
+      "dedup": "N-A-045:stop:77153.4",
+      "event_id": 332
+    },
+    {
+      "ts": 1788310800,
+      "time": "2026-09-02 03:00 UTC",
+      "strategy": "N-D",
+      "signal_no": 50,
+      "pos_id": "N-D-050",
+      "paper": true,
+      "action": "move_stop",
+      "direction": "short",
+      "entry_price": 77179.4,
+      "sl": 77153.4,
+      "tp": null,
+      "L": 160.0,
+      "neck_lo": 77240.1,
+      "neck_hi": 77400.1,
+      "notional_usd": 12867.0,
+      "dedup": "N-D-050:stop:77153.4",
+      "event_id": 333
     }
   ],
   "open_positions": [
@@ -6716,7 +6754,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 77179.4,
-      "sl": 77440.1,
+      "sl": 77153.4,
       "tp": null,
       "L": 160.0,
       "neck_lo": 77240.1,
@@ -6744,7 +6782,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 77179.4,
-      "sl": 77440.1,
+      "sl": 77153.4,
       "tp": null,
       "L": 160.0,
       "neck_lo": 77240.1,
