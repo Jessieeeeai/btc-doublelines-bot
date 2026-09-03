@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-09-03 10:45 UTC",
-  "next_event_id": 353,
+  "updated_at": "2026-09-03 11:00 UTC",
+  "next_event_id": 355,
   "events": [
     {
       "ts": 1787040000,
@@ -7132,9 +7132,61 @@
       "pnl_usd": 91.53,
       "dedup": "N-E-011:close",
       "event_id": 352
+    },
+    {
+      "ts": 1788429600,
+      "time": "2026-09-03 11:00 UTC",
+      "strategy": "N-A",
+      "signal_no": 48,
+      "pos_id": "N-A-048",
+      "paper": true,
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 77578.0,
+      "sl": 77852.65,
+      "tp": null,
+      "L": 180.2,
+      "neck_lo": 77627.4,
+      "neck_hi": 77807.6,
+      "notional_usd": 11481.0,
+      "dedup": "N-A-048:open",
+      "event_id": 353
+    },
+    {
+      "ts": 1788429600,
+      "time": "2026-09-03 11:00 UTC",
+      "strategy": "N-D",
+      "signal_no": 53,
+      "pos_id": "N-D-053",
+      "paper": true,
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 77578.0,
+      "sl": 77852.65,
+      "tp": null,
+      "L": 180.2,
+      "neck_lo": 77627.4,
+      "neck_hi": 77807.6,
+      "notional_usd": 11481.0,
+      "dedup": "N-D-053:open",
+      "event_id": 354
     }
   ],
   "open_positions": [
+    {
+      "strategy": "N-A",
+      "signal_no": 48,
+      "pos_id": "N-A-048",
+      "paper": true,
+      "direction": "short",
+      "entry_price": 77578.0,
+      "sl": 77852.65,
+      "tp": null,
+      "L": 180.2,
+      "neck_lo": 77627.4,
+      "neck_hi": 77807.6,
+      "notional_usd": 11481.0
+    },
     {
       "strategy": "N-C",
       "signal_no": 35,
@@ -7148,6 +7200,20 @@
       "neck_lo": 77025.1,
       "neck_hi": 77300.0,
       "notional_usd": 10000.0
+    },
+    {
+      "strategy": "N-D",
+      "signal_no": 53,
+      "pos_id": "N-D-053",
+      "paper": true,
+      "direction": "short",
+      "entry_price": 77578.0,
+      "sl": 77852.65,
+      "tp": null,
+      "L": 180.2,
+      "neck_lo": 77627.4,
+      "neck_hi": 77807.6,
+      "notional_usd": 11481.0
     }
   ]
 }
