@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-09-06 14:45 UTC",
-  "next_event_id": 384,
+  "updated_at": "2026-09-06 15:00 UTC",
+  "next_event_id": 386,
   "events": [
     {
       "ts": 1787040000,
@@ -7754,23 +7754,53 @@
       "notional_usd": 4521.0,
       "dedup": "N-D-056:stop:79463.95",
       "event_id": 383
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1788703200,
+      "time": "2026-09-06 15:00 UTC",
       "strategy": "N-A",
       "signal_no": 51,
       "pos_id": "N-A-051",
       "paper": true,
+      "action": "close",
       "direction": "long",
       "entry_price": 79459.98,
-      "sl": 79463.95,
+      "sl": null,
       "tp": null,
       "L": 468.7,
       "neck_lo": 78874.1,
       "neck_hi": 79342.8,
-      "notional_usd": 4521.0
+      "notional_usd": 4521.0,
+      "reason": "trail",
+      "exit_price": 79463.95,
+      "pnl_usd": 0.23,
+      "dedup": "N-A-051:close",
+      "event_id": 384
     },
+    {
+      "ts": 1788703200,
+      "time": "2026-09-06 15:00 UTC",
+      "strategy": "N-D",
+      "signal_no": 56,
+      "pos_id": "N-D-056",
+      "paper": true,
+      "action": "close",
+      "direction": "long",
+      "entry_price": 79459.98,
+      "sl": null,
+      "tp": null,
+      "L": 468.7,
+      "neck_lo": 78874.1,
+      "neck_hi": 79342.8,
+      "notional_usd": 4521.0,
+      "reason": "trail",
+      "exit_price": 79463.95,
+      "pnl_usd": 0.23,
+      "dedup": "N-D-056:close",
+      "event_id": 385
+    }
+  ],
+  "open_positions": [
     {
       "strategy": "N-C",
       "signal_no": 38,
@@ -7784,20 +7814,6 @@
       "neck_lo": 78874.1,
       "neck_hi": 79342.8,
       "notional_usd": 10000.0
-    },
-    {
-      "strategy": "N-D",
-      "signal_no": 56,
-      "pos_id": "N-D-056",
-      "paper": true,
-      "direction": "long",
-      "entry_price": 79459.98,
-      "sl": 79463.95,
-      "tp": null,
-      "L": 468.7,
-      "neck_lo": 78874.1,
-      "neck_hi": 79342.8,
-      "notional_usd": 4521.0
     }
   ]
 }
