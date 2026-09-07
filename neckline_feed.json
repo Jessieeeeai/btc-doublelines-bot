@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-09-07 22:54 UTC",
-  "next_event_id": 412,
+  "updated_at": "2026-09-07 23:00 UTC",
+  "next_event_id": 414,
   "events": [
     {
       "ts": 1787040000,
@@ -8319,23 +8319,53 @@
       "notional_usd": 10378.0,
       "dedup": "N-D-061:stop:79086.75",
       "event_id": 411
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1788818400,
+      "time": "2026-09-07 23:00 UTC",
       "strategy": "N-A",
       "signal_no": 56,
       "pos_id": "N-A-056",
       "paper": true,
+      "action": "close",
       "direction": "long",
       "entry_price": 79040.08,
-      "sl": 79086.75,
+      "sl": null,
       "tp": null,
       "L": 203.1,
       "neck_lo": 78786.2,
       "neck_hi": 78989.3,
-      "notional_usd": 10378.0
+      "notional_usd": 10378.0,
+      "reason": "trail",
+      "exit_price": 79086.75,
+      "pnl_usd": 6.13,
+      "dedup": "N-A-056:close",
+      "event_id": 412
     },
+    {
+      "ts": 1788818400,
+      "time": "2026-09-07 23:00 UTC",
+      "strategy": "N-D",
+      "signal_no": 61,
+      "pos_id": "N-D-061",
+      "paper": true,
+      "action": "close",
+      "direction": "long",
+      "entry_price": 79040.08,
+      "sl": null,
+      "tp": null,
+      "L": 203.1,
+      "neck_lo": 78786.2,
+      "neck_hi": 78989.3,
+      "notional_usd": 10378.0,
+      "reason": "trail",
+      "exit_price": 79086.75,
+      "pnl_usd": 6.13,
+      "dedup": "N-D-061:close",
+      "event_id": 413
+    }
+  ],
+  "open_positions": [
     {
       "strategy": "N-C",
       "signal_no": 39,
@@ -8349,20 +8379,6 @@
       "neck_lo": 78786.2,
       "neck_hi": 78989.3,
       "notional_usd": 10000.0
-    },
-    {
-      "strategy": "N-D",
-      "signal_no": 61,
-      "pos_id": "N-D-061",
-      "paper": true,
-      "direction": "long",
-      "entry_price": 79040.08,
-      "sl": 79086.75,
-      "tp": null,
-      "L": 203.1,
-      "neck_lo": 78786.2,
-      "neck_hi": 78989.3,
-      "notional_usd": 10378.0
     }
   ]
 }
