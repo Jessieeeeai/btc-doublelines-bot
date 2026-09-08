@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-09-08 02:45 UTC",
-  "next_event_id": 418,
+  "updated_at": "2026-09-08 03:00 UTC",
+  "next_event_id": 420,
   "events": [
     {
       "ts": 1787040000,
@@ -8439,23 +8439,53 @@
       "notional_usd": 13227.0,
       "dedup": "N-D-062:stop:79200.35",
       "event_id": 417
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1788832800,
+      "time": "2026-09-08 03:00 UTC",
       "strategy": "N-A",
       "signal_no": 57,
       "pos_id": "N-A-057",
       "paper": true,
+      "action": "close",
       "direction": "long",
       "entry_price": 79115.77,
-      "sl": 79200.35,
+      "sl": null,
       "tp": null,
       "L": 159.5,
       "neck_lo": 78916.4,
       "neck_hi": 79075.9,
-      "notional_usd": 13227.0
+      "notional_usd": 13227.0,
+      "reason": "trail",
+      "exit_price": 79200.35,
+      "pnl_usd": 14.14,
+      "dedup": "N-A-057:close",
+      "event_id": 418
     },
+    {
+      "ts": 1788832800,
+      "time": "2026-09-08 03:00 UTC",
+      "strategy": "N-D",
+      "signal_no": 62,
+      "pos_id": "N-D-062",
+      "paper": true,
+      "action": "close",
+      "direction": "long",
+      "entry_price": 79115.77,
+      "sl": null,
+      "tp": null,
+      "L": 159.5,
+      "neck_lo": 78916.4,
+      "neck_hi": 79075.9,
+      "notional_usd": 13227.0,
+      "reason": "trail",
+      "exit_price": 79200.35,
+      "pnl_usd": 14.14,
+      "dedup": "N-D-062:close",
+      "event_id": 419
+    }
+  ],
+  "open_positions": [
     {
       "strategy": "N-C",
       "signal_no": 39,
@@ -8469,20 +8499,6 @@
       "neck_lo": 78786.2,
       "neck_hi": 78989.3,
       "notional_usd": 10000.0
-    },
-    {
-      "strategy": "N-D",
-      "signal_no": 62,
-      "pos_id": "N-D-062",
-      "paper": true,
-      "direction": "long",
-      "entry_price": 79115.77,
-      "sl": 79200.35,
-      "tp": null,
-      "L": 159.5,
-      "neck_lo": 78916.4,
-      "neck_hi": 79075.9,
-      "notional_usd": 13227.0
     }
   ]
 }
