@@ -1184,7 +1184,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1789066800,
+      "last_checked_ts": 1789070400,
       "close_notified": false
     },
     {
@@ -1213,7 +1213,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1789066800,
+      "last_checked_ts": 1789070400,
       "close_notified": false
     }
   ],
