@@ -1185,7 +1185,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 76732.08,
-      "last_checked_ts": 1789174800,
+      "last_checked_ts": 1789178400,
       "close_notified": false
     },
     {
@@ -1214,7 +1214,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 76494.15,
-      "last_checked_ts": 1789174800,
+      "last_checked_ts": 1789178400,
       "close_notified": false
     },
     {
@@ -1243,7 +1243,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 76959.34,
-      "last_checked_ts": 1789174800,
+      "last_checked_ts": 1789178400,
       "close_notified": false
     }
   ],
