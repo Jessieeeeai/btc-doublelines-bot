@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-09-13 19:45 UTC",
-  "next_event_id": 503,
+  "updated_at": "2026-09-13 20:00 UTC",
+  "next_event_id": 505,
   "events": [
     {
       "ts": 1787040000,
@@ -10159,23 +10159,53 @@
       "notional_usd": 26699.0,
       "dedup": "N-D-073:stop:77271.35",
       "event_id": 502
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1789326000,
+      "time": "2026-09-13 20:00 UTC",
       "strategy": "N-A",
       "signal_no": 67,
       "pos_id": "N-A-067",
       "paper": true,
+      "action": "close",
       "direction": "long",
       "entry_price": 77194.38,
-      "sl": 77271.35,
+      "sl": null,
       "tp": null,
       "L": 77.1,
       "neck_lo": 77098.0,
       "neck_hi": 77175.1,
-      "notional_usd": 26699.0
+      "notional_usd": 26699.0,
+      "reason": "trail",
+      "exit_price": 77271.35,
+      "pnl_usd": 26.62,
+      "dedup": "N-A-067:close",
+      "event_id": 503
     },
+    {
+      "ts": 1789326000,
+      "time": "2026-09-13 20:00 UTC",
+      "strategy": "N-D",
+      "signal_no": 73,
+      "pos_id": "N-D-073",
+      "paper": true,
+      "action": "close",
+      "direction": "long",
+      "entry_price": 77194.38,
+      "sl": null,
+      "tp": null,
+      "L": 77.1,
+      "neck_lo": 77098.0,
+      "neck_hi": 77175.1,
+      "notional_usd": 26699.0,
+      "reason": "trail",
+      "exit_price": 77271.35,
+      "pnl_usd": 26.62,
+      "dedup": "N-D-073:close",
+      "event_id": 504
+    }
+  ],
+  "open_positions": [
     {
       "strategy": "N-C",
       "signal_no": 50,
@@ -10189,20 +10219,6 @@
       "neck_lo": 77098.0,
       "neck_hi": 77175.1,
       "notional_usd": 10000.0
-    },
-    {
-      "strategy": "N-D",
-      "signal_no": 73,
-      "pos_id": "N-D-073",
-      "paper": true,
-      "direction": "long",
-      "entry_price": 77194.38,
-      "sl": 77271.35,
-      "tp": null,
-      "L": 77.1,
-      "neck_lo": 77098.0,
-      "neck_hi": 77175.1,
-      "notional_usd": 26699.0
     }
   ]
 }
