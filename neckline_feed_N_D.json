@@ -2,8 +2,8 @@
   "schema": 1,
   "paper": true,
   "strategy": "N-D",
-  "next_event_id": 346,
-  "updated_at": "2026-09-14 20:45 UTC",
+  "next_event_id": 347,
+  "updated_at": "2026-09-14 21:00 UTC",
   "events": [
     {
       "ts": 1787040000,
@@ -3920,7 +3920,42 @@
       "dedup": "N-D-075:close",
       "event_id": 345,
       "master_event_id": 513
+    },
+    {
+      "ts": 1789416000,
+      "time": "2026-09-14 21:00 UTC",
+      "strategy": "N-D",
+      "signal_no": 76,
+      "pos_id": "N-D-076",
+      "paper": true,
+      "action": "open_long",
+      "direction": "long",
+      "entry_price": 79242.98,
+      "sl": 78893.93,
+      "tp": null,
+      "L": 232.7,
+      "neck_lo": 78952.1,
+      "neck_hi": 79184.8,
+      "notional_usd": 9081.0,
+      "dedup": "N-D-076:open",
+      "event_id": 346,
+      "master_event_id": 516
     }
   ],
-  "open_positions": []
+  "open_positions": [
+    {
+      "strategy": "N-D",
+      "signal_no": 76,
+      "pos_id": "N-D-076",
+      "paper": true,
+      "direction": "long",
+      "entry_price": 79242.98,
+      "sl": 78893.93,
+      "tp": null,
+      "L": 232.7,
+      "neck_lo": 78952.1,
+      "neck_hi": 79184.8,
+      "notional_usd": 9081.0
+    }
+  ]
 }
