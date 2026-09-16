@@ -2,7 +2,7 @@
   "schema": 1,
   "strategy": "C",
   "updated_at": "2026-09-16 02:30 UTC",
-  "next_event_id": 116,
+  "next_event_id": 114,
   "events": [
     {
       "ts": 1782982800,
@@ -785,7 +785,8 @@
       "result_r": -1.4,
       "dollar_pl": -344.87,
       "dedup": "C-039:close",
-      "event_id": 103
+      "event_id": 101,
+      "old_event_id": 103
     },
     {
       "ts": 1788757200,
@@ -802,8 +803,9 @@
       "r_dollar": 1775.22,
       "notional_usd": 10000,
       "dedup": "C-040:open",
-      "event_id": 104,
-      "master_event_id": 108
+      "event_id": 102,
+      "master_event_id": 108,
+      "old_event_id": 104
     },
     {
       "ts": 1788836400,
@@ -820,8 +822,9 @@
       "r_dollar": 2166.72,
       "notional_usd": 10000,
       "dedup": "C-041:open",
-      "event_id": 105,
-      "master_event_id": 111
+      "event_id": 103,
+      "master_event_id": 111,
+      "old_event_id": 105
     },
     {
       "ts": 1788872400,
@@ -842,8 +845,9 @@
       "result_r": -0.7,
       "dollar_pl": -155.94,
       "dedup": "C-040:close",
-      "event_id": 106,
-      "master_event_id": 114
+      "event_id": 104,
+      "master_event_id": 114,
+      "old_event_id": 106
     },
     {
       "ts": 1788948000,
@@ -860,8 +864,9 @@
       "r_dollar": 2418.95,
       "notional_usd": 10000,
       "dedup": "C-042:open",
-      "event_id": 107,
-      "master_event_id": 117
+      "event_id": 105,
+      "master_event_id": 117,
+      "old_event_id": 107
     },
     {
       "ts": 1788962400,
@@ -878,8 +883,9 @@
       "r_dollar": 2140.86,
       "notional_usd": 10000,
       "dedup": "C-043:open",
-      "event_id": 108,
-      "master_event_id": 120
+      "event_id": 106,
+      "master_event_id": 120,
+      "old_event_id": 108
     },
     {
       "ts": 1788836400,
@@ -898,8 +904,9 @@
       "add_price": 76732.08,
       "add_size": 0.5,
       "dedup": "C-041:pyramid",
-      "event_id": 109,
-      "master_event_id": 122
+      "event_id": 107,
+      "master_event_id": 122,
+      "old_event_id": 109
     },
     {
       "ts": 1788962400,
@@ -918,8 +925,9 @@
       "add_price": 76959.34,
       "add_size": 0.5,
       "dedup": "C-043:pyramid",
-      "event_id": 110,
-      "master_event_id": 123
+      "event_id": 108,
+      "master_event_id": 123,
+      "old_event_id": 110
     },
     {
       "ts": 1788948000,
@@ -938,8 +946,9 @@
       "add_price": 76494.15,
       "add_size": 0.5,
       "dedup": "C-042:pyramid",
-      "event_id": 111,
-      "master_event_id": 124
+      "event_id": 109,
+      "master_event_id": 124,
+      "old_event_id": 111
     },
     {
       "ts": 1789228800,
@@ -956,8 +965,9 @@
       "r_dollar": 1683.25,
       "notional_usd": 10000,
       "dedup": "C-044:open",
-      "event_id": 112,
-      "master_event_id": 127
+      "event_id": 110,
+      "master_event_id": 127,
+      "old_event_id": 112
     },
     {
       "ts": 1789282800,
@@ -974,8 +984,9 @@
       "r_dollar": 1755.02,
       "notional_usd": 10000,
       "dedup": "C-045:open",
-      "event_id": 113,
-      "master_event_id": 130
+      "event_id": 111,
+      "master_event_id": 130,
+      "old_event_id": 113
     },
     {
       "ts": 1789401600,
@@ -996,8 +1007,9 @@
       "result_r": -0.7,
       "dollar_pl": -159.38,
       "dedup": "C-045:close",
-      "event_id": 114,
-      "master_event_id": 133
+      "event_id": 112,
+      "master_event_id": 133,
+      "old_event_id": 114
     },
     {
       "ts": 1789405200,
@@ -1018,8 +1030,9 @@
       "result_r": -0.7,
       "dollar_pl": -152.34,
       "dedup": "C-044:close",
-      "event_id": 115,
-      "master_event_id": 136
+      "event_id": 113,
+      "master_event_id": 136,
+      "old_event_id": 115
     }
   ],
   "open_positions": [

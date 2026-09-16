@@ -2,7 +2,7 @@
   "schema": 1,
   "strategy": "B",
   "updated_at": "2026-09-16 02:30 UTC",
-  "next_event_id": 111,
+  "next_event_id": 110,
   "events": [
     {
       "ts": 1782982800,
@@ -726,7 +726,8 @@
       "result_r": -1.0,
       "dollar_pl": -246.34,
       "dedup": "B-039:close",
-      "event_id": 102
+      "event_id": 101,
+      "old_event_id": 102
     },
     {
       "ts": 1788757200,
@@ -743,8 +744,9 @@
       "r_dollar": 1775.22,
       "notional_usd": 10000,
       "dedup": "B-040:open",
-      "event_id": 103,
-      "master_event_id": 107
+      "event_id": 102,
+      "master_event_id": 107,
+      "old_event_id": 103
     },
     {
       "ts": 1788836400,
@@ -761,8 +763,9 @@
       "r_dollar": 2166.72,
       "notional_usd": 10000,
       "dedup": "B-041:open",
-      "event_id": 104,
-      "master_event_id": 110
+      "event_id": 103,
+      "master_event_id": 110,
+      "old_event_id": 104
     },
     {
       "ts": 1788872400,
@@ -783,8 +786,9 @@
       "result_r": -1.0,
       "dollar_pl": -222.78,
       "dedup": "B-040:close",
-      "event_id": 105,
-      "master_event_id": 113
+      "event_id": 104,
+      "master_event_id": 113,
+      "old_event_id": 105
     },
     {
       "ts": 1788962400,
@@ -801,8 +805,9 @@
       "r_dollar": 2140.86,
       "notional_usd": 10000,
       "dedup": "B-042:open",
-      "event_id": 106,
-      "master_event_id": 119
+      "event_id": 105,
+      "master_event_id": 119,
+      "old_event_id": 106
     },
     {
       "ts": 1789228800,
@@ -819,8 +824,9 @@
       "r_dollar": 1683.25,
       "notional_usd": 10000,
       "dedup": "B-043:open",
-      "event_id": 107,
-      "master_event_id": 126
+      "event_id": 106,
+      "master_event_id": 126,
+      "old_event_id": 107
     },
     {
       "ts": 1789282800,
@@ -837,8 +843,9 @@
       "r_dollar": 1755.02,
       "notional_usd": 10000,
       "dedup": "B-044:open",
-      "event_id": 108,
-      "master_event_id": 129
+      "event_id": 107,
+      "master_event_id": 129,
+      "old_event_id": 108
     },
     {
       "ts": 1789401600,
@@ -859,8 +866,9 @@
       "result_r": -1.0,
       "dollar_pl": -227.68,
       "dedup": "B-044:close",
-      "event_id": 109,
-      "master_event_id": 132
+      "event_id": 108,
+      "master_event_id": 132,
+      "old_event_id": 109
     },
     {
       "ts": 1789405200,
@@ -881,8 +889,9 @@
       "result_r": -1.0,
       "dollar_pl": -217.63,
       "dedup": "B-043:close",
-      "event_id": 110,
-      "master_event_id": 135
+      "event_id": 109,
+      "master_event_id": 135,
+      "old_event_id": 110
     }
   ],
   "open_positions": [
