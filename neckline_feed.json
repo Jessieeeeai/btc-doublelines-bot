@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-09-17 08:47 UTC",
+  "updated_at": "2026-09-17 09:00 UTC",
   "next_event_id": 553,
   "events": [
     {
@@ -11185,7 +11185,7 @@
       "paper": true,
       "direction": "long",
       "entry_price": 76486.78,
-      "sl": 76255.93,
+      "sl": 76330.35,
       "tp": null,
       "L": 153.9,
       "neck_lo": 76294.4,
@@ -11213,7 +11213,7 @@
       "paper": true,
       "direction": "long",
       "entry_price": 76486.78,
-      "sl": 76255.93,
+      "sl": 76330.35,
       "tp": null,
       "L": 153.9,
       "neck_lo": 76294.4,
