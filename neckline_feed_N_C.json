@@ -2,8 +2,8 @@
   "schema": 1,
   "paper": true,
   "strategy": "N-C",
-  "next_event_id": 312,
-  "updated_at": "2026-09-17 10:45 UTC",
+  "next_event_id": 313,
+  "updated_at": "2026-09-17 11:00 UTC",
   "events": [
     {
       "ts": 1787040000,
@@ -2432,22 +2432,30 @@
       "dedup": "N-C-057:open",
       "event_id": 311,
       "master_event_id": 551
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1789639200,
+      "time": "2026-09-17 11:00 UTC",
       "strategy": "N-C",
       "signal_no": 57,
       "pos_id": "N-C-057",
       "paper": true,
+      "action": "close",
       "direction": "long",
       "entry_price": 76486.78,
-      "sl": 76255.93,
+      "sl": null,
       "tp": 76948.48,
       "L": 153.9,
       "neck_lo": 76294.4,
       "neck_hi": 76448.3,
-      "notional_usd": 10000.0
+      "notional_usd": 10000.0,
+      "reason": "sl",
+      "exit_price": 76255.93,
+      "pnl_usd": -30.18,
+      "dedup": "N-C-057:close",
+      "event_id": 312,
+      "master_event_id": 556
     }
-  ]
+  ],
+  "open_positions": []
 }
