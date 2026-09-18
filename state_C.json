@@ -1185,7 +1185,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 76732.08,
-      "last_checked_ts": 1789707600,
+      "last_checked_ts": 1789711200,
       "close_notified": false
     },
     {
@@ -1214,7 +1214,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 76494.15,
-      "last_checked_ts": 1789707600,
+      "last_checked_ts": 1789711200,
       "close_notified": false
     },
     {
@@ -1243,7 +1243,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 76959.34,
-      "last_checked_ts": 1789707600,
+      "last_checked_ts": 1789711200,
       "close_notified": false
     },
     {
@@ -1345,7 +1345,7 @@
       "expires_at": "2026-09-18 06:00 UTC",
       "expires_ts": 1789711200,
       "pattern_desc": "看跌反转 (急涨后顶部缠绕)",
-      "status": "waiting",
+      "status": "expired",
       "entry_price": null,
       "entry_time": null,
       "entry_ts": null,
