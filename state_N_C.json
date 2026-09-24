@@ -1,18 +1,9 @@
 {
   "started": true,
   "anchor_ts": 1787022000,
-  "last_bar_ts": 1790215200,
+  "last_bar_ts": 1790218800,
   "active": [],
-  "forming": {
-    "signal_ts": 1790215200,
-    "signal_time": "2026-09-24 02:00 UTC",
-    "overlap_lo": 84070.8,
-    "overlap_hi": 84278.3,
-    "L": 207.5,
-    "trigger_up": 84330.18,
-    "trigger_dn": 84018.93,
-    "expire_ts": 1790226000
-  },
+  "forming": null,
   "position": null,
   "trades": [
     {
@@ -1330,5 +1321,5 @@
   "seq": 69,
   "n_skipped": 82,
   "n_expired": 0,
-  "n_ambiguous": 27
+  "n_ambiguous": 28
 }
