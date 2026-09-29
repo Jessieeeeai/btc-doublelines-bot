@@ -19,6 +19,12 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from tg_notify import send_message
 import neckline_feed
 
+# 额外播报群 (追加到 TELEGRAM_GROUP_CHAT_ID, tg_notify 会自动去重)
+#   -1003953373413 = 大漂亮的AI策略分享福利群
+EXTRA_BROADCAST_GROUPS = ["-1003953373413"]
+_g = [x.strip() for x in (os.environ.get("TELEGRAM_GROUP_CHAT_ID") or "").split(",") if x.strip()]
+os.environ["TELEGRAM_GROUP_CHAT_ID"] = ",".join(_g + [x for x in EXTRA_BROADCAST_GROUPS if x not in _g])
+
 COINGLASS_BASE = "https://open-api-v4.coinglass.com"
 N_BARS = 300
 
