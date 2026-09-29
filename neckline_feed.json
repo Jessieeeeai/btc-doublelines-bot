@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-09-28 23:45 UTC",
-  "next_event_id": 750,
+  "updated_at": "2026-09-29 00:00 UTC",
+  "next_event_id": 752,
   "events": [
     {
       "ts": 1787040000,
@@ -15176,9 +15176,61 @@
       "pnl_usd": 33.0,
       "dedup": "N-D-114:close",
       "event_id": 749
+    },
+    {
+      "ts": 1790636400,
+      "time": "2026-09-29 00:00 UTC",
+      "strategy": "N-A",
+      "signal_no": 97,
+      "pos_id": "N-A-097",
+      "paper": true,
+      "action": "open_long",
+      "direction": "long",
+      "entry_price": 83581.1,
+      "sl": 83095.1,
+      "tp": null,
+      "L": 324.0,
+      "neck_lo": 83176.1,
+      "neck_hi": 83500.1,
+      "notional_usd": 6879.0,
+      "dedup": "N-A-097:open",
+      "event_id": 750
+    },
+    {
+      "ts": 1790636400,
+      "time": "2026-09-29 00:00 UTC",
+      "strategy": "N-D",
+      "signal_no": 115,
+      "pos_id": "N-D-115",
+      "paper": true,
+      "action": "open_long",
+      "direction": "long",
+      "entry_price": 83581.1,
+      "sl": 83095.1,
+      "tp": null,
+      "L": 324.0,
+      "neck_lo": 83176.1,
+      "neck_hi": 83500.1,
+      "notional_usd": 6879.0,
+      "dedup": "N-D-115:open",
+      "event_id": 751
     }
   ],
   "open_positions": [
+    {
+      "strategy": "N-A",
+      "signal_no": 97,
+      "pos_id": "N-A-097",
+      "paper": true,
+      "direction": "long",
+      "entry_price": 83581.1,
+      "sl": 83095.1,
+      "tp": null,
+      "L": 324.0,
+      "neck_lo": 83176.1,
+      "neck_hi": 83500.1,
+      "notional_usd": 6879.0
+    },
     {
       "strategy": "N-C",
       "signal_no": 78,
@@ -15192,6 +15244,20 @@
       "neck_lo": 82990.6,
       "neck_hi": 83331.5,
       "notional_usd": 10000.0
+    },
+    {
+      "strategy": "N-D",
+      "signal_no": 115,
+      "pos_id": "N-D-115",
+      "paper": true,
+      "direction": "long",
+      "entry_price": 83581.1,
+      "sl": 83095.1,
+      "tp": null,
+      "L": 324.0,
+      "neck_lo": 83176.1,
+      "neck_hi": 83500.1,
+      "notional_usd": 6879.0
     }
   ]
 }
