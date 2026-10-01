@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-10-01 05:45 UTC",
-  "next_event_id": 795,
+  "updated_at": "2026-10-01 06:00 UTC",
+  "next_event_id": 797,
   "events": [
     {
       "ts": 1787040000,
@@ -16085,23 +16085,53 @@
       "notional_usd": 3459.0,
       "dedup": "N-D-123:stop:84430.15",
       "event_id": 794
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1790830800,
+      "time": "2026-10-01 06:00 UTC",
       "strategy": "N-A",
       "signal_no": 102,
       "pos_id": "N-A-102",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 84445.92,
-      "sl": 84336.65,
+      "sl": null,
       "tp": null,
       "L": 651.1,
       "neck_lo": 84608.7,
       "neck_hi": 85259.8,
-      "notional_usd": 3459.0
+      "notional_usd": 3459.0,
+      "reason": "trail",
+      "exit_price": 84336.65,
+      "pnl_usd": 4.48,
+      "dedup": "N-A-102:close",
+      "event_id": 795
     },
+    {
+      "ts": 1790830800,
+      "time": "2026-10-01 06:00 UTC",
+      "strategy": "N-D",
+      "signal_no": 123,
+      "pos_id": "N-D-123",
+      "paper": true,
+      "action": "close",
+      "direction": "short",
+      "entry_price": 84445.92,
+      "sl": null,
+      "tp": null,
+      "L": 651.1,
+      "neck_lo": 84608.7,
+      "neck_hi": 85259.8,
+      "notional_usd": 3459.0,
+      "reason": "trail",
+      "exit_price": 84336.65,
+      "pnl_usd": 4.48,
+      "dedup": "N-D-123:close",
+      "event_id": 796
+    }
+  ],
+  "open_positions": [
     {
       "strategy": "N-C",
       "signal_no": 83,
@@ -16115,20 +16145,6 @@
       "neck_lo": 84608.7,
       "neck_hi": 85259.8,
       "notional_usd": 10000.0
-    },
-    {
-      "strategy": "N-D",
-      "signal_no": 123,
-      "pos_id": "N-D-123",
-      "paper": true,
-      "direction": "short",
-      "entry_price": 84445.92,
-      "sl": 84336.65,
-      "tp": null,
-      "L": 651.1,
-      "neck_lo": 84608.7,
-      "neck_hi": 85259.8,
-      "notional_usd": 3459.0
     }
   ]
 }
