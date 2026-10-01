@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-10-01 09:45 UTC",
-  "next_event_id": 801,
+  "updated_at": "2026-10-01 10:00 UTC",
+  "next_event_id": 803,
   "events": [
     {
       "ts": 1787040000,
@@ -16205,23 +16205,53 @@
       "notional_usd": 12604.0,
       "dedup": "N-D-124:stop:83403.3",
       "event_id": 800
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1790845200,
+      "time": "2026-10-01 10:00 UTC",
       "strategy": "N-A",
       "signal_no": 103,
       "pos_id": "N-A-103",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 84037.65,
-      "sl": 83403.3,
+      "sl": null,
       "tp": null,
       "L": 177.8,
       "neck_lo": 84082.1,
       "neck_hi": 84259.9,
-      "notional_usd": 12604.0
+      "notional_usd": 12604.0,
+      "reason": "trail",
+      "exit_price": 83403.3,
+      "pnl_usd": 95.14,
+      "dedup": "N-A-103:close",
+      "event_id": 801
     },
+    {
+      "ts": 1790845200,
+      "time": "2026-10-01 10:00 UTC",
+      "strategy": "N-D",
+      "signal_no": 124,
+      "pos_id": "N-D-124",
+      "paper": true,
+      "action": "close",
+      "direction": "short",
+      "entry_price": 84037.65,
+      "sl": null,
+      "tp": null,
+      "L": 177.8,
+      "neck_lo": 84082.1,
+      "neck_hi": 84259.9,
+      "notional_usd": 12604.0,
+      "reason": "trail",
+      "exit_price": 83403.3,
+      "pnl_usd": 95.14,
+      "dedup": "N-D-124:close",
+      "event_id": 802
+    }
+  ],
+  "open_positions": [
     {
       "strategy": "N-C",
       "signal_no": 83,
@@ -16235,20 +16265,6 @@
       "neck_lo": 84608.7,
       "neck_hi": 85259.8,
       "notional_usd": 10000.0
-    },
-    {
-      "strategy": "N-D",
-      "signal_no": 124,
-      "pos_id": "N-D-124",
-      "paper": true,
-      "direction": "short",
-      "entry_price": 84037.65,
-      "sl": 83403.3,
-      "tp": null,
-      "L": 177.8,
-      "neck_lo": 84082.1,
-      "neck_hi": 84259.9,
-      "notional_usd": 12604.0
     }
   ]
 }
