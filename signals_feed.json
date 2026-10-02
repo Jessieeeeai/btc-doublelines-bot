@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "updated_at": "2026-10-02 04:15 UTC",
-  "next_event_id": 161,
+  "updated_at": "2026-10-02 04:30 UTC",
+  "next_event_id": 164,
   "events": [
     {
       "ts": 1782982800,
@@ -3028,6 +3028,63 @@
       "notional_usd": 10000,
       "dedup": "C-051:open",
       "event_id": 160
+    },
+    {
+      "ts": 1790388000,
+      "time": "2026-10-02 04:30 UTC",
+      "strategy": "C",
+      "signal_no": 48,
+      "pos_id": "C-048",
+      "action": "pyramid_add",
+      "direction": "long",
+      "entry_price": 84041.4,
+      "sl": 82075.0,
+      "tp": 99772.6,
+      "size_mult": 0.7,
+      "r_dollar": 1966.4,
+      "notional_usd": 10000,
+      "add_price": 86007.8,
+      "add_size": 0.5,
+      "dedup": "C-048:pyramid",
+      "event_id": 161
+    },
+    {
+      "ts": 1790553600,
+      "time": "2026-10-02 04:30 UTC",
+      "strategy": "C",
+      "signal_no": 50,
+      "pos_id": "C-050",
+      "action": "pyramid_add",
+      "direction": "long",
+      "entry_price": 84433.0,
+      "sl": 82392.81,
+      "tp": 100754.49,
+      "size_mult": 0.7,
+      "r_dollar": 2040.19,
+      "notional_usd": 10000,
+      "add_price": 86473.19,
+      "add_size": 0.5,
+      "dedup": "C-050:pyramid",
+      "event_id": 162
+    },
+    {
+      "ts": 1790784000,
+      "time": "2026-10-02 04:30 UTC",
+      "strategy": "C",
+      "signal_no": 51,
+      "pos_id": "C-051",
+      "action": "pyramid_add",
+      "direction": "long",
+      "entry_price": 84104.8,
+      "sl": 81658.6,
+      "tp": 103674.42,
+      "size_mult": 0.7,
+      "r_dollar": 2446.2,
+      "notional_usd": 10000,
+      "add_price": 86551.0,
+      "add_size": 0.5,
+      "dedup": "C-051:pyramid",
+      "event_id": 163
     }
   ],
   "open_positions": [
@@ -3140,7 +3197,7 @@
       "size_mult": 0.7,
       "r_dollar": 1966.4,
       "stair_2r_locked": false,
-      "pyramid_entered": false,
+      "pyramid_entered": true,
       "notional_usd": 10000
     },
     {
@@ -3154,7 +3211,7 @@
       "size_mult": 0.7,
       "r_dollar": 2040.19,
       "stair_2r_locked": false,
-      "pyramid_entered": false,
+      "pyramid_entered": true,
       "notional_usd": 10000
     },
     {
@@ -3168,7 +3225,7 @@
       "size_mult": 0.7,
       "r_dollar": 2446.2,
       "stair_2r_locked": false,
-      "pyramid_entered": false,
+      "pyramid_entered": true,
       "notional_usd": 10000
     }
   ]
