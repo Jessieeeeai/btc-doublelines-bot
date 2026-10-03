@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-10-03 11:45 UTC",
-  "next_event_id": 832,
+  "updated_at": "2026-10-03 12:00 UTC",
+  "next_event_id": 834,
   "events": [
     {
       "ts": 1787040000,
@@ -16833,23 +16833,53 @@
       "notional_usd": 23409.0,
       "dedup": "N-D-130:open",
       "event_id": 831
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1791025200,
+      "time": "2026-10-03 12:00 UTC",
       "strategy": "N-A",
       "signal_no": 107,
       "pos_id": "N-A-107",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 84535.93,
-      "sl": 84641.95,
+      "sl": null,
       "tp": null,
       "L": 96.3,
       "neck_lo": 84560.0,
       "neck_hi": 84656.3,
-      "notional_usd": 23409.0
+      "notional_usd": 23409.0,
+      "reason": "trail",
+      "exit_price": 84641.95,
+      "pnl_usd": -29.36,
+      "dedup": "N-A-107:close",
+      "event_id": 832
     },
+    {
+      "ts": 1791025200,
+      "time": "2026-10-03 12:00 UTC",
+      "strategy": "N-D",
+      "signal_no": 130,
+      "pos_id": "N-D-130",
+      "paper": true,
+      "action": "close",
+      "direction": "short",
+      "entry_price": 84535.93,
+      "sl": null,
+      "tp": null,
+      "L": 96.3,
+      "neck_lo": 84560.0,
+      "neck_hi": 84656.3,
+      "notional_usd": 23409.0,
+      "reason": "trail",
+      "exit_price": 84641.95,
+      "pnl_usd": -29.36,
+      "dedup": "N-D-130:close",
+      "event_id": 833
+    }
+  ],
+  "open_positions": [
     {
       "strategy": "N-C",
       "signal_no": 86,
@@ -16863,20 +16893,6 @@
       "neck_lo": 84560.0,
       "neck_hi": 84656.3,
       "notional_usd": 10000.0
-    },
-    {
-      "strategy": "N-D",
-      "signal_no": 130,
-      "pos_id": "N-D-130",
-      "paper": true,
-      "direction": "short",
-      "entry_price": 84535.93,
-      "sl": 84641.95,
-      "tp": null,
-      "L": 96.3,
-      "neck_lo": 84560.0,
-      "neck_hi": 84656.3,
-      "notional_usd": 23409.0
     }
   ]
 }
