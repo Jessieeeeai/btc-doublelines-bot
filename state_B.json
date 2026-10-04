@@ -1329,7 +1329,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1791133200,
+      "last_checked_ts": 1791136800,
       "close_notified": false
     },
     {
@@ -1387,7 +1387,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1791133200,
+      "last_checked_ts": 1791136800,
       "close_notified": false
     },
     {
@@ -1416,7 +1416,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1791133200,
+      "last_checked_ts": 1791136800,
       "close_notified": false
     },
     {
@@ -1474,7 +1474,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1791133200,
+      "last_checked_ts": 1791136800,
       "close_notified": false
     }
   ],
@@ -1485,6 +1485,6 @@
   "pause_until_ts": 1790658000,
   "pause_until_ts_long": 0,
   "pause_until_ts_short": 0,
-  "last_weekly_report_ts": 1790535627,
+  "last_weekly_report_ts": 1791140429,
   "report_format_v": 5
 }
