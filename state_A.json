@@ -1432,7 +1432,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1791266400,
+      "last_checked_ts": 1791270000,
       "close_notified": false
     },
     {
@@ -1490,7 +1490,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1791266400,
+      "last_checked_ts": 1791270000,
       "close_notified": false
     },
     {
@@ -1519,7 +1519,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1791266400,
+      "last_checked_ts": 1791270000,
       "close_notified": false
     },
     {
@@ -1548,7 +1548,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1791266400,
+      "last_checked_ts": 1791270000,
       "close_notified": false
     },
     {
@@ -1606,7 +1606,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1791266400,
+      "last_checked_ts": 1791270000,
       "close_notified": false
     },
     {
@@ -1635,7 +1635,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1791266400,
+      "last_checked_ts": 1791270000,
       "close_notified": false
     },
     {
@@ -1664,7 +1664,36 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1791266400,
+      "last_checked_ts": 1791270000,
+      "close_notified": false
+    },
+    {
+      "signal_time": "2026-10-06 07:00 UTC",
+      "signal_ts": 1791270000,
+      "direction": "long",
+      "trigger_price": 85512.3,
+      "sl0": 83371.25,
+      "current_sl": 83371.25,
+      "tp": 89794.41,
+      "r_dollar": 2141.05,
+      "expires_at": "2026-10-06 11:00 UTC",
+      "expires_ts": 1791284400,
+      "pattern_desc": "看涨反转 (急跌后底部缠绕)",
+      "status": "entered",
+      "entry_price": 85512.3,
+      "entry_time": "2026-10-06 08:00 UTC",
+      "entry_ts": 1791273600,
+      "exit_price": null,
+      "exit_time": null,
+      "exit_ts": null,
+      "result_r": null,
+      "result_r_raw": null,
+      "size_multiplier": 1.0,
+      "stair_2r_locked": false,
+      "stair_4r_locked": false,
+      "pyramid_entered": false,
+      "pyramid_entry_price": null,
+      "last_checked_ts": null,
       "close_notified": false
     }
   ],
