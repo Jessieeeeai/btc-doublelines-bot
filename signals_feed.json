@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "updated_at": "2026-10-08 16:00 UTC",
-  "next_event_id": 197,
+  "updated_at": "2026-10-08 16:15 UTC",
+  "next_event_id": 198,
   "events": [
     {
       "ts": 1782982800,
@@ -3730,22 +3730,28 @@
       "dollar_pl": -407.19,
       "dedup": "C-051:close",
       "event_id": 196
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1791475200,
+      "time": "2026-10-08 16:15 UTC",
       "strategy": "A",
       "signal_no": 53,
       "pos_id": "A-053",
+      "action": "close",
       "direction": "long",
       "entry_price": 83328.4,
       "sl": 80850.1,
       "tp": 88285.0,
       "size_mult": 1.0,
       "r_dollar": 2478.3,
-      "stair_2r_locked": false,
-      "pyramid_entered": false,
-      "notional_usd": 10000
+      "notional_usd": 10000,
+      "reason": "sl",
+      "exit_price": 80850.1,
+      "result_r": -1.0,
+      "dollar_pl": -297.41,
+      "dedup": "A-053:close",
+      "event_id": 197
     }
-  ]
+  ],
+  "open_positions": []
 }
