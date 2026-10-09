@@ -14,12 +14,21 @@ def _esc(s) -> str:
     return html_module.escape(str(s), quote=False)
 
 
+PAUSE_FLAG = "PAUSE_PUBLIC"  # 仓库根目录存在此文件 => 对外全部暂停 (群/英文群/Discord/订阅平台子feed)
+
+
+def public_paused():
+    return os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), PAUSE_FLAG))
+
+
 def _chat_ids(chat_id=None):
     """解析目标 chat_id 列表。
     TELEGRAM_CHAT_ID 支持逗号分隔多个; 另外可选 TELEGRAM_GROUP_CHAT_ID 追加群,
     两者都支持逗号分隔, 自动去重。这样加群时只需新增 GROUP 密钥, 不动原私聊密钥。"""
     raw = chat_id if chat_id is not None else os.environ.get("TELEGRAM_CHAT_ID") or ""
     extra = "" if chat_id is not None else (os.environ.get("TELEGRAM_GROUP_CHAT_ID") or "")
+    if public_paused():
+        extra = ""  # 对外暂停: 只发私聊, 不发群
     ids, seen = [], set()
     for part in str(raw).split(",") + str(extra).split(","):
         c = part.strip()

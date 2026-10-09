@@ -123,7 +123,10 @@ def flush(path, states_by_code, notional_usd):
     feed["schema"] = SCHEMA
     with open(path, "w") as f:
         json.dump(feed, f, indent=2, ensure_ascii=False)
-    _write_per_strategy_feeds(path, feed, states_by_code)
+    if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), "PAUSE_PUBLIC")):
+        print("  [feed] 对外暂停中: A/B/C 子feed 冻结不更新")
+    else:
+        _write_per_strategy_feeds(path, feed, states_by_code)
     _buffer.clear()
     return added
 

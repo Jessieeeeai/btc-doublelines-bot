@@ -11,22 +11,29 @@ REPO = os.path.dirname(HERE)
 sys.path.insert(0, REPO)
 
 NOTICE_CN = (
-    "📢 <b>[B] #024 / [C] #026 恢复为持仓中</b>, "
-    "止损已锁定 <b>$65,688 (保底+1R)</b>, 继续等 8R 止盈或锁价出场。"
+    "📢 <b>双线反转信号 (A/B/C 三条线) 暂停对外推送</b>\n\n"
+    "自 7 月中旬以来策略连续亏损 (B/C 近三个月 28 笔无一盈利), 已超出历史回测的回撤范围。"
+    "在原因查清、行情类型改变之前, 不再向群内推送开仓/平仓信号。\n\n"
+    "机器人本身继续纸面记账, 之后会复盘这段停发期的数据, 恢复推送时另行通知。"
+    "现有持仓请自行按止损处理。谢谢大家。"
 )
 
 NOTICE_EN = (
-    "📢 <b>[B] #024 / [C] #026 are restored as OPEN</b>, "
-    "stops locked at <b>$65,688 (+1R secured)</b>, continuing toward the 8R target."
+    "📢 <b>Double-Line Reversal signals (strategies A/B/C) are paused</b>\n\n"
+    "The strategy has been in a losing streak since mid-July (B/C: 28 trades, 0 wins over ~3 months), "
+    "beyond anything in the 3-year backtest. Until the cause is understood or the regime changes, "
+    "no open/close signals will be posted here.\n\n"
+    "The bot keeps paper-tracking in the background; we'll review that data before resuming. "
+    "Please manage any open positions by their stops. Thank you."
 )
 
 DISCORD_TEXT = (
-    "📢 **[B] #024 / [C] #026 restored as OPEN**, stops locked at **$65,688 (+1R secured)**, "
-    "continuing toward the 8R target.\n"
-    "[B] #024 / [C] #026 恢复为持仓中, 止损已锁保底 +1R ($65,688), 继续等 8R。"
+    "📢 **Double-Line Reversal signals (A/B/C) are paused.**\n"
+    "Losing streak since mid-July (B/C: 28 trades, 0 wins) is beyond the 3-year backtest range. "
+    "No signals will be posted until the cause is understood or the regime changes. "
+    "Bot keeps paper-tracking; please manage open positions by their stops."
 )
 
-# 中文群兜底 (与 Secrets 里的 GROUP 合并去重)
 GROUP_CHAT_IDS = "-5515956430,-1003953373413"
 
 
@@ -68,8 +75,9 @@ def main():
     existing = os.environ.get("TELEGRAM_GROUP_CHAT_ID", "").strip()
     merged = ",".join(dict.fromkeys(
         x.strip() for x in f"{existing},{GROUP_CHAT_IDS}".split(",") if x.strip()))
-    os.environ["TELEGRAM_GROUP_CHAT_ID"] = merged
-    ok_cn = send_message(NOTICE_CN)
+    private = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
+    # 显式传 chat_id, 绕过 PAUSE_PUBLIC 的"不发群"规则 (停发通知本身必须到群)
+    ok_cn = send_message(NOTICE_CN, chat_id=",".join(x for x in [private, merged] if x))
     print(f"[中文TG] {'已发送' if ok_cn else '失败'} → 私聊+群({merged})")
 
     # 2) 英文 TG 群 (单独目标)

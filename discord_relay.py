@@ -105,6 +105,9 @@ def try_close_chart(e, url):
 
 
 def main():
+    if os.path.exists("PAUSE_PUBLIC"):
+        print("[PAUSED] 对外暂停中 (PAUSE_PUBLIC 存在), 不转发")
+        return
     url = os.environ.get("DISCORD_WEBHOOK_URL")
     if not url:
         print("[WARN] 未配置 DISCORD_WEBHOOK_URL, 跳过")

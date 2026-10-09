@@ -87,6 +87,9 @@ def try_close_chart(e, token, chat_id):
 
 
 def main():
+    if os.path.exists("PAUSE_PUBLIC"):
+        print("[PAUSED] 对外暂停中 (PAUSE_PUBLIC 存在), 不转发")
+        return
     token = os.environ.get("TELEGRAM_BOT_TOKEN")
     chat_id = os.environ.get("TG_EN_CHAT_ID")
     if not token or not chat_id:
