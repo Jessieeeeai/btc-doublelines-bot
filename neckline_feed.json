@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-10-09 18:45 UTC",
-  "next_event_id": 926,
+  "updated_at": "2026-10-09 19:00 UTC",
+  "next_event_id": 927,
   "events": [
     {
       "ts": 1787040000,
@@ -18733,6 +18733,28 @@
       "notional_usd": 13740.0,
       "dedup": "N-E-027:stop:82718.85",
       "event_id": 925
+    },
+    {
+      "ts": 1791568800,
+      "time": "2026-10-09 19:00 UTC",
+      "strategy": "N-C",
+      "signal_no": 96,
+      "pos_id": "N-C-096",
+      "paper": true,
+      "action": "close",
+      "direction": "short",
+      "entry_price": 82799.22,
+      "sl": null,
+      "tp": 82317.12,
+      "L": 160.7,
+      "neck_lo": 82839.4,
+      "neck_hi": 83000.1,
+      "notional_usd": 10000.0,
+      "reason": "tp",
+      "exit_price": 82317.12,
+      "pnl_usd": 58.23,
+      "dedup": "N-C-096:close",
+      "event_id": 926
     }
   ],
   "open_positions": [
@@ -18743,26 +18765,12 @@
       "paper": true,
       "direction": "short",
       "entry_price": 82799.22,
-      "sl": 82718.85,
+      "sl": 82514.95,
       "tp": null,
       "L": 160.7,
       "neck_lo": 82839.4,
       "neck_hi": 83000.1,
       "notional_usd": 13740.0
-    },
-    {
-      "strategy": "N-C",
-      "signal_no": 96,
-      "pos_id": "N-C-096",
-      "paper": true,
-      "direction": "short",
-      "entry_price": 82799.22,
-      "sl": 83040.27,
-      "tp": 82317.12,
-      "L": 160.7,
-      "neck_lo": 82839.4,
-      "neck_hi": 83000.1,
-      "notional_usd": 10000.0
     },
     {
       "strategy": "N-D",
@@ -18771,7 +18779,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 82799.22,
-      "sl": 82718.85,
+      "sl": 82514.95,
       "tp": null,
       "L": 160.7,
       "neck_lo": 82839.4,
@@ -18785,7 +18793,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 82799.22,
-      "sl": 82718.85,
+      "sl": 82514.95,
       "tp": null,
       "L": 160.7,
       "neck_lo": 82839.4,
