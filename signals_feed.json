@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "updated_at": "2026-10-10 06:45 UTC",
-  "next_event_id": 201,
+  "updated_at": "2026-10-10 07:00 UTC",
+  "next_event_id": 204,
   "events": [
     {
       "ts": 1782982800,
@@ -3802,6 +3802,57 @@
       "notional_usd": 10000,
       "dedup": "C-057:open",
       "event_id": 200
+    },
+    {
+      "ts": 1791615600,
+      "time": "2026-10-10 07:00 UTC",
+      "strategy": "A",
+      "signal_no": 61,
+      "pos_id": "A-061",
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 82700.0,
+      "sl": 84516.79,
+      "tp": 79066.42,
+      "size_mult": 1.0,
+      "r_dollar": 1816.79,
+      "notional_usd": 10000,
+      "dedup": "A-061:open",
+      "event_id": 201
+    },
+    {
+      "ts": 1791615600,
+      "time": "2026-10-10 07:00 UTC",
+      "strategy": "B",
+      "signal_no": 56,
+      "pos_id": "B-056",
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 82700.0,
+      "sl": 84516.79,
+      "tp": 68165.66,
+      "size_mult": 1.0,
+      "r_dollar": 1816.79,
+      "notional_usd": 10000,
+      "dedup": "B-056:open",
+      "event_id": 202
+    },
+    {
+      "ts": 1791615600,
+      "time": "2026-10-10 07:00 UTC",
+      "strategy": "C",
+      "signal_no": 58,
+      "pos_id": "C-058",
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 82700.0,
+      "sl": 84516.79,
+      "tp": 68165.66,
+      "size_mult": 0.7,
+      "r_dollar": 1816.79,
+      "notional_usd": 10000,
+      "dedup": "C-058:open",
+      "event_id": 203
     }
   ],
   "open_positions": [
@@ -3815,6 +3866,20 @@
       "tp": 79019.54,
       "size_mult": 1.0,
       "r_dollar": 1785.43,
+      "stair_2r_locked": false,
+      "pyramid_entered": false,
+      "notional_usd": 10000
+    },
+    {
+      "strategy": "A",
+      "signal_no": 61,
+      "pos_id": "A-061",
+      "direction": "short",
+      "entry_price": 82700.0,
+      "sl": 84516.79,
+      "tp": 79066.42,
+      "size_mult": 1.0,
+      "r_dollar": 1816.79,
       "stair_2r_locked": false,
       "pyramid_entered": false,
       "notional_usd": 10000
@@ -3834,6 +3899,20 @@
       "notional_usd": 10000
     },
     {
+      "strategy": "B",
+      "signal_no": 56,
+      "pos_id": "B-056",
+      "direction": "short",
+      "entry_price": 82700.0,
+      "sl": 84516.79,
+      "tp": 68165.66,
+      "size_mult": 1.0,
+      "r_dollar": 1816.79,
+      "stair_2r_locked": false,
+      "pyramid_entered": false,
+      "notional_usd": 10000
+    },
+    {
       "strategy": "C",
       "signal_no": 57,
       "pos_id": "C-057",
@@ -3843,6 +3922,20 @@
       "tp": 68306.98,
       "size_mult": 0.7,
       "r_dollar": 1785.43,
+      "stair_2r_locked": false,
+      "pyramid_entered": false,
+      "notional_usd": 10000
+    },
+    {
+      "strategy": "C",
+      "signal_no": 58,
+      "pos_id": "C-058",
+      "direction": "short",
+      "entry_price": 82700.0,
+      "sl": 84516.79,
+      "tp": 68165.66,
+      "size_mult": 0.7,
+      "r_dollar": 1816.79,
       "stair_2r_locked": false,
       "pyramid_entered": false,
       "notional_usd": 10000
