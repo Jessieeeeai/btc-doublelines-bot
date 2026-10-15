@@ -3,7 +3,7 @@
   "paper": true,
   "strategy": "N-A",
   "next_event_id": 481,
-  "updated_at": "2026-10-15 19:45 UTC",
+  "updated_at": "2026-10-15 20:00 UTC",
   "events": [
     {
       "ts": 1787040000,
@@ -6752,7 +6752,7 @@
       "paper": true,
       "direction": "long",
       "entry_price": 82447.2,
-      "sl": 82008.0,
+      "sl": 82136.2,
       "tp": null,
       "L": 292.8,
       "neck_lo": 82081.2,
