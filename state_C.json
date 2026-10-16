@@ -1649,7 +1649,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 80804.97,
-      "last_checked_ts": 1792148400,
+      "last_checked_ts": 1792152000,
       "close_notified": false
     },
     {
@@ -1678,7 +1678,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 80883.21,
-      "last_checked_ts": 1792148400,
+      "last_checked_ts": 1792152000,
       "close_notified": false
     },
     {
@@ -1707,7 +1707,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 81174.26,
-      "last_checked_ts": 1792148400,
+      "last_checked_ts": 1792152000,
       "close_notified": false
     },
     {
@@ -1736,7 +1736,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 81111.88,
-      "last_checked_ts": 1792148400,
+      "last_checked_ts": 1792152000,
       "close_notified": false
     },
     {
@@ -1765,7 +1765,36 @@
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 80295.83,
-      "last_checked_ts": 1792148400,
+      "last_checked_ts": 1792152000,
+      "close_notified": false
+    },
+    {
+      "signal_time": "2026-10-16 12:00 UTC",
+      "signal_ts": 1792152000,
+      "direction": "short",
+      "trigger_price": 82008.6,
+      "sl0": 84558.51,
+      "current_sl": 84558.51,
+      "tp": 61609.32,
+      "r_dollar": 2549.91,
+      "expires_at": "2026-10-16 16:00 UTC",
+      "expires_ts": 1792166400,
+      "pattern_desc": "看跌反转 (急涨后顶部缠绕)",
+      "status": "waiting",
+      "entry_price": null,
+      "entry_time": null,
+      "entry_ts": null,
+      "exit_price": null,
+      "exit_time": null,
+      "exit_ts": null,
+      "result_r": null,
+      "result_r_raw": null,
+      "size_multiplier": 0.7,
+      "stair_2r_locked": false,
+      "stair_4r_locked": false,
+      "pyramid_entered": false,
+      "pyramid_entry_price": null,
+      "last_checked_ts": null,
       "close_notified": false
     }
   ],
