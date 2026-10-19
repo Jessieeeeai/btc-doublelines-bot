@@ -1722,7 +1722,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1792411200,
+      "last_checked_ts": 1792414800,
       "close_notified": false
     },
     {
@@ -1751,7 +1751,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1792411200,
+      "last_checked_ts": 1792414800,
       "close_notified": false
     },
     {
@@ -1780,7 +1780,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1792411200,
+      "last_checked_ts": 1792414800,
       "close_notified": false
     },
     {
@@ -1809,7 +1809,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1792411200,
+      "last_checked_ts": 1792414800,
       "close_notified": false
     },
     {
@@ -1838,7 +1838,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1792411200,
+      "last_checked_ts": 1792414800,
       "close_notified": false
     },
     {
@@ -1867,7 +1867,36 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1792411200,
+      "last_checked_ts": 1792414800,
+      "close_notified": false
+    },
+    {
+      "signal_time": "2026-10-19 13:00 UTC",
+      "signal_ts": 1792414800,
+      "direction": "short",
+      "trigger_price": 82088.5,
+      "sl0": 84398.88,
+      "current_sl": 84398.88,
+      "tp": 77467.74,
+      "r_dollar": 2310.38,
+      "expires_at": "2026-10-19 17:00 UTC",
+      "expires_ts": 1792429200,
+      "pattern_desc": "看跌反转 (急涨后顶部缠绕)",
+      "status": "entered",
+      "entry_price": 82088.5,
+      "entry_time": "2026-10-19 14:00 UTC",
+      "entry_ts": 1792418400,
+      "exit_price": null,
+      "exit_time": null,
+      "exit_ts": null,
+      "result_r": null,
+      "result_r_raw": null,
+      "size_multiplier": 1.0,
+      "stair_2r_locked": false,
+      "stair_4r_locked": false,
+      "pyramid_entered": false,
+      "pyramid_entry_price": null,
+      "last_checked_ts": null,
       "close_notified": false
     }
   ],
