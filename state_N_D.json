@@ -1,9 +1,18 @@
 {
   "started": true,
   "anchor_ts": 1787022000,
-  "last_bar_ts": 1792533600,
+  "last_bar_ts": 1792537200,
   "active": [],
-  "forming": null,
+  "forming": {
+    "signal_ts": 1792537200,
+    "signal_time": "2026-10-20 23:00 UTC",
+    "overlap_lo": 82984.7,
+    "overlap_hi": 83057.7,
+    "L": 73.0,
+    "trigger_up": 83075.95,
+    "trigger_dn": 82966.45,
+    "expire_ts": 1792548000
+  },
   "position": {
     "seq": 178,
     "direction": "short",
