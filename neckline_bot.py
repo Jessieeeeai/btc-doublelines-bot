@@ -18,6 +18,17 @@ from datetime import datetime
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from tg_notify import send_message
 import neckline_feed
+import tg_notify
+
+# PAUSE_PUBLIC 总开关对这几匹马不生效 (照常发群); 其余马 (N-C) 仍按开关只发私聊。
+# F6 / 英文群 / Discord 是独立进程, 不受这里影响。
+PUBLIC_HORSES = {"N-A", "N-D", "N-E"}
+_orig_public_paused = tg_notify.public_paused
+
+
+def _apply_public_switch(horse):
+    tg_notify.public_paused = ((lambda: False) if horse["code"] in PUBLIC_HORSES
+                               else _orig_public_paused)
 
 # 额外播报群 (追加到 TELEGRAM_GROUP_CHAT_ID, tg_notify 会自动去重)
 #   -1003953373413 = 大漂亮的AI策略分享福利群
@@ -364,6 +375,7 @@ def main():
     print(f"拉到 {len(bars)} 根, 最新 {bars[-1]['date']} UTC close={bars[-1]['close']}")
     for horse in HORSES:
         try:
+            _apply_public_switch(horse)
             process_horse(horse, bars)
             print(f"[{horse['code']}] ok")
         except Exception as e:
