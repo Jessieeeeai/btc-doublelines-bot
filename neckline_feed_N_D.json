@@ -2,8 +2,8 @@
   "schema": 1,
   "paper": true,
   "strategy": "N-D",
-  "next_event_id": 641,
-  "updated_at": "2026-10-26 14:45 UTC",
+  "next_event_id": 642,
+  "updated_at": "2026-10-26 15:00 UTC",
   "events": [
     {
       "ts": 1787040000,
@@ -10263,22 +10263,30 @@
       "dedup": "N-D-194:stop:79684.45",
       "event_id": 640,
       "master_event_id": 1195
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1793023200,
+      "time": "2026-10-26 15:00 UTC",
       "strategy": "N-D",
       "signal_no": 194,
       "pos_id": "N-D-194",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 80294.43,
-      "sl": 79684.45,
+      "sl": null,
       "tp": null,
       "L": 170.3,
       "neck_lo": 80337.0,
       "neck_hi": 80507.3,
-      "notional_usd": 12573.0
+      "notional_usd": 12573.0,
+      "reason": "trail",
+      "exit_price": 79684.45,
+      "pnl_usd": 95.51,
+      "dedup": "N-D-194:close",
+      "event_id": 641,
+      "master_event_id": 1197
     }
-  ]
+  ],
+  "open_positions": []
 }
