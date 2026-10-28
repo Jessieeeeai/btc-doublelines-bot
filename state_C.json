@@ -1925,22 +1925,22 @@
       "expires_at": "2026-10-27 10:00 UTC",
       "expires_ts": 1793095200,
       "pattern_desc": "看跌反转 (急涨后顶部缠绕)",
-      "status": "entered",
+      "status": "sl_hit",
       "entry_price": 79628.4,
       "entry_time": "2026-10-27 07:00 UTC",
       "entry_ts": 1793084400,
-      "exit_price": null,
-      "exit_time": null,
-      "exit_ts": null,
-      "result_r": null,
-      "result_r_raw": null,
+      "exit_price": 81618.16,
+      "exit_time": "2026-10-28 08:00 UTC",
+      "exit_ts": 1793174400,
+      "result_r": -0.7,
+      "result_r_raw": -1.0,
       "size_multiplier": 0.7,
       "stair_2r_locked": false,
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
       "last_checked_ts": 1793170800,
-      "close_notified": false
+      "close_notified": true
     },
     {
       "signal_time": "2026-10-27 13:00 UTC",
@@ -1978,7 +1978,7 @@
   "started": true,
   "pause_until_ts": 0,
   "pause_until_ts_long": 1791453600,
-  "pause_until_ts_short": 1792677600,
+  "pause_until_ts_short": 1793260800,
   "last_weekly_report_ts": 1792954831,
   "report_format_v": 5
 }
