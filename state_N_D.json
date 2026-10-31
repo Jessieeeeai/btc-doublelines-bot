@@ -1,19 +1,25 @@
 {
   "started": true,
   "anchor_ts": 1787022000,
-  "last_bar_ts": 1793448000,
+  "last_bar_ts": 1793451600,
   "active": [],
-  "forming": {
-    "signal_ts": 1793448000,
-    "signal_time": "2026-10-31 12:00 UTC",
-    "overlap_lo": 77510.0,
-    "overlap_hi": 77576.2,
+  "forming": null,
+  "position": {
+    "seq": 210,
+    "direction": "short",
+    "entry": 77493.45,
+    "entry_ts": 1793451600,
+    "entry_time": "2026-10-31 13:00 UTC",
+    "level": 77493.45,
     "L": 66.2,
-    "trigger_up": 77592.75,
-    "trigger_dn": 77493.45,
-    "expire_ts": 1793458800
+    "neck_lo": 77510.0,
+    "neck_hi": 77576.2,
+    "sl": 77592.75,
+    "tp": null,
+    "peak": 77493.45,
+    "trailed": false,
+    "notional": 31216.0
   },
-  "position": null,
   "trades": [
     {
       "seq": 1,
@@ -3987,7 +3993,7 @@
       "bars_held": 2
     }
   ],
-  "seq": 209,
+  "seq": 210,
   "n_skipped": 216,
   "n_expired": 0,
   "n_ambiguous": 149
