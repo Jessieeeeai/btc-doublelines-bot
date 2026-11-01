@@ -1,7 +1,7 @@
 {
   "started": true,
   "anchor_ts": 1787022000,
-  "last_bar_ts": 1793527200,
+  "last_bar_ts": 1793530800,
   "active": [],
   "forming": null,
   "position": {
@@ -14,10 +14,10 @@
     "L": 133.2,
     "neck_lo": 78082.8,
     "neck_hi": 78216.0,
-    "sl": 78249.3,
+    "sl": 78073.0,
     "tp": null,
-    "peak": 78049.5,
-    "trailed": false,
+    "peak": 77873.2,
+    "trailed": true,
     "notional": 15626.0
   },
   "trades": [
