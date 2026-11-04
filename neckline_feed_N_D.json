@@ -3,7 +3,7 @@
   "paper": true,
   "strategy": "N-D",
   "next_event_id": 720,
-  "updated_at": "2026-11-04 09:45 UTC",
+  "updated_at": "2026-11-04 10:00 UTC",
   "events": [
     {
       "ts": 1787040000,
@@ -11940,7 +11940,7 @@
       "paper": true,
       "direction": "long",
       "entry_price": 76550.15,
-      "sl": 77993.3,
+      "sl": 78043.2,
       "tp": null,
       "L": 337.8,
       "neck_lo": 76127.9,
