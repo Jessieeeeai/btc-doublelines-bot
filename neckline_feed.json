@@ -1,28 +1,9 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-04 10:45 UTC",
-  "next_event_id": 1374,
+  "updated_at": "2026-11-04 11:00 UTC",
+  "next_event_id": 1375,
   "events": [
-    {
-      "ts": 1788501600,
-      "time": "2026-09-04 08:00 UTC",
-      "strategy": "N-D",
-      "signal_no": 55,
-      "pos_id": "N-D-055",
-      "paper": true,
-      "action": "move_stop",
-      "direction": "short",
-      "entry_price": 80919.65,
-      "sl": 80756.7,
-      "tp": null,
-      "L": 96.6,
-      "neck_lo": 80943.8,
-      "neck_hi": 81040.4,
-      "notional_usd": 22338.0,
-      "dedup": "N-D-055:stop:80756.7",
-      "event_id": 374
-    },
     {
       "ts": 1788508800,
       "time": "2026-09-04 09:00 UTC",
@@ -20248,6 +20229,25 @@
       "notional_usd": 6043.0,
       "dedup": "N-D-223:stop:77657.3",
       "event_id": 1373
+    },
+    {
+      "ts": 1793786400,
+      "time": "2026-11-04 11:00 UTC",
+      "strategy": "N-C",
+      "signal_no": 141,
+      "pos_id": "N-C-141",
+      "paper": true,
+      "action": "open_long",
+      "direction": "long",
+      "entry_price": 78498.28,
+      "sl": 78353.23,
+      "tp": 78788.38,
+      "L": 96.7,
+      "neck_lo": 78377.4,
+      "neck_hi": 78474.1,
+      "notional_usd": 10000.0,
+      "dedup": "N-C-141:open",
+      "event_id": 1374
     }
   ],
   "open_positions": [
@@ -20258,12 +20258,26 @@
       "paper": true,
       "direction": "long",
       "entry_price": 76550.15,
-      "sl": 78043.2,
+      "sl": 78189.9,
       "tp": null,
       "L": 337.8,
       "neck_lo": 76127.9,
       "neck_hi": 76465.7,
       "notional_usd": 6043.0
+    },
+    {
+      "strategy": "N-C",
+      "signal_no": 141,
+      "pos_id": "N-C-141",
+      "paper": true,
+      "direction": "long",
+      "entry_price": 78498.28,
+      "sl": 78353.23,
+      "tp": 78788.38,
+      "L": 96.7,
+      "neck_lo": 78377.4,
+      "neck_hi": 78474.1,
+      "notional_usd": 10000.0
     },
     {
       "strategy": "N-D",
@@ -20272,7 +20286,7 @@
       "paper": true,
       "direction": "long",
       "entry_price": 76550.15,
-      "sl": 78043.2,
+      "sl": 78189.9,
       "tp": null,
       "L": 337.8,
       "neck_lo": 76127.9,
