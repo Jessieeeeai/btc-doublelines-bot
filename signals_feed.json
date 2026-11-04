@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "updated_at": "2026-11-04 14:45 UTC",
-  "next_event_id": 279,
+  "updated_at": "2026-11-04 15:00 UTC",
+  "next_event_id": 282,
   "events": [
     {
       "ts": 1782982800,
@@ -5280,50 +5280,70 @@
       "dollar_pl": 181.86,
       "dedup": "C-068:close",
       "event_id": 278
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1793800800,
+      "time": "2026-11-04 15:00 UTC",
       "strategy": "A",
       "signal_no": 72,
       "pos_id": "A-072",
+      "action": "close",
       "direction": "short",
       "entry_price": 77875.6,
       "sl": 79583.46,
       "tp": 74459.88,
       "size_mult": 1.0,
       "r_dollar": 1707.86,
-      "stair_2r_locked": false,
-      "pyramid_entered": false,
-      "notional_usd": 10000
+      "notional_usd": 10000,
+      "reason": "sl",
+      "exit_price": 79583.46,
+      "result_r": -1.0,
+      "dollar_pl": -219.31,
+      "dedup": "A-072:close",
+      "event_id": 279
     },
     {
+      "ts": 1793800800,
+      "time": "2026-11-04 15:00 UTC",
       "strategy": "B",
       "signal_no": 66,
       "pos_id": "B-066",
+      "action": "close",
       "direction": "short",
       "entry_price": 77875.6,
       "sl": 79583.46,
       "tp": 64212.72,
       "size_mult": 1.0,
       "r_dollar": 1707.86,
-      "stair_2r_locked": false,
-      "pyramid_entered": false,
-      "notional_usd": 10000
+      "notional_usd": 10000,
+      "reason": "sl",
+      "exit_price": 79583.46,
+      "result_r": -1.0,
+      "dollar_pl": -219.31,
+      "dedup": "B-066:close",
+      "event_id": 280
     },
     {
+      "ts": 1793800800,
+      "time": "2026-11-04 15:00 UTC",
       "strategy": "C",
       "signal_no": 69,
       "pos_id": "C-069",
+      "action": "close",
       "direction": "short",
       "entry_price": 77875.6,
       "sl": 79583.46,
       "tp": 64212.72,
       "size_mult": 0.7,
       "r_dollar": 1707.86,
-      "stair_2r_locked": false,
-      "pyramid_entered": true,
-      "notional_usd": 10000
+      "notional_usd": 10000,
+      "reason": "sl",
+      "exit_price": 79583.46,
+      "result_r": -1.4,
+      "dollar_pl": -307.03,
+      "dedup": "C-069:close",
+      "event_id": 281
     }
-  ]
+  ],
+  "open_positions": []
 }
