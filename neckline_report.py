@@ -144,6 +144,9 @@ def render_chart(code, trade, bars, sl_mult=1.5):
     return buf.getvalue()
 
 
+PRINCIPAL_USD = 1000.0  # 每单本金 (与 neckline_bot.PRINCIPAL_USD 一致)
+
+
 def build_caption(code, horse_name, trade, footer=""):
     short = trade["direction"] == "short"
     reason = {"TP": "🎯 打到TP目标价, 止盈出场",
@@ -159,7 +162,7 @@ def build_caption(code, horse_name, trade, footer=""):
         f"🏁 {_fmt_t(trade['exit_ts'])} 出场 <code>${trade['exit']:,.0f}</code>",
         "━━━━━━━━━━━━━━━",
         f"💰 <b>{'+' if trade['pnl_usd'] >= 0 else '-'}${abs(trade['pnl_usd']):,.2f}</b>"
-        f" · 持仓 {trade['bars_held']} 小时",
+        f" (<b>{trade['pnl_usd']/PRINCIPAL_USD*100:+.2f}%</b>) · 持仓 {trade['bars_held']} 小时",
     ]
     text = "\n".join(lines)
     if footer:
