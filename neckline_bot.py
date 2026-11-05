@@ -49,6 +49,7 @@ EXPIRE_BARS = 3       # 形态确认后3根内未触发作废
 RISK_USD = 40.0       # 马A每单风险
 NOTIONAL_CAP = 100000.0
 NOTIONAL_FIXED = 10000.0
+PRINCIPAL_USD = 1000.0  # 每单本金 (保证金 $1,000 × 10x = 名义 $10,000), 收益率 = 盈亏 ÷ 本金
 
 HORSES = [
     {"code": "N-A", "name": "FINAL_R完全体 (跟踪+等风险)", "state_file": "state_N_A.json",
@@ -160,7 +161,9 @@ def footer(horse, state):
     pos = state["position"]
     line = (f"\n━━━━━━━━━━━━━━━\n📊 <b>[{horse['code']}] 前向战绩</b> "
             f"已完成 {s['n']} 笔 · {s['wins']}胜{s['n']-s['wins']}败 "
-            f"(胜率 {s['wr']*100:.0f}%) · 累计 <b>${s['total']:+,.2f}</b>")
+            f"(胜率 {s['wr']*100:.0f}%) · 累计 <b>${s['total']:+,.2f}</b> "
+            f"(<b>{s['total']/PRINCIPAL_USD*100:+,.1f}%</b>)"
+            f"\n💵 每单本金 ${PRINCIPAL_USD:,.0f} · 单均 {(s['total']/s['n'] if s['n'] else 0)/PRINCIPAL_USD*100:+.2f}%")
     if pos:
         line += f"\n⏳ 持仓: {'📈多' if pos['direction']=='long' else '📉空'} @${pos['entry']:,.0f}"
     if horse.get("observe"):
@@ -182,9 +185,9 @@ def fmt_entry(horse, pos, state):
             f"方向: {'📈 做多' if pos['direction']=='long' else '📉 做空'}\n"
             f"形态: 重叠K线 L=${pos['L']:,.0f} (颈线 {pos['neck_lo']:,.0f}~{pos['neck_hi']:,.0f})\n"
             f"入场: <code>${pos['entry']:,.2f}</code> ({pos['entry_time']})\n"
-            f"🛑 止损: <code>${pos['sl']:,.2f}</code> · 输约 <b>${-risk_usd:,.0f}</b>\n"
+            f"🛑 止损: <code>${pos['sl']:,.2f}</code> · 输约 <b>${-risk_usd:,.0f}</b> ({-risk_usd/PRINCIPAL_USD*100:.1f}%)\n"
             f"{tp_txt}\n"
-            f"⚖️ 仓位: <b>${pos['notional']:,.0f}</b> 名义"
+            f"⚖️ 仓位: <b>${pos['notional']:,.0f}</b> 名义 · 本金 ${PRINCIPAL_USD:,.0f}"
             + footer(horse, state))
 
 
@@ -194,7 +197,7 @@ def fmt_exit(horse, t, state):
             f"━━━━━━━━━━━━━━━\n"
             f"{'📈多' if t['direction']=='long' else '📉空'} "
             f"@${t['entry']:,.2f} → ${t['exit']:,.2f} ({t['exit_time']})\n"
-            f"结果: <b>${t['pnl_usd']:+,.2f}</b> · 持仓 {t['bars_held']} 根K线"
+            f"结果: <b>${t['pnl_usd']:+,.2f}</b> ({t['pnl_usd']/PRINCIPAL_USD*100:+.2f}%) · 持仓 {t['bars_held']} 根K线"
             + footer(horse, state))
 
 
