@@ -2,8 +2,8 @@
   "schema": 1,
   "paper": true,
   "strategy": "N-A",
-  "next_event_id": 624,
-  "updated_at": "2026-11-09 17:45 UTC",
+  "next_event_id": 625,
+  "updated_at": "2026-11-09 18:00 UTC",
   "events": [
     {
       "ts": 1787040000,
@@ -9770,7 +9770,42 @@
       "dedup": "N-A-182:close",
       "event_id": 623,
       "master_event_id": 1480
+    },
+    {
+      "ts": 1794243600,
+      "time": "2026-11-09 18:00 UTC",
+      "strategy": "N-A",
+      "signal_no": 183,
+      "pos_id": "N-A-183",
+      "paper": true,
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 74919.38,
+      "sl": 75616.13,
+      "tp": null,
+      "L": 464.5,
+      "neck_lo": 75035.5,
+      "neck_hi": 75500.0,
+      "notional_usd": 4301.0,
+      "dedup": "N-A-183:open",
+      "event_id": 624,
+      "master_event_id": 1483
     }
   ],
-  "open_positions": []
+  "open_positions": [
+    {
+      "strategy": "N-A",
+      "signal_no": 183,
+      "pos_id": "N-A-183",
+      "paper": true,
+      "direction": "short",
+      "entry_price": 74919.38,
+      "sl": 75616.13,
+      "tp": null,
+      "L": 464.5,
+      "neck_lo": 75035.5,
+      "neck_hi": 75500.0,
+      "notional_usd": 4301.0
+    }
+  ]
 }
