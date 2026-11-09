@@ -59,6 +59,8 @@ def _fetch(api_key, interval, n):
     with urllib.request.urlopen(req, timeout=30) as resp:
         raw = json.loads(resp.read().decode())
     items = raw.get("data") or raw.get("result") or []
+    if not items:
+        print(f"Coinglass {interval} 返回空: code={raw.get('code')} msg={raw.get('msg')} keys={list(raw)[:6]}")
     bars = []
     for it in items:
         if isinstance(it, dict):
@@ -73,6 +75,22 @@ def _fetch(api_key, interval, n):
     bars.sort(key=lambda x: x["ts"])
     now = int(time.time())
     return [b for b in bars if b["ts"] + sec <= now]   # 只要已收盘的
+
+
+def _fetch_okx_5m():
+    """备用 5m 数据源: OKX BTC-USDT-SWAP 公共行情 (美国机房可访问)。只取已确认收盘的 K 线。"""
+    url = "https://www.okx.com/api/v5/market/candles?instId=BTC-USDT-SWAP&bar=5m&limit=300"
+    req = urllib.request.Request(url, headers={"accept": "application/json", "User-Agent": "neckline-g/1.0"})
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        raw = json.loads(resp.read().decode())
+    bars = []
+    for it in raw.get("data") or []:
+        if len(it) >= 9 and str(it[8]) != "1":
+            continue
+        bars.append({"ts": int(it[0]) // 1000, "open": float(it[1]), "high": float(it[2]),
+                     "low": float(it[3]), "close": float(it[4])})
+    bars.sort(key=lambda x: x["ts"])
+    return bars
 
 
 def tstr(ts):
@@ -356,7 +374,17 @@ def main():
     if not api_key:
         print("缺少 COINGLASS_API_KEY"); sys.exit(1)
     HB = _fetch(api_key, "1h", 1000)
-    M5 = _fetch(api_key, "5m", 1000)
+    try:
+        M5 = _fetch(api_key, "5m", 1000)
+    except Exception as e:
+        print(f"Coinglass 5m 失败: {e}"); M5 = []
+    src5 = "Coinglass/Binance"
+    if len(M5) < 24:
+        try:
+            M5 = _fetch_okx_5m(); src5 = "OKX 永续"
+            print(f"5m 改用 OKX: {len(M5)} 根")
+        except Exception as e:
+            print(f"OKX 5m 失败: {e}")
     if len(HB) < 200 or len(M5) < 24:
         print(f"K线不足: 1h {len(HB)} 5m {len(M5)}"); sys.exit(1)
     print(f"1h {len(HB)} 根 (最新 {tstr(HB[-1]['ts'])}), 5m {len(M5)} 根 (最新 {tstr(M5[-1]['ts'])})")
@@ -367,7 +395,7 @@ def main():
         st["hour_done_ts"] = M5[-1]["ts"] // H * H if M5[-1]["ts"] % H == H - 300 else M5[-1]["ts"] // H * H - H
         save_state(st)
         send(f"🤖 <b>{NAME} 已启动</b>\n━━━━━━━━━━━━━━━\n"
-             f"标的: BTCUSDT 永续 · 1h 形态 · 5m 真实路径记账\n"
+             f"标的: BTCUSDT 永续 · 1h 形态 (Binance) · 5m 真实路径记账 (数据源 {src5})\n"
              f"规则: 野马形态 + 两道门 (止损≥0.3% · 波动≥1.6×30天中位) + 突破后回踩 颈线−0.2L 进 + 跟踪止损\n"
              f"仓位: 每单本金 ${PRINCIPAL_USD:,.0f} · 风险 ${RISK_USD:,.0f} · 名义≤${NOTIONAL_CAP:,.0f}\n"
              f"记账: 基准口径 (滑点0.04%+资金费) 与 保守口径 (滑点0.08%+止损再滑0.05%+资金费) 并列\n"
