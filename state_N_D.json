@@ -1,18 +1,9 @@
 {
   "started": true,
   "anchor_ts": 1787022000,
-  "last_bar_ts": 1794337200,
+  "last_bar_ts": 1794340800,
   "active": [],
-  "forming": {
-    "signal_ts": 1794337200,
-    "signal_time": "2026-11-10 19:00 UTC",
-    "overlap_lo": 73437.6,
-    "overlap_hi": 73455.6,
-    "L": 18.0,
-    "trigger_up": 73460.1,
-    "trigger_dn": 73433.1,
-    "expire_ts": 1794348000
-  },
+  "forming": null,
   "position": {
     "seq": 248,
     "direction": "long",
@@ -23,11 +14,12 @@
     "L": 335.6,
     "neck_lo": 72844.5,
     "neck_hi": 73180.1,
-    "sl": 73058.7,
+    "sl": 73340.6,
     "tp": null,
-    "peak": 73562.1,
+    "peak": 73844.0,
     "trailed": true,
-    "notional": 5822.0
+    "notional": 5822.0,
+    "be_notified": true
   },
   "trades": [
     {
@@ -4725,7 +4717,7 @@
     }
   ],
   "seq": 248,
-  "n_skipped": 234,
+  "n_skipped": 235,
   "n_expired": 0,
   "n_ambiguous": 169
 }
