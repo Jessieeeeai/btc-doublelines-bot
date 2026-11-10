@@ -1,7 +1,7 @@
 {
   "started": true,
-  "last_5m_ts": 1794304500,
-  "hour_done_ts": 1794301200,
+  "last_5m_ts": 1794332700,
+  "hour_done_ts": 1794326400,
   "active": [],
   "pend": null,
   "position": null,
@@ -46,8 +46,8 @@
     }
   ],
   "seq": 2,
-  "n_pat": 9,
-  "n_gate_fail": 4,
+  "n_pat": 12,
+  "n_gate_fail": 7,
   "n_no_break": 0,
   "n_no_pullback": 0,
   "block_until": 1794268800
