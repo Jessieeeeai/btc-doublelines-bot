@@ -1,22 +1,8 @@
 {
   "started": true,
-  "last_5m_ts": 1794364800,
-  "hour_done_ts": 1794358800,
-  "active": [
-    {
-      "L": 58.70000000001164,
-      "side": 1,
-      "neck": 73762.9,
-      "ext": 73328.4,
-      "entry": 73751.15999999999,
-      "sl": 73316.65999999999,
-      "sd_pct": 0.005891432758481359,
-      "sig_ts": 1794358800,
-      "h_from": 1794362400,
-      "h_until": 1794373200,
-      "vr": 1.75
-    }
-  ],
+  "last_5m_ts": 1794392700,
+  "hour_done_ts": 1794387600,
+  "active": [],
   "pend": null,
   "position": null,
   "trades": [
@@ -76,12 +62,31 @@
       "trailed": true,
       "sl0": 72623.88,
       "D0": 562.4
+    },
+    {
+      "seq": 4,
+      "d": 1,
+      "e": 73751.16,
+      "x": 73503.5,
+      "ts": 1794367200,
+      "xts": 1794380700,
+      "n": 3395.0,
+      "gross": -11.4,
+      "cost_base": 1.52,
+      "cost_cons": 4.57,
+      "fund": 0.16,
+      "net_base": -12.92,
+      "net_cons": -15.97,
+      "hold_h": 3.8,
+      "trailed": true,
+      "sl0": 73316.66,
+      "D0": 434.5
     }
   ],
-  "seq": 3,
-  "n_pat": 16,
-  "n_gate_fail": 7,
+  "seq": 4,
+  "n_pat": 19,
+  "n_gate_fail": 10,
   "n_no_break": 0,
   "n_no_pullback": 0,
-  "block_until": 1794362400
+  "block_until": 1794384000
 }
