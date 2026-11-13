@@ -16,6 +16,7 @@ from datetime import datetime, timezone
 FEED_FILE = "breakout_feed.json"
 SCHEMA, MAX_EVENTS, PRINCIPAL = 1, 1000, 1000.0
 CODES = ["N-H1", "N-H2", "N-H3", "N-H4", "AMD"]
+TB_SYMS = ["BTC", "ETH", "SOL"]   # 接入 TokenBeep 量化机器人的币 (每马每币一个文件)
 _buffer = []
 
 
@@ -100,17 +101,22 @@ def flush(st, path=FEED_FILE):
         feed.update(open_positions=snap, updated_at=_now(), schema=SCHEMA, paper=True)
         with open(path, "w") as f:
             json.dump(feed, f, indent=2, ensure_ascii=False)
-        for code in CODES:
-            sp = f"breakout_feed_{code.replace('-', '_')}.json"
+        # 单马文件 (7 币合在一起) + 单马单币文件 (TokenBeep 量化机器人一个接入只能绑一个币)
+        targets = [(f"breakout_feed_{c.replace('-', '_')}.json", c, None) for c in CODES]
+        targets += [(f"breakout_feed_{c.replace('-', '_')}_{y}.json", c, f"{y}USDT") for c in CODES for y in TB_SYMS]
+        for sp, code, symbol in targets:
+            hit = lambda x: x["strategy"] == code and (symbol is None or x["symbol"] == symbol)
             sub = _load(sp); sub["strategy"] = code
+            if symbol:
+                sub["symbol"] = symbol
             sseen = {e.get("dedup") for e in sub["events"]}
-            for ev in added:
-                if ev["strategy"] != code or ev["dedup"] in sseen:
+            for ev in (feed["events"] if not os.path.exists(sp) else added):   # 新文件: 把总表里已有的事件补进来
+                if not hit(ev) or ev["dedup"] in sseen:
                     continue
                 e2 = dict(ev); e2["master_event_id"] = ev["event_id"]; e2["event_id"] = sub["next_event_id"]
-                sub["next_event_id"] += 1; sub["events"].append(e2)
+                sub["next_event_id"] += 1; sub["events"].append(e2); sseen.add(ev["dedup"])
             sub["events"] = sub["events"][-MAX_EVENTS:]
-            sub.update(open_positions=[p for p in snap if p["strategy"] == code], updated_at=feed["updated_at"], schema=SCHEMA, paper=True)
+            sub.update(open_positions=[p for p in snap if hit(p)], updated_at=feed["updated_at"], schema=SCHEMA, paper=True)
             with open(sp, "w") as f:
                 json.dump(sub, f, indent=2, ensure_ascii=False)
         _buffer.clear()

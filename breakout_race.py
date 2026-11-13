@@ -43,7 +43,7 @@ ACCOUNT_USD = PRINCIPAL_USD * len(SYMS)
 SLIP_BASE, SLIP_CONS, STOP_SLIP_CONS, FUND_8H = 0.0004, 0.0008, 0.0005, 0.0001
 # TokenBeep: 一个账号只有一条 webhook 信号流, 只发这里列出的马的开仓信号 (平仓/移动止损该接口不支持)。
 # 地址放在 GitHub Secret TOKENBEEP_WEBHOOK_URL 里; 没设就不发。
-TB_PUBLISH = ["N-H2"]
+TB_PUBLISH = []
 PAPER_MARK = "\n🧪 <i>纸面验证 · 实盘记账口径 — 非实盘指令</i>"
 
 
