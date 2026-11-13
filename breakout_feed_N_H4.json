@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-13 05:00 UTC",
-  "next_event_id": 2,
+  "updated_at": "2026-11-13 05:15 UTC",
+  "next_event_id": 3,
   "events": [
     {
       "ts": 1794542400,
@@ -22,9 +22,40 @@
       "dedup": "N-H4-001:open",
       "event_id": 1,
       "master_event_id": 2
+    },
+    {
+      "ts": 1794546000,
+      "time": "2026-11-13 05:15 UTC",
+      "strategy": "N-H4",
+      "symbol": "ETHUSDT",
+      "signal_no": 2,
+      "pos_id": "N-H4-002",
+      "paper": true,
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 1924.1,
+      "sl": 1993.3378,
+      "tp": null,
+      "notional_usd": 1112.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H4-002:open",
+      "event_id": 2,
+      "master_event_id": 6
     }
   ],
   "open_positions": [
+    {
+      "strategy": "N-H4",
+      "symbol": "ETHUSDT",
+      "signal_no": 2,
+      "pos_id": "N-H4-002",
+      "paper": true,
+      "direction": "short",
+      "entry_price": 1924.1,
+      "sl": 1993.337822,
+      "tp": null,
+      "notional_usd": 1112.0
+    },
     {
       "strategy": "N-H4",
       "symbol": "BNBUSDT",
@@ -33,7 +64,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 633.02,
-      "sl": 653.2271428571428,
+      "sl": 652.2171428571428,
       "tp": null,
       "notional_usd": 1197.0
     }
