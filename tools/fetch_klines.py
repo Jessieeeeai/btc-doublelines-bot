@@ -19,6 +19,30 @@ def grab(url):
         raise
 
 
+def okx(sym):
+    """备用: OKX 永续历史K线 (没有主动买量, 那两列填 0)。"""
+    import json, time
+    inst = sym.replace("USDT", "") + "-USDT-SWAP"
+    out, after = {}, ""
+    for _ in range(4000):
+        url = f"https://www.okx.com/api/v5/market/history-candles?instId={inst}&bar=5m&limit=100" + (f"&after={after}" if after else "")
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "kline-fetch"}), timeout=30) as r:
+                data = json.loads(r.read()).get("data", [])
+        except Exception as e:
+            print("okx err", str(e)[:100], flush=True); time.sleep(2); continue
+        if not data:
+            break
+        for it in data:
+            if len(it) >= 9 and str(it[8]) != "1":
+                continue
+            out[int(it[0])] = [it[0], it[1], it[2], it[3], it[4], it[6], it[7], "0", "0", "0"]
+        after = data[-1][0]
+        time.sleep(0.11)
+    print(sym, "okx 得到", len(out), "根", flush=True)
+    return out
+
+
 def main():
     syms = [l.strip().upper() for l in open("data_requests/request.txt") if l.strip() and not l.startswith("#")]
     now = datetime.now(timezone.utc)
@@ -41,6 +65,9 @@ def main():
                     for r in rows:
                         out[int(r[0])] = [r[0], r[1], r[2], r[3], r[4], r[5], r[7], r[8], r[9], r[10]]
             d += timedelta(days=1)
+        print(sym, "binance.vision 得到", len(out), "根", flush=True)
+        if len(out) < 1000:
+            out = okx(sym)
         ks = sorted(out)
         if not ks:
             print(sym, "没有数据"); continue

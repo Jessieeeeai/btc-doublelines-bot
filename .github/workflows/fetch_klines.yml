@@ -17,7 +17,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Download
-        run: python3 tools/fetch_klines.py
+        run: python3 tools/fetch_klines.py 2>&1 | tee /tmp/fetch_log.txt
       - name: Push to data branch
         run: |
           mkdir -p /tmp/out && mv *_5m_full.csv.gz /tmp/out/ 2>/dev/null || true
@@ -27,6 +27,8 @@ jobs:
           git checkout --orphan data-tmp
           git rm -rfq . || true
           cp /tmp/out/* . 2>/dev/null || true
-          git add -A *.csv.gz
+          cp /tmp/fetch_log.txt .
+          git add -A fetch_log.txt
+          git add -A *.csv.gz || true
           git commit -m "klines $(date -u +'%Y-%m-%d %H:%M UTC')" || exit 0
           git push -f origin data-tmp:data
