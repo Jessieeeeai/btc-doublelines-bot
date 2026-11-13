@@ -5,7 +5,7 @@
 
 ## 订阅链接（raw，公开仓库直接轮询）
 
-总表（四马合流）：
+总表（五马合流）：
 ```
 https://raw.githubusercontent.com/Jessieeeeai/btc-doublelines-bot/main/breakout_feed.json
 ```
@@ -13,8 +13,9 @@ https://raw.githubusercontent.com/Jessieeeeai/btc-doublelines-bot/main/breakout_
 ```
 https://raw.githubusercontent.com/Jessieeeeai/btc-doublelines-bot/main/breakout_feed_N_H1.json   # N-H1 基准马：全做，2R 止盈
 https://raw.githubusercontent.com/Jessieeeeai/btc-doublelines-bot/main/breakout_feed_N_H2.json   # N-H2 纽约顺势马：美东 7-13 点 + 顺 BTC，2R
-https://raw.githubusercontent.com/Jessieeeeai/btc-doublelines-bot/main/breakout_feed_N_H3.json   # N-H3 强弱马：顺 BTC + 强弱排名，2R
+https://raw.githubusercontent.com/Jessieeeeai/btc-doublelines-bot/main/breakout_feed_N_H3.json   # N-H3 强弱马：顺 BTC + 强弱排名，不设止盈，吊灯止损
 https://raw.githubusercontent.com/Jessieeeeai/btc-doublelines-bot/main/breakout_feed_N_H4.json   # N-H4 奔跑马：顺 BTC，不设止盈，吊灯止损
+https://raw.githubusercontent.com/Jessieeeeai/btc-doublelines-bot/main/breakout_feed_N_H5.json   # N-H5 AMD马：4h 横盘→扫一侧→收回箱体，三段止盈（open 事件带 tp1/tp2/tp3/stop_after_tp1；tp 字段=第三止盈）
 ```
 
 ## 文件结构
@@ -35,7 +36,7 @@ https://raw.githubusercontent.com/Jessieeeeai/btc-doublelines-bot/main/breakout_
 | notional_usd / risk_usd | 名义仓位 / 打到止损的亏损额（固定 $40） |
 | close 附加 | reason（tp 止盈 / sl 止损 / trail 吊灯止损 / time 72 小时到时）、exit_price、pnl_usd、pnl_pct（占每币本金 $1,000 的百分比，已扣滑点和资金费） |
 
-`move_stop` 只在 N-H4 的吊灯止损首次推过进场价（保本）时发一条。
+`move_stop`：N-H3 / N-H4 的吊灯止损首次推过进场价（保本）时发一条；N-H5 在第一止盈到手、止损上移时发一条。N-H5 的 `close` 是整笔结束时发一条，pnl_usd 为三份合计。
 
 ## 消费端要点
 1. 机器人每 15 分钟跑一轮，轮询 ≥1 分钟一次即可。

@@ -5,9 +5,9 @@
 不写入任何已有 feed。⚠️ 纸面验证阶段: 所有事件带 "paper": true。
 
 事件字段:
-  event_id, ts, time, strategy(N-H1..N-H4), symbol, signal_no, pos_id, paper,
+  event_id, ts, time, strategy(N-H1..N-H5), symbol, signal_no, pos_id, paper,
   action: open_long | open_short | move_stop | close
-  direction, entry_price, sl, tp(N-H4 为 null=吊灯止损出场), notional_usd, risk_usd
+  direction, entry_price, sl, tp(N-H3/N-H4 为 null=吊灯止损出场; N-H5 为第三止盈, 另带 tp1/tp2/tp3/stop_after_tp1), notional_usd, risk_usd
   close 额外: reason(tp|sl|trail|time), exit_price, pnl_usd, pnl_pct(占每币本金 $1,000)
 """
 import json, os
@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 
 FEED_FILE = "breakout_feed.json"
 SCHEMA, MAX_EVENTS, PRINCIPAL = 1, 1000, 1000.0
-CODES = ["N-H1", "N-H2", "N-H3", "N-H4"]
+CODES = ["N-H1", "N-H2", "N-H3", "N-H4", "N-H5"]
 _buffer = []
 
 
@@ -50,6 +50,12 @@ def emit(kind, p):
                 pos = p["pos"][code]
                 _ev(code, p["sym"], pos["seq"], "open_long" if p["d"] == 1 else "open_short", p["ts"], p["d"], p["e"], p["sl"],
                     pos["tp"], pos["n"], "open")
+        elif kind == "entry5":
+            _ev("N-H5", p["sym"], p["seq"], "open_long" if p["d"] == 1 else "open_short", p["ts"], p["d"], p["e"], p["sl"],
+                p["tg"][2], p["n"], "open", tp1=_r(p["tg"][0]), tp2=_r(p["tg"][1]), tp3=_r(p["tg"][2]), stop_after_tp1=_r(p["s1"]))
+        elif kind == "tp5":
+            if p.get("first"):
+                _ev("N-H5", p["sym"], p["seq"], "move_stop", p["ts"], p["d"], p["e"], p["sl"], None, p["n"], f"stop:{_r(p['sl'])}")
         elif kind == "bemove":
             _ev(p["code"], p["sym"], p["seq"], "move_stop", p["ts"], p["d"], p["e"], p["sl"], None, p["n"], f"stop:{_r(p['sl'])}")
         elif kind == "exit":
