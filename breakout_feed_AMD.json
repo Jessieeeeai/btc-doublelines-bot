@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-13 06:45 UTC",
-  "next_event_id": 2,
+  "updated_at": "2026-11-13 07:00 UTC",
+  "next_event_id": 3,
   "events": [
     {
       "ts": 1794542400,
@@ -26,6 +26,25 @@
       "stop_after_tp1": 0.16769006,
       "event_id": 1,
       "master_event_id": 3
+    },
+    {
+      "ts": 1794552900,
+      "time": "2026-11-13 07:00 UTC",
+      "strategy": "AMD",
+      "symbol": "ADAUSDT",
+      "signal_no": 1,
+      "pos_id": "AMD-001",
+      "paper": true,
+      "action": "move_stop",
+      "direction": "long",
+      "entry_price": 0.1682,
+      "sl": 0.16769006,
+      "tp": null,
+      "notional_usd": 2639.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-001:stop:0.16769006",
+      "event_id": 2,
+      "master_event_id": 7
     }
   ],
   "open_positions": [
@@ -37,7 +56,7 @@
       "paper": true,
       "direction": "long",
       "entry_price": 0.1682,
-      "sl": 0.16565028999999998,
+      "sl": 0.16769005799999998,
       "tp": null,
       "notional_usd": 2639.0
     }
