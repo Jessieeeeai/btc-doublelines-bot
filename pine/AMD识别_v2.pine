@@ -1,4 +1,4 @@
-// AMD 识别 · 大漂亮 v2
+// AMD 识别 · 大漂亮 v2.1 (所有色块无边框)
 // A区 = 吸筹横盘箱体; M区 = 操纵 (扫出箱体一侧); 破败信号 = 扫出后收盘收回箱体; D区 = 派发目标 (破败信号的 2~2.5R、4~4.5R)。
 // 规则与 AMD马 机器人同一套 (箱体 12 根、高度 ≤ 3×ATR、扫出后 3 根内收回、止损 = 扫出的极值)。
 // 一切只在 K 线收盘后判定, 画出来的东西不会事后消失或挪位置。
@@ -188,7 +188,7 @@ if barstate.isconfirmed
                 cur.sl := cur.e - cur.dir * beR * cur.dist
                 cur.bxRisk.set_right(bar_index)
                 cur.bxRisk.set_bgcolor(color.new(colShort, 92))
-                cur.bxRisk2 := box.new(bar_index, math.max(cur.e, cur.sl), bar_index + AHEAD, math.min(cur.e, cur.sl), border_color = color.new(colShort, 100), bgcolor = color.new(colShort, 70))
+                cur.bxRisk2 := box.new(bar_index, math.max(cur.e, cur.sl), bar_index + AHEAD, math.min(cur.e, cur.sl), border_color = color.new(colShort, 100), border_width = 0, bgcolor = color.new(colShort, 70))
                 cur.lnTP1.set_style(line.style_solid)
                 cur.tgSL.set_y(cur.sl)
                 cur.tgSL.set_text("损 " + f_px(cur.sl) + " (已上移)")
@@ -222,7 +222,7 @@ if barstate.isconfirmed
             suExt := dn ? low : high
             suBar := bar_index
             if showWait and (not live or not oneLive)
-                suBox := box.new(bar_index - nBox, boxHi, bar_index, boxLo, border_color = color.new(colA, 35), border_width = 1, bgcolor = color.new(colA, 90), text = "A 吸筹", text_color = color.new(colA, 0), text_size = size.small, text_halign = text.align_left, text_valign = text.align_top)
+                suBox := box.new(bar_index - nBox, boxHi, bar_index, boxLo, border_color = color.new(colA, 100), border_width = 0, bgcolor = color.new(colA, 90), text = "A 吸筹", text_color = color.new(colA, 0), text_size = size.small, text_halign = text.align_left, text_valign = text.align_top)
             else
                 suBox := na
 
@@ -282,17 +282,17 @@ if barstate.isconfirmed
                 t.tip  := tip
                 // A区: 沿用等待时的蓝框, 没有就现画
                 if na(suBox)
-                    suBox := box.new(suBar - nBox, suHi, bar_index, suLo, border_color = color.new(colA, 35), border_width = 1, bgcolor = color.new(colA, 90), text = "A 吸筹", text_color = color.new(colA, 0), text_size = size.small, text_halign = text.align_left, text_valign = text.align_top)
+                    suBox := box.new(suBar - nBox, suHi, bar_index, suLo, border_color = color.new(colA, 100), border_width = 0, bgcolor = color.new(colA, 90), text = "A 吸筹", text_color = color.new(colA, 0), text_size = size.small, text_halign = text.align_left, text_valign = text.align_top)
                 suBox.set_right(bar_index)
                 t.bxA := suBox
                 // M区: 从被扫的箱体边到扫出的极值
-                t.bxM := box.new(suBar - 1, suSide == 1 ? suLo : suExt, bar_index, suSide == 1 ? suExt : suHi, border_color = color.new(c, 30), border_width = 1, bgcolor = color.new(c, 75), text = "M 操纵", text_color = c, text_size = size.small, text_halign = text.align_left, text_valign = suSide == 1 ? text.align_bottom : text.align_top)
+                t.bxM := box.new(suBar - 1, suSide == 1 ? suLo : suExt, bar_index, suSide == 1 ? suExt : suHi, border_color = color.new(c, 100), border_width = 0, bgcolor = color.new(c, 75), text = "M 操纵", text_color = c, text_size = size.small, text_halign = text.align_left, text_valign = suSide == 1 ? text.align_bottom : text.align_top)
                 // 仓位图
-                t.bxRisk := box.new(bar_index, math.max(e, sl), rb, math.min(e, sl), border_color = color.new(colShort, 100), bgcolor = color.new(colShort, 78))
-                t.bxRun  := box.new(bar_index, math.max(e, z2b), rb, math.min(e, z2b), border_color = color.new(colLong, 100), bgcolor = color.new(colLong, 93))
-                t.bxD1   := box.new(bar_index, math.max(z1a, z1b), rb, math.min(z1a, z1b), border_color = color.new(colLong, 40), border_width = 1, bgcolor = color.new(colLong, 72),
+                t.bxRisk := box.new(bar_index, math.max(e, sl), rb, math.min(e, sl), border_color = color.new(colShort, 100), border_width = 0, bgcolor = color.new(colShort, 78))
+                t.bxRun  := box.new(bar_index, math.max(e, z2b), rb, math.min(e, z2b), border_color = color.new(colLong, 100), border_width = 0, bgcolor = color.new(colLong, 93))
+                t.bxD1   := box.new(bar_index, math.max(z1a, z1b), rb, math.min(z1a, z1b), border_color = color.new(colLong, 100), border_width = 0, bgcolor = color.new(colLong, 72),
                      text = "D区一  " + str.tostring(d1a) + "~" + str.tostring(d1b) + "R   " + f_px(z1a) + " ~ " + f_px(z1b), text_color = color.white, text_size = size.small, text_halign = text.align_left)
-                t.bxD2   := box.new(bar_index, math.max(z2a, z2b), rb, math.min(z2a, z2b), border_color = color.new(colLong, 40), border_width = 1, bgcolor = color.new(colLong, 72),
+                t.bxD2   := box.new(bar_index, math.max(z2a, z2b), rb, math.min(z2a, z2b), border_color = color.new(colLong, 100), border_width = 0, bgcolor = color.new(colLong, 72),
                      text = "D区二  " + str.tostring(d2a) + "~" + str.tostring(d2b) + "R   " + f_px(z2a) + " ~ " + f_px(z2b), text_color = color.white, text_size = size.small, text_halign = text.align_left)
                 t.lnE    := line.new(bar_index, e, rb, e, color = color.new(color.white, 30), style = line.style_solid, width = 1)
                 t.lnTP1  := line.new(bar_index, t.tp1, rb, t.tp1, color = color.new(colLong, 10), style = line.style_dashed, width = 1)
