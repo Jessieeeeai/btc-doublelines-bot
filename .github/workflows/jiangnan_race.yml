@@ -37,10 +37,10 @@ jobs:
 
       - name: Commit state and feed if changed
         run: |
-          if [ -n "$(git status --porcelain state_JN.json jiangnan_feed.json 2>/dev/null)" ]; then
+          if [ -n "$(git status --porcelain state_JN.json jiangnan_feed*.json 2>/dev/null)" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add state_JN.json jiangnan_feed.json 2>/dev/null || true
+            git add state_JN.json jiangnan_feed*.json 2>/dev/null || true
             git commit -m "update jiangnan race $(date -u +'%Y-%m-%d %H:%M UTC')"
             pushed=0
             for attempt in 1 2 3 4 5; do
