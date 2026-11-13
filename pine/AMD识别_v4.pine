@@ -6,13 +6,14 @@
 // v4 画法 (进单出单一眼看完):
 //   三个方块      A区 吸筹 (蓝) → M区 操纵 (橙, 扫出箱体的那一段) → D区 派发 (绿, 从进场价到这一单实际走到的最远处, 跟着行情长)
 //   BUY / SELL   进场旗标, 尖头指着进场价 (鼠标停上去看全部价格)
+//   细线          从进场价沿着每根收盘价一路连到出场位 (多单绿、空单红)
 //   红点线        原始止损, 从进场画到出场
 //   紫线          1R 到手后移动过的止损
 //   绿虚线        D区一 / D区二 目标
 //   ✅            每到一个目标 (1R、D区一、D区二) 打一个勾
 //   ❌ 止损出场   🛡️ 拿到 1R 后被保护止损带走   ⏱️ 到时平仓
 //@version=6
-indicator("AMD 识别 · 大漂亮", shorttitle = "AMD", overlay = true, max_boxes_count = 500, max_lines_count = 500, max_labels_count = 500)
+indicator("AMD 识别 · 大漂亮", shorttitle = "AMD", overlay = true, max_boxes_count = 500, max_lines_count = 500, max_labels_count = 500, max_polylines_count = 100)
 
 // ───────────── 常量 ─────────────
 const string R_LEG   = "操纵腿: 箱体对侧 → 扫出的极值 (同 AMD马)"
@@ -86,6 +87,8 @@ type Trade
     box   bxM   = na     // M区: 扫出箱体的那一段
     box   bxD   = na     // D区: 进场价 → 这一单走到过的最远处
     float best  = na
+    array<chart.point> pts = na   // 进场 → 每根收盘 → 出场
+    polyline pl = na
     line  lnSL  = na     // 原始止损 (红点线)
     line  lnSt  = na     // 止损移动的那一步 (紫)
     line  lnTr  = na     // 移动后的止损 (紫)
@@ -98,6 +101,12 @@ type Trade
     label tgSL  = na
     label tgD1  = na
     label tgD2  = na
+
+// 细线多走一步: 进场位 → 每根收盘 → 出场位
+method trace(Trade t, int x, float y) =>
+    t.pts.push(chart.point.from_index(x, y))
+    t.pl.delete()
+    t.pl := polyline.new(t.pts, line_color = t.dir == 1 ? colLong : colShort, line_width = 1)
 
 // 把右边界拉到 x
 method stretch(Trade t, int x) =>
@@ -114,6 +123,7 @@ method stretch(Trade t, int x) =>
 method finish(Trade t, int x, float px, string icon, string res) =>
     t.done := true
     t.stretch(x)
+    t.trace(x, px)
     t.tgSL.delete()
     t.tgD1.delete()
     t.tgD2.delete()
@@ -131,6 +141,7 @@ method compact(Trade t) =>
     t.bxA.delete()
     t.bxM.delete()
     t.bxD.delete()
+    t.pl.delete()
     t.lnSL.delete()
     t.lnSt.delete()
     t.lnTr.delete()
@@ -211,6 +222,7 @@ if barstate.isconfirmed
                 cur.finish(bar_index, close, "⏱️", "到时平仓" + (cur.hitD1 ? " (到过 D区一)" : cur.hit1 ? " (到过 1R)" : ""))
             else
                 cur.stretch(bar_index + AHEAD)
+                cur.trace(bar_index, close)
         live := not cur.done
 
     // ── 2. 找新的 A区 + 扫出 ──
@@ -299,6 +311,8 @@ if barstate.isconfirmed
                 t.lnD1 := line.new(bar_index, z1a, rb, z1a, color = colLong, style = line.style_dashed, width = 1)
                 t.lnD2 := line.new(bar_index, z2a, rb, z2a, color = colLong, style = line.style_dashed, width = 1)
                 t.best := e
+                t.pts  := array.new<chart.point>()
+                t.pts.push(chart.point.from_index(bar_index, e))
                 t.bxD  := box.new(bar_index, e, rb, e, border_color = color.new(colD, 100), border_width = 0, bgcolor = color.new(colD, 80))
                 // 右侧价格牌 (只在这一单进行中显示)
                 t.tgSL := f_tag(rb, sl, "损 " + f_px(sl), colShort)
@@ -351,7 +365,7 @@ if barstate.islast and showTbl
     table.cell(tb, 0, 5, "没到 1R 就止损", text_color = color.white, text_size = size.small)
     table.cell(tb, 1, 5, str.tostring(cSL), text_color = color.white, text_size = size.small)
     if showLegend
-        table.cell(tb, 0, 6, "蓝 A区 · 橙 M区 · 绿 D区 · BUY/SELL 进场 · 红点线 止损 · 紫线 移动后的止损 · 绿虚线 D区\n✅ 到目标  ❌ 止损  🛡️ 保护止损出场  ⏱️ 到时", text_color = color.new(color.white, 25), text_size = size.tiny, text_halign = text.align_left)
+        table.cell(tb, 0, 6, "蓝 A区 · 橙 M区 · 绿 D区 · BUY/SELL 进场 · 细线 进场到出场 · 红点线 止损 · 紫线 移动后的止损 · 绿虚线 D区\n✅ 到目标  ❌ 止损  🛡️ 保护止损出场  ⏱️ 到时", text_color = color.new(color.white, 25), text_size = size.tiny, text_halign = text.align_left)
         table.merge_cells(tb, 0, 6, 1, 6)
 
 // ───────────── 单项提醒 (在提醒窗口里单独选) ─────────────
