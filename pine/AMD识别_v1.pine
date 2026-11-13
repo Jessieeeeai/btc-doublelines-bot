@@ -35,11 +35,11 @@ bool   oneLive  = input.bool(true, "同时只跟踪一单", group = G4, tooltip 
 
 bool   showFail = input.bool(false, "显示没等到破败信号的箱体", group = G5)
 bool   showSkip = input.bool(false, "显示没跟踪的破败信号", group = G5, tooltip = "上一单没走完时出的破败信号。关: 不画。开: 画一个小灰标。")
-bool   showTbl  = input.bool(true, "显示右上角统计", group = G5)
-color  colA     = input.color(#2962FF, "A区", group = G5, inline = "c1")
-color  colLong  = input.color(#089981, "多", group = G5, inline = "c1")
-color  colShort = input.color(#F23645, "空", group = G5, inline = "c1")
-color  colD     = input.color(#FF9800, "D区", group = G5, inline = "c1")
+bool   showTbl  = input.bool(true, "显示右下角统计", group = G5)
+color  colA     = input.color(#2962FF, "A区颜色", group = G5)
+color  colLong  = input.color(#089981, "做多颜色", group = G5)
+color  colShort = input.color(#F23645, "做空颜色", group = G5)
+color  colD     = input.color(#FF9800, "D区颜色", group = G5)
 
 // ───────────── 每根都要算的序列 ─────────────
 float boxHi  = ta.highest(high, nBox)[1]
@@ -237,7 +237,7 @@ if barstate.isconfirmed
         alert("AMD " + syminfo.ticker + " " + timeframe.period + ": " + msg, alert.freq_once_per_bar_close)
 
 // ───────────── 统计表 ─────────────
-var table tb = table.new(position.top_right, 2, 6, bgcolor = color.new(color.black, 35), border_width = 1, border_color = color.new(color.gray, 60))
+var table tb = table.new(position.bottom_right, 2, 6, bgcolor = color.new(color.black, 35), border_width = 1, border_color = color.new(color.gray, 60))
 if barstate.islast and showTbl
     table.cell(tb, 0, 0, "AMD 识别", text_color = color.white, text_size = size.small)
     table.cell(tb, 1, 0, str.tostring(nBox) + " 根 · ≤" + str.tostring(kAtr) + "×ATR", text_color = color.white, text_size = size.small)
