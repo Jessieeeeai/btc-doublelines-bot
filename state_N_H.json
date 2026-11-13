@@ -2,8 +2,8 @@
  "started": true,
  "syms": {
   "BTC": {
-   "last_5m_ts": 1794573600,
-   "hour_done_ts": 1794567600,
+   "last_5m_ts": 1794574500,
+   "hour_done_ts": 1794571200,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -13,8 +13,8 @@
    }
   },
   "ETH": {
-   "last_5m_ts": 1794573600,
-   "hour_done_ts": 1794567600,
+   "last_5m_ts": 1794574500,
+   "hour_done_ts": 1794571200,
    "pend": null,
    "pos": {
     "N-H1": {
@@ -64,8 +64,8 @@
    }
   },
   "SOL": {
-   "last_5m_ts": 1794573600,
-   "hour_done_ts": 1794567600,
+   "last_5m_ts": 1794574500,
+   "hour_done_ts": 1794571200,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -75,8 +75,8 @@
    }
   },
   "BNB": {
-   "last_5m_ts": 1794573600,
-   "hour_done_ts": 1794567600,
+   "last_5m_ts": 1794574500,
+   "hour_done_ts": 1794571200,
    "pend": null,
    "pos": {
     "N-H1": {
@@ -113,8 +113,8 @@
    }
   },
   "XRP": {
-   "last_5m_ts": 1794573600,
-   "hour_done_ts": 1794567600,
+   "last_5m_ts": 1794574500,
+   "hour_done_ts": 1794571200,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -124,8 +124,8 @@
    }
   },
   "DOGE": {
-   "last_5m_ts": 1794573600,
-   "hour_done_ts": 1794567600,
+   "last_5m_ts": 1794574500,
+   "hour_done_ts": 1794571200,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -135,8 +135,8 @@
    }
   },
   "ADA": {
-   "last_5m_ts": 1794573600,
-   "hour_done_ts": 1794567600,
+   "last_5m_ts": 1794574500,
+   "hour_done_ts": 1794571200,
    "pend": null,
    "pos": {
     "AMD": {
