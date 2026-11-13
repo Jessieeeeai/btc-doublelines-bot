@@ -60,6 +60,7 @@ f_tag(int x, float y, string txt, color c) => label.new(x, y, txt, style = label
 type Trade
     int   dir   = 0
     int   bar0  = 0
+    int   rbar  = 0      // 仓位图画到哪一根
     float e     = na
     float sl    = na
     float dist  = na
@@ -110,7 +111,8 @@ method stretch(Trade t, int x) =>
 // 走完: 去掉右侧价格牌, 定住右边界, 贴结果
 method finish(Trade t, int x, float px, string res) =>
     t.done := true
-    t.stretch(math.max(x, t.bar0 + MIN_W))
+    t.rbar := math.max(x, t.bar0 + MIN_W)
+    t.stretch(t.rbar)
     t.tgE.delete()
     t.tgSL.delete()
     t.tgTP1.delete()
@@ -247,7 +249,10 @@ if barstate.isconfirmed
                 if not na(cur)
                     if not cur.done
                         cur.finish(bar_index, close, "被新信号接管")
-                    hist.push(cur)
+                    if cur.rbar >= bar_index - 1      // 和新的一单在图上会叠在一起 → 旧的直接收成小三角
+                        cur.compact()
+                    else
+                        hist.push(cur)
                 while hist.size() > keepN - 1
                     Trade old = hist.shift()
                     old.compact()
