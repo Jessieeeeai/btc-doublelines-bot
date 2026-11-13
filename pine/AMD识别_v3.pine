@@ -51,6 +51,7 @@ color  colLong  = input.color(#089981, "做多 / 盈利区颜色", group = G5)
 color  colShort = input.color(#F23645, "做空 / 止损区颜色", group = G5)
 color  colWarn  = input.color(#FF9800, "只到 1R 的颜色", group = G5)
 bool   showLegend = input.bool(true, "统计表里带图例", group = G5)
+bool   keepMiss = input.bool(false, "走完的单保留没碰到的 D区", group = G5, tooltip = "关: 一单走完后, 没碰到的 D区带子收掉, 历史图面更干净 (价格仍可在 ▲▼ 的悬停提示里看)。开: 全部保留。")
 
 // ───────────── 每根都要算的序列 ─────────────
 float boxHi  = ta.highest(high, nBox)[1]
@@ -115,6 +116,17 @@ method finish(Trade t, int x, float px, string icon, string res) =>
     t.tgSL.delete()
     t.tgD1.delete()
     t.tgD2.delete()
+    if not keepMiss
+        if not t.hitD1
+            t.bxD1.delete()
+        if not t.hitD2
+            t.bxD2.delete()
+        if t.hitD2
+            t.lnV.set_y2(t.z2a)
+        else if t.hitD1
+            t.lnV.set_y2(t.z1a)
+        else
+            t.lnV.delete()
     color c = t.hitD1 or t.hitD2 ? colLong : t.hit1 ? colWarn : color.gray
     t.tip := t.tip + "\n结果: " + res
     t.lbEnd := label.new(x, px, icon, style = label.style_none, textcolor = c, size = size.large, tooltip = t.tip)
