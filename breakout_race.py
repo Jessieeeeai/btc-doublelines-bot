@@ -83,6 +83,10 @@ def fp(x):
     return f"{x:.5f}"
 
 
+def usd(x, nd=0):
+    return f"{'-' if x < 0 else '+'}${abs(x):,.{nd}f}"
+
+
 def pct(x, base=ACCOUNT_USD):
     return f"{x / base * 100:+.2f}%"
 
@@ -426,15 +430,16 @@ def run(HB, M5, st, sym, msgs, feats):
 
 # ===== 消息 =====
 
-def board(st):
+def board(st, amd=False):
     rows = {}
     for code, name in HORSES.items():
         tr = st["trades"][code]; n = len(tr); w = sum(1 for t in tr if t["net_base"] > 0)
         nb = sum(t["net_base"] for t in tr); nc = sum(t["net_cons"] for t in tr)
         op = sum(1 for v in st["syms"].values() if code in v["pos"])
-        rows[code] = (f"{lab(code)}: {n}笔 {w}胜 · 净 <b>${nb:+,.0f} ({pct(nb)})</b> · 保守 ${nc:+,.0f} ({pct(nc)}) · 持仓{op}")
-    return ("\n━━━━━━━━━━━━━━━\n📊 <b>前向战绩</b> (每匹账户 $7,000 · 每单风险 $40)\n<b>突破马</b>\n" + "\n".join(rows[c] for c in BO_HORSES)
-            + "\n<b>AMD马</b>\n" + rows[AMD] + PAPER_MARK)
+        rows[code] = (f"{lab(code)}: {n}笔 {w}胜 · 净 <b>{usd(nb, 0)} ({pct(nb)})</b> · 保守 {usd(nc, 0)} ({pct(nc)}) · 持仓{op}")
+    if amd:
+        return ("\n━━━━━━━━━━━━━━━\n📊 <b>AMD马 前向战绩</b> (账户 $7,000 · 每单风险 $40)\n" + rows[AMD] + PAPER_MARK)
+    return ("\n━━━━━━━━━━━━━━━\n📊 <b>突破四马 前向战绩</b> (每匹账户 $7,000 · 每单风险 $40)\n" + "\n".join(rows[c] for c in BO_HORSES) + PAPER_MARK)
 
 
 def fmt_entry(p, st):
@@ -443,7 +448,7 @@ def fmt_entry(p, st):
     for c in p["horses"]:
         pos = p["pos"][c]
         tgt = (f"止盈 <code>${fp(pos['tp'])}</code> (赚 ${RISK_USD*RR:,.0f} = 本金 {RISK_USD*RR/PRINCIPAL_USD*100:.0f}%)" if pos["tp"]
-               else f"不设止盈 · 吊灯止损距最高点 ${fp(pos['ch'])}")
+               else f"不设止盈 · 吊灯止损距{'最高点' if d == 1 else '最低点'} ${fp(pos['ch'])}")
         lines.append(f"✅ {lab(c)} #{pos['seq']:03d}: {tgt}")
     for c, why in p["skipped"].items():
         lines.append(f"➖ {lab(c)}: 不做 ({why})")
@@ -462,7 +467,7 @@ def fmt_entry5(p, st):
             f"🥇 第一止盈 <code>${fp(p['tg'][0])}</code> (1R) → 出 1/3, 之后止损移到 <code>${fp(p['s1'])}</code>\n"
             f"🥈 第二止盈 <code>${fp(p['tg'][1])}</code> (2 倍操纵腿) → 再出 1/3\n"
             f"🥉 第三止盈 <code>${fp(p['tg'][2])}</code> (4 倍操纵腿) → 出完\n"
-            f"⚖️ 名义 ${n:,.0f} · 杠杆 {n/PRINCIPAL_USD:.1f}× (每币本金 ${PRINCIPAL_USD:,.0f}) · 最多拿 8 天" + board(st))
+            f"⚖️ 名义 ${n:,.0f} · 杠杆 {n/PRINCIPAL_USD:.1f}× (每币本金 ${PRINCIPAL_USD:,.0f}) · 最多拿 8 天" + board(st, True))
 
 
 def fmt_tp5(p, st):
@@ -480,8 +485,8 @@ def fmt_exit5(t, st):
     head = {"tp": "三档止盈全部到手", "time": "到时平仓", "sl": ("剩余仓位被止损" if t["hit"] else "止损")}[t["why"]]
     return (f"{icon} <b>{t['sym']} AMD马 #{t['seq']:03d} {'多' if t['d']==1 else '空'}单结束 — {head}</b>\n━━━━━━━━━━━━━━━\n"
             f"进场 ${fp(t['e'])} · 持仓 {t['hold_h']:.1f}h\n" + "\n".join(parts) +
-            f"\n净 <b>${t['net_base']:+,.2f} ({pct(t['net_base'], PRINCIPAL_USD)})</b> · 保守 ${t['net_cons']:+,.2f} ({pct(t['net_cons'], PRINCIPAL_USD)})"
-            + board(st))
+            f"\n净 <b>{usd(t['net_base'], 2)} ({pct(t['net_base'], PRINCIPAL_USD)})</b> · 保守 {usd(t['net_cons'], 2)} ({pct(t['net_cons'], PRINCIPAL_USD)})"
+            + board(st, True))
 
 
 def fmt_exit(ts_, st):
@@ -489,10 +494,10 @@ def fmt_exit(ts_, st):
     if t0["code"] == AMD:
         return fmt_exit5(t0, st)
     icon = {"tp": "🟢 止盈", "sl": "🔴 止损" if t0["sl"] == t0["sl0"] else "🔒 吊灯止损", "time": "⏱ 到时平仓"}[t0["why"]]
-    lines = [f"{lab(t['code'])} #{t['seq']:03d}: 净 <b>${t['net_base']:+,.2f} ({pct(t['net_base'], PRINCIPAL_USD)})</b>"
-             f" · 保守 ${t['net_cons']:+,.2f} ({pct(t['net_cons'], PRINCIPAL_USD)})" for t in ts_]
+    lines = [f"{lab(t['code'])} #{t['seq']:03d}: 净 <b>{usd(t['net_base'], 2)} ({pct(t['net_base'], PRINCIPAL_USD)})</b>"
+             f" · 保守 {usd(t['net_cons'], 2)} ({pct(t['net_cons'], PRINCIPAL_USD)})" for t in ts_]
     return (f"{icon} <b>{t0['sym']} {'多' if t0['d']==1 else '空'}单出场</b>\n━━━━━━━━━━━━━━━\n"
-            f"${fp(t0['e'])} → ${fp(t0['x'])} ({tstr(t0['xts'])} UTC) · 持仓 {t0['hold_h']:.1f}h · 毛利 ${t0['gross']:+,.2f}"
+            f"${fp(t0['e'])} → ${fp(t0['x'])} ({tstr(t0['xts'])} UTC) · 持仓 {t0['hold_h']:.1f}h · 毛利 {usd(t0['gross'], 2)}"
             f" · 成本 ${t0['cost_base']:,.2f}/${t0['cost_cons']:,.2f}\n" + "\n".join(lines) + board(st))
 
 
