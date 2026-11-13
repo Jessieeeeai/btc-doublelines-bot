@@ -1,0 +1,56 @@
+name: 江南4马 四根K线赛马 (纸面)
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+  # GitHub 自带的定时经常不触发; 和其它机器人一样, 由 cron-job.org 每 15-20 分钟发来的 check-signals 拉起
+  repository_dispatch:
+    types: [check-signals]
+
+concurrency:
+  group: jiangnan-race
+  cancel-in-progress: false
+
+jobs:
+  run-jiangnan-race:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Jiangnan four horses (paper)
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.NECKLINE_TG_BOT_TOKEN != '' && secrets.NECKLINE_TG_BOT_TOKEN || secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.NECKLINE_TG_CHAT_ID != '' && secrets.NECKLINE_TG_CHAT_ID || secrets.TELEGRAM_CHAT_ID }}
+          # 与马G 相同的两个群: 颈线群 + 福利群。要加群就在后面用逗号接群 ID
+          TELEGRAM_GROUP_CHAT_ID: "-5515956430,-1003953373413"
+        run: |
+          python3 jiangnan_race.py
+
+      - name: Commit state and feed if changed
+        run: |
+          if [ -n "$(git status --porcelain state_JN.json jiangnan_feed.json 2>/dev/null)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add state_JN.json jiangnan_feed.json 2>/dev/null || true
+            git commit -m "update jiangnan race $(date -u +'%Y-%m-%d %H:%M UTC')"
+            pushed=0
+            for attempt in 1 2 3 4 5; do
+              if git push; then pushed=1; break; fi
+              git pull --rebase --autostash origin main || true
+              sleep $((RANDOM % 5 + 2))
+            done
+            if [ "$pushed" != "1" ]; then
+              echo "::warning::5 次重试后仍无法 push"
+            fi
+          else
+            echo "unchanged"
+          fi
