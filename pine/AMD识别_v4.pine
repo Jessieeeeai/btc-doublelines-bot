@@ -7,8 +7,7 @@
 //   三个方块      A区 吸筹 (蓝) → M区 操纵 (橙, 扫出箱体的那一段) → D区 派发 (绿, 从进场价到这一单实际走到的最远处, 跟着行情长)
 //   BUY / SELL   进场旗标, 尖头指着进场价 (鼠标停上去看全部价格)
 //   细线          从进场位出发贴着K线走到出场位: 多单贴在K线下面 (最近几根的最低点), 空单贴在上面 (最近几根的最高点)
-//   红点线        原始止损, 从进场画到出场
-//   紫线          1R 到手后移动过的止损
+//   红点线        止损。「移动止损」开: 1R 到手后这条线跟着抬到新位置; 关: 止损不动, 就是一条横线
 //   绿虚线        D区一 / D区二 目标
 //   ✅            每到一个目标 (1R、D区一、D区二) 打一个勾
 //   ❌ 止损出场   🛡️ 拿到 1R 后被保护止损带走   ⏱️ 到时平仓
@@ -42,6 +41,7 @@ float  minGap = input.float(0.3, "D区一离进场至少 (× 止损距离)", min
 
 int    holdBars = input.int(48, "一单最多跟踪多少根", minval = 5, maxval = 500, group = G4)
 float  beR      = input.float(0.2, "1R 到手后止损移到进场价外 (× 止损距离)", minval = 0, maxval = 1, step = 0.05, group = G4, tooltip = "第一止盈 (1R) 到手后, 止损移到进场价外侧这么多。0 = 移到进场价。")
+bool   moveSL   = input.bool(true, "移动止损 (1R 到手后)", group = G4, tooltip = "开: 1R 到手后止损移到进场价外侧 (下面那个参数), 红点线跟着变。关: 止损一直留在原位, 红点线就是一条横线。AMD马 机器人是开着的。")
 bool   oneLive  = input.bool(true, "同时只跟踪一单", group = G4, tooltip = "开: 上一单没走完时, 新的破败信号不画也不提醒 (和 AMD马 一样)。关: 新信号直接接管。")
 
 int    keepN    = input.int(80, "图上保留多少单", minval = 1, maxval = 80, group = G5, tooltip = "最近这么多单完整画出来, 方便往前复盘。更早的只留 BUY / SELL 旗标 (TradingView 对图形数量有上限)。")
@@ -52,7 +52,6 @@ color  colM     = input.color(#FF9800, "M区颜色", group = G5)
 color  colD     = input.color(#089981, "D区颜色", group = G5)
 color  colLong  = input.color(#089981, "做多 / 盈利区颜色", group = G5)
 color  colShort = input.color(#F23645, "做空 / 止损区颜色", group = G5)
-color  colTrail = input.color(#D05CE3, "移动后的止损线颜色", group = G5)
 int    hugN     = input.int(3, "贴K线细线: 取最近几根的高低点", minval = 1, maxval = 10, group = G5, tooltip = "多单取最近这么多根的最低点, 空单取最高点。数越小贴得越紧。")
 color  colHugL  = input.color(#9CCC65, "多单细线颜色", group = G5)
 color  colHugS  = input.color(#FF8A80, "空单细线颜色", group = G5)
@@ -95,8 +94,8 @@ type Trade
     array<chart.point> pts = na   // 进场 → 每根收盘 → 出场
     polyline pl = na
     line  lnSL  = na     // 原始止损 (红点线)
-    line  lnSt  = na     // 止损移动的那一步 (紫)
-    line  lnTr  = na     // 移动后的止损 (紫)
+    line  lnSt  = na     // 止损移动的那一步
+    line  lnTr  = na     // 移动后的止损
     line  lnD1  = na     // D区一 目标线
     line  lnD2  = na
     label lbSig = na     // BUY / SELL
@@ -118,8 +117,10 @@ method stretch(Trade t, int x) =>
     t.bxD.set_right(x)
     t.lnD1.set_x2(x)
     t.lnD2.set_x2(x)
-    t.lnSL.set_x2(x)
-    t.lnTr.set_x2(x)
+    if na(t.lnTr)
+        t.lnSL.set_x2(x)
+    else
+        t.lnTr.set_x2(x)
     t.tgSL.set_x(x)
     t.tgD1.set_x(x)
     t.tgD2.set_x(x)
@@ -200,19 +201,21 @@ if barstate.isconfirmed
             evStop := true
             if not cur.hit1
                 cSL += 1
-            cur.finish(bar_index, cur.sl, cur.hit1 ? "🛡️" : "❌", cur.hitD1 ? "到过 D区一, 之后保护止损出场" : cur.hit1 ? "到过 1R, 之后保护止损出场" : "止损")
+            cur.finish(bar_index, cur.sl, cur.hit1 and moveSL ? "🛡️" : "❌", cur.hitD1 ? "到过 D区一, 之后" + (moveSL ? "保护止损出场" : "止损出场") : cur.hit1 ? "到过 1R, 之后" + (moveSL ? "保护止损出场" : "止损出场") : "止损")
         else
             if not cur.hit1 and f_reach(cur.dir, cur.tp1)
                 cur.hit1 := true
                 evTP1 := true
                 cTP1 += 1
-                float sl0 = cur.sl
-                cur.sl := cur.e - cur.dir * beR * cur.dist
-                cur.lb1  := f_icon(bar_index, cur.tp1, "✅", "1R 到手 " + f_px(cur.tp1) + ", 止损移到 " + f_px(cur.sl))
-                cur.lnSt := line.new(bar_index - 1, sl0, bar_index, cur.sl, color = colTrail, style = line.style_solid, width = 2)
-                cur.lnTr := line.new(bar_index, cur.sl, bar_index + AHEAD, cur.sl, color = colTrail, style = line.style_solid, width = 2)
-                cur.tgSL.set_y(cur.sl)
-                cur.tgSL.set_text("损 " + f_px(cur.sl))
+                if moveSL
+                    float sl0 = cur.sl
+                    cur.sl := cur.e - cur.dir * beR * cur.dist
+                    cur.lnSL.set_x2(bar_index - 1)
+                    cur.lnSt := line.new(bar_index - 1, sl0, bar_index, cur.sl, color = colShort, style = line.style_dotted, width = 2)
+                    cur.lnTr := line.new(bar_index, cur.sl, bar_index + AHEAD, cur.sl, color = colShort, style = line.style_dotted, width = 2)
+                    cur.tgSL.set_y(cur.sl)
+                    cur.tgSL.set_text("损 " + f_px(cur.sl))
+                cur.lb1  := f_icon(bar_index, cur.tp1, "✅", "1R 到手 " + f_px(cur.tp1) + (moveSL ? ", 止损移到 " + f_px(cur.sl) : ""))
             if not cur.hitD1 and f_reach(cur.dir, cur.z1a)
                 cur.hitD1 := true
                 evD1 := true
@@ -370,7 +373,7 @@ if barstate.islast and showTbl
     table.cell(tb, 0, 5, "没到 1R 就止损", text_color = color.white, text_size = size.small)
     table.cell(tb, 1, 5, str.tostring(cSL), text_color = color.white, text_size = size.small)
     if showLegend
-        table.cell(tb, 0, 6, "蓝 A区 · 橙 M区 · 绿 D区 · BUY/SELL 进场 · 细线 进场到出场 · 红点线 止损 · 紫线 移动后的止损 · 绿虚线 D区\n✅ 到目标  ❌ 止损  🛡️ 保护止损出场  ⏱️ 到时", text_color = color.new(color.white, 25), text_size = size.tiny, text_halign = text.align_left)
+        table.cell(tb, 0, 6, "蓝 A区 · 橙 M区 · 绿 D区 · BUY/SELL 进场 · 细线 进场到出场 · 红点线 止损 · 绿虚线 D区\n✅ 到目标  ❌ 止损  🛡️ 保护止损出场  ⏱️ 到时", text_color = color.new(color.white, 25), text_size = size.tiny, text_halign = text.align_left)
         table.merge_cells(tb, 0, 6, 1, 6)
 
 // ───────────── 单项提醒 (在提醒窗口里单独选) ─────────────
