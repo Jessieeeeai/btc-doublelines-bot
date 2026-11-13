@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-13 06:00 UTC",
+  "updated_at": "2026-11-13 06:16 UTC",
   "next_event_id": 7,
   "events": [
     {
@@ -138,7 +138,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 1924.1,
-      "sl": 1993.337822,
+      "sl": 1981.3300000000002,
       "tp": null,
       "notional_usd": 1112.0
     },
@@ -150,7 +150,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 1924.1,
-      "sl": 1993.337822,
+      "sl": 1981.3300000000002,
       "tp": null,
       "notional_usd": 1112.0
     },
@@ -174,7 +174,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 633.02,
-      "sl": 652.2171428571428,
+      "sl": 644.5271428571428,
       "tp": null,
       "notional_usd": 1197.0
     },
