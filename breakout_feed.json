@@ -1,8 +1,104 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-13 04:00 UTC",
-  "next_event_id": 1,
-  "events": [],
-  "open_positions": []
+  "updated_at": "2026-11-13 04:15 UTC",
+  "next_event_id": 4,
+  "events": [
+    {
+      "ts": 1794542400,
+      "time": "2026-11-13 04:15 UTC",
+      "strategy": "N-H1",
+      "symbol": "BNBUSDT",
+      "signal_no": 1,
+      "pos_id": "N-H1-001",
+      "paper": true,
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 633.02,
+      "sl": 654.17619,
+      "tp": 590.70761,
+      "notional_usd": 1197.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H1-001:open",
+      "event_id": 1
+    },
+    {
+      "ts": 1794542400,
+      "time": "2026-11-13 04:15 UTC",
+      "strategy": "N-H4",
+      "symbol": "BNBUSDT",
+      "signal_no": 1,
+      "pos_id": "N-H4-001",
+      "paper": true,
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 633.02,
+      "sl": 654.17619,
+      "tp": null,
+      "notional_usd": 1197.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H4-001:open",
+      "event_id": 2
+    },
+    {
+      "ts": 1794542400,
+      "time": "2026-11-13 04:15 UTC",
+      "strategy": "N-H5",
+      "symbol": "ADAUSDT",
+      "signal_no": 1,
+      "pos_id": "N-H5-001",
+      "paper": true,
+      "action": "open_long",
+      "direction": "long",
+      "entry_price": 0.1682,
+      "sl": 0.16565029,
+      "tp": 0.2412,
+      "notional_usd": 2639.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H5-001:open",
+      "tp1": 0.17074971,
+      "tp2": 0.211,
+      "tp3": 0.2412,
+      "stop_after_tp1": 0.16769006,
+      "event_id": 3
+    }
+  ],
+  "open_positions": [
+    {
+      "strategy": "N-H1",
+      "symbol": "BNBUSDT",
+      "signal_no": 1,
+      "pos_id": "N-H1-001",
+      "paper": true,
+      "direction": "short",
+      "entry_price": 633.02,
+      "sl": 654.176194,
+      "tp": 590.7076119999999,
+      "notional_usd": 1197.0
+    },
+    {
+      "strategy": "N-H4",
+      "symbol": "BNBUSDT",
+      "signal_no": 1,
+      "pos_id": "N-H4-001",
+      "paper": true,
+      "direction": "short",
+      "entry_price": 633.02,
+      "sl": 654.176194,
+      "tp": null,
+      "notional_usd": 1197.0
+    },
+    {
+      "strategy": "N-H5",
+      "symbol": "ADAUSDT",
+      "signal_no": 1,
+      "pos_id": "N-H5-001",
+      "paper": true,
+      "direction": "long",
+      "entry_price": 0.1682,
+      "sl": 0.16565028999999998,
+      "tp": null,
+      "notional_usd": 2639.0
+    }
+  ]
 }
