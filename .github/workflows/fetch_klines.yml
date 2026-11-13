@@ -1,0 +1,32 @@
+name: Fetch klines (research data)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['data_requests/**']
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download
+        run: python3 tools/fetch_klines.py
+      - name: Push to data branch
+        run: |
+          mkdir -p /tmp/out && mv *_5m_full.csv.gz /tmp/out/ 2>/dev/null || true
+          ls -la /tmp/out
+          git config user.name "kline-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git checkout --orphan data-tmp
+          git rm -rfq . || true
+          cp /tmp/out/* . 2>/dev/null || true
+          git add -A *.csv.gz
+          git commit -m "klines $(date -u +'%Y-%m-%d %H:%M UTC')" || exit 0
+          git push -f origin data-tmp:data
