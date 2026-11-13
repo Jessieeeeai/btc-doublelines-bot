@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-13 04:45 UTC",
+  "updated_at": "2026-11-13 05:00 UTC",
   "next_event_id": 4,
   "events": [
     {
@@ -43,10 +43,10 @@
     {
       "ts": 1794542400,
       "time": "2026-11-13 04:15 UTC",
-      "strategy": "N-H5",
+      "strategy": "AMD",
       "symbol": "ADAUSDT",
       "signal_no": 1,
-      "pos_id": "N-H5-001",
+      "pos_id": "AMD-001",
       "paper": true,
       "action": "open_long",
       "direction": "long",
@@ -55,7 +55,7 @@
       "tp": 0.2412,
       "notional_usd": 2639.0,
       "risk_usd": 40.0,
-      "dedup": "N-H5-001:open",
+      "dedup": "AMD-001:open",
       "tp1": 0.17074971,
       "tp2": 0.211,
       "tp3": 0.2412,
@@ -84,15 +84,15 @@
       "paper": true,
       "direction": "short",
       "entry_price": 633.02,
-      "sl": 653.9171428571428,
+      "sl": 653.2271428571428,
       "tp": null,
       "notional_usd": 1197.0
     },
     {
-      "strategy": "N-H5",
+      "strategy": "AMD",
       "symbol": "ADAUSDT",
       "signal_no": 1,
-      "pos_id": "N-H5-001",
+      "pos_id": "AMD-001",
       "paper": true,
       "direction": "long",
       "entry_price": 0.1682,

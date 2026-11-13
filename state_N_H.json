@@ -2,8 +2,8 @@
  "started": true,
  "syms": {
   "BTC": {
-   "last_5m_ts": 1794544800,
-   "hour_done_ts": 1794538800,
+   "last_5m_ts": 1794545700,
+   "hour_done_ts": 1794542400,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -13,9 +13,22 @@
    }
   },
   "ETH": {
-   "last_5m_ts": 1794544800,
-   "hour_done_ts": 1794538800,
-   "pend": null,
+   "last_5m_ts": 1794545700,
+   "hour_done_ts": 1794542400,
+   "pend": {
+    "side": -1,
+    "sl": 1993.337822,
+    "from_ts": 1794546000,
+    "atr": 22.050000000000004,
+    "horses": [
+     "N-H1",
+     "N-H3",
+     "N-H4"
+    ],
+    "skipped": {
+     "N-H2": "非美东7-13点"
+    }
+   },
    "pos": {},
    "pend5": null,
    "amd": {
@@ -24,8 +37,8 @@
    }
   },
   "SOL": {
-   "last_5m_ts": 1794544800,
-   "hour_done_ts": 1794538800,
+   "last_5m_ts": 1794545700,
+   "hour_done_ts": 1794542400,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -35,8 +48,8 @@
    }
   },
   "BNB": {
-   "last_5m_ts": 1794544800,
-   "hour_done_ts": 1794538800,
+   "last_5m_ts": 1794545700,
+   "hour_done_ts": 1794542400,
    "pend": null,
    "pos": {
     "N-H1": {
@@ -49,20 +62,20 @@
      "n": 1197.0,
      "ts": 1794542400,
      "x_ts": 1794801600,
-     "pk": 630.86,
+     "pk": 630.81,
      "ch": null
     },
     "N-H4": {
      "seq": 1,
      "d": -1,
      "e": 633.02,
-     "sl": 653.9171428571428,
+     "sl": 653.2271428571428,
      "sl0": 654.176194,
      "tp": null,
      "n": 1197.0,
      "ts": 1794542400,
      "x_ts": 1794801600,
-     "pk": 630.86,
+     "pk": 630.81,
      "ch": 22.417142857142867
     }
    },
@@ -73,8 +86,8 @@
    }
   },
   "XRP": {
-   "last_5m_ts": 1794544800,
-   "hour_done_ts": 1794538800,
+   "last_5m_ts": 1794545700,
+   "hour_done_ts": 1794542400,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -84,8 +97,8 @@
    }
   },
   "DOGE": {
-   "last_5m_ts": 1794544800,
-   "hour_done_ts": 1794538800,
+   "last_5m_ts": 1794545700,
+   "hour_done_ts": 1794542400,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -95,11 +108,11 @@
    }
   },
   "ADA": {
-   "last_5m_ts": 1794544800,
-   "hour_done_ts": 1794538800,
+   "last_5m_ts": 1794545700,
+   "hour_done_ts": 1794542400,
    "pend": null,
    "pos": {
-    "N-H5": {
+    "AMD": {
      "seq": 1,
      "d": 1,
      "e": 0.1682,
@@ -140,17 +153,18 @@
   "N-H2": [],
   "N-H3": [],
   "N-H4": [],
-  "N-H5": []
+  "AMD": []
  },
  "seq": {
   "N-H1": 1,
   "N-H2": 0,
   "N-H3": 0,
   "N-H4": 1,
-  "N-H5": 1
+  "AMD": 1
  },
- "n_sig": 1,
+ "n_sig": 3,
  "n_amd": 1,
  "lineup_v2": true,
- "lineup_v3": true
+ "lineup_v3": true,
+ "lineup_v4": true
 }
