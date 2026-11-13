@@ -10,8 +10,8 @@
   N-H2 纽约顺势马 只做美东 7-13 点 且 顺 BTC 大势        2R 止盈
   N-H3 强弱马    顺 BTC 大势 且 7日涨幅前3才多/后3才空   不设止盈, 吊灯止损 (2026-11-12 起由 2R 改为吊灯)
   N-H4 奔跑马    顺 BTC 大势                          不设止盈, 吊灯止损 (最高点 - 4 x ATR, 只紧不松)
-另有一匹独立信号的马 (4h, 与上面四匹无关):
-  N-H5 AMD马    前 12 根 4h 的高低差 <= 3 x ATR14 (吸筹) → 某根刺穿箱体一侧 (操纵) → 之后 3 根内收盘回到箱体内 → 进场
+另一种马, 单独成类 (4h, 与上面四匹突破马无关):
+  AMD马         前 12 根 4h 的高低差 <= 3 x ATR14 (吸筹) → 某根刺穿箱体一侧 (操纵) → 之后 3 根内收盘回到箱体内 → 进场
                 止损 = 扫到的极值; 三段止盈各 1/3: 1R / 箱体对侧 + 2 x 操纵腿 / + 4 x 操纵腿 (操纵腿 = 箱体对侧到极值);
                 第一止盈到手后, 剩余止损移到进场价下方 0.2R; 最多拿 48 根 4h
   顺 BTC 大势 = BTC 1h 收盘在自己 200 均线(EMA)上方只做多, 下方只做空
@@ -28,12 +28,13 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 STATE_FILE = "state_N_H.json"
 SYMS = ["BTC", "ETH", "SOL", "BNB", "XRP", "DOGE", "ADA"]
-HORSES = {"N-H1": "基准马", "N-H2": "纽约顺势马", "N-H3": "强弱马", "N-H4": "奔跑马", "N-H5": "AMD马"}
+HORSES = {"N-H1": "基准马", "N-H2": "纽约顺势马", "N-H3": "强弱马", "N-H4": "奔跑马", "AMD": "AMD马"}
 BO_HORSES = ["N-H1", "N-H2", "N-H3", "N-H4"]      # 共用 1h 强突破信号的四匹
 CHAND_HORSES = ("N-H3", "N-H4")                   # 不设止盈、吊灯止损的马
 RULE = {"N-H1": "全做 · 2R", "N-H2": "美东7-13点+顺BTC · 2R", "N-H3": "顺BTC+强弱排名 · 吊灯止损", "N-H4": "顺BTC · 吊灯止损",
-        "N-H5": "4h 横盘→扫一侧→收回箱体 · 三段止盈"}
-AMD, H4S = "N-H5", 14400
+        "AMD": "4h 横盘→扫一侧→收回箱体 · 三段止盈"}
+AMD, H4S = "AMD", 14400
+lab = lambda c: "AMD马" if c == AMD else f"{c[2:]} {HORSES[c]}"
 AMD_N, AMD_K, AMD_M, AMD_HOLD_H, AMD_M2, AMD_M3, AMD_BE = 12, 3.0, 3, 192, 2.0, 4.0, 0.2
 H = 3600
 LOOK, BODY, K_ATR, RR, HOLD_H, BUF, CHAND = 20, 0.7, 1.5, 2.0, 72, 0.0003, 4.0
@@ -179,7 +180,15 @@ def new_state():
 
 
 def migrate(st):
-    """老 state (只有四匹马) 补上 H5 需要的字段。"""
+    """老 state 补上 AMD马 需要的字段; 早期 AMD马 记在 N-H5 名下, 改挂到 AMD。"""
+    for k in ("trades", "seq"):
+        if "N-H5" in st[k]:
+            st[k][AMD] = st[k].pop("N-H5")
+    for t in st["trades"].get(AMD, []):
+        t["code"] = AMD
+    for ss in st["syms"].values():
+        if "N-H5" in ss["pos"]:
+            ss["pos"][AMD] = ss["pos"].pop("N-H5")
     for c in HORSES:
         st["trades"].setdefault(c, []); st["seq"].setdefault(c, 0)
     st.setdefault("n_amd", 0)
@@ -418,13 +427,14 @@ def run(HB, M5, st, sym, msgs, feats):
 # ===== 消息 =====
 
 def board(st):
-    rows = []
+    rows = {}
     for code, name in HORSES.items():
         tr = st["trades"][code]; n = len(tr); w = sum(1 for t in tr if t["net_base"] > 0)
         nb = sum(t["net_base"] for t in tr); nc = sum(t["net_cons"] for t in tr)
         op = sum(1 for v in st["syms"].values() if code in v["pos"])
-        rows.append(f"{code[2:]} {name}: {n}笔 {w}胜 · 净 <b>${nb:+,.0f} ({pct(nb)})</b> · 保守 ${nc:+,.0f} ({pct(nc)}) · 持仓{op}")
-    return ("\n━━━━━━━━━━━━━━━\n📊 <b>五马前向战绩</b> (每匹账户 $7,000 · 每单风险 $40)\n" + "\n".join(rows) + PAPER_MARK)
+        rows[code] = (f"{lab(code)}: {n}笔 {w}胜 · 净 <b>${nb:+,.0f} ({pct(nb)})</b> · 保守 ${nc:+,.0f} ({pct(nc)}) · 持仓{op}")
+    return ("\n━━━━━━━━━━━━━━━\n📊 <b>前向战绩</b> (每匹账户 $7,000 · 每单风险 $40)\n<b>突破马</b>\n" + "\n".join(rows[c] for c in BO_HORSES)
+            + "\n<b>AMD马</b>\n" + rows[AMD] + PAPER_MARK)
 
 
 def fmt_entry(p, st):
@@ -434,9 +444,9 @@ def fmt_entry(p, st):
         pos = p["pos"][c]
         tgt = (f"止盈 <code>${fp(pos['tp'])}</code> (赚 ${RISK_USD*RR:,.0f} = 本金 {RISK_USD*RR/PRINCIPAL_USD*100:.0f}%)" if pos["tp"]
                else f"不设止盈 · 吊灯止损距最高点 ${fp(pos['ch'])}")
-        lines.append(f"✅ {c[2:]} {HORSES[c]} #{pos['seq']:03d}: {tgt}")
+        lines.append(f"✅ {lab(c)} #{pos['seq']:03d}: {tgt}")
     for c, why in p["skipped"].items():
-        lines.append(f"➖ {c[2:]} {HORSES[c]}: 不做 ({why})")
+        lines.append(f"➖ {lab(c)}: 不做 ({why})")
     return (f"🚀 <b>{p['sym']} {'📈 做多' if d==1 else '📉 做空'} — 1h 强突破 + 跟进K</b>\n━━━━━━━━━━━━━━━\n"
             f"进场 <code>${fp(p['e'])}</code> ({tstr(p['ts'])} UTC){' · 🗽纽约时段' if is_ny(p['ts']) else ''}\n"
             f"🛑 止损 <code>${fp(p['sl'])}</code> · 距离 {p['dist']/p['e']*100:.2f}% · 打到亏 ${RISK_USD:,.0f} (本金 {RISK_USD/PRINCIPAL_USD*100:.0f}%)\n"
@@ -447,7 +457,7 @@ def fmt_entry(p, st):
 def fmt_entry5(p, st):
     d = p["d"]; n = p["n"]; R = RISK_USD
     return (f"🎯 <b>{p['sym']} {'📈 做多' if d==1 else '📉 做空'} — 4h AMD (横盘 → 扫{'低' if d==1 else '高'}点 → 收回箱体)</b>\n━━━━━━━━━━━━━━━\n"
-            f"H5 AMD马 #{p['seq']:03d} · 进场 <code>${fp(p['e'])}</code> ({tstr(p['ts'])} UTC)\n"
+            f"AMD马 #{p['seq']:03d} · 进场 <code>${fp(p['e'])}</code> ({tstr(p['ts'])} UTC)\n"
             f"🛑 止损 <code>${fp(p['sl'])}</code> (扫到的{'最低' if d==1 else '最高'}点) · 距离 {p['dist']/p['e']*100:.2f}% · 打到亏 ${R:,.0f} (本金 {R/PRINCIPAL_USD*100:.0f}%)\n"
             f"🥇 第一止盈 <code>${fp(p['tg'][0])}</code> (1R) → 出 1/3, 之后止损移到 <code>${fp(p['s1'])}</code>\n"
             f"🥈 第二止盈 <code>${fp(p['tg'][1])}</code> (2 倍操纵腿) → 再出 1/3\n"
@@ -458,7 +468,7 @@ def fmt_entry5(p, st):
 def fmt_tp5(p, st):
     names = {1: "第一止盈 (1R)", 2: "第二止盈 (2 倍操纵腿)", 3: "第三止盈 (4 倍操纵腿)"}
     got = "、".join(f"{names[w]} ${fp(x)}" for w, x in zip(p["which"], p["px"]))
-    return (f"✅ <b>{p['sym']} H5 AMD马 #{p['seq']:03d} — {got} 到手</b>\n"
+    return (f"✅ <b>{p['sym']} AMD马 #{p['seq']:03d} — {got} 到手</b>\n"
             f"出 {len(p['which'])}/3 仓位 · 剩余仓位止损在 <code>${fp(p['sl'])}</code> (进场 ${fp(p['e'])})" + PAPER_MARK)
 
 
@@ -468,7 +478,7 @@ def fmt_exit5(t, st):
         parts.append(f"第{i}份: {'止盈' if w=='tp' else ('止损' if w=='sl' else '到时平仓')} ${fp(px)}")
     icon = "🟢" if t["net_base"] > 0 else "🔴"
     head = {"tp": "三档止盈全部到手", "time": "到时平仓", "sl": ("剩余仓位被止损" if t["hit"] else "止损")}[t["why"]]
-    return (f"{icon} <b>{t['sym']} H5 AMD马 #{t['seq']:03d} {'多' if t['d']==1 else '空'}单结束 — {head}</b>\n━━━━━━━━━━━━━━━\n"
+    return (f"{icon} <b>{t['sym']} AMD马 #{t['seq']:03d} {'多' if t['d']==1 else '空'}单结束 — {head}</b>\n━━━━━━━━━━━━━━━\n"
             f"进场 ${fp(t['e'])} · 持仓 {t['hold_h']:.1f}h\n" + "\n".join(parts) +
             f"\n净 <b>${t['net_base']:+,.2f} ({pct(t['net_base'], PRINCIPAL_USD)})</b> · 保守 ${t['net_cons']:+,.2f} ({pct(t['net_cons'], PRINCIPAL_USD)})"
             + board(st))
@@ -479,7 +489,7 @@ def fmt_exit(ts_, st):
     if t0["code"] == AMD:
         return fmt_exit5(t0, st)
     icon = {"tp": "🟢 止盈", "sl": "🔴 止损" if t0["sl"] == t0["sl0"] else "🔒 吊灯止损", "time": "⏱ 到时平仓"}[t0["why"]]
-    lines = [f"{t['code'][2:]} {HORSES[t['code']]} #{t['seq']:03d}: 净 <b>${t['net_base']:+,.2f} ({pct(t['net_base'], PRINCIPAL_USD)})</b>"
+    lines = [f"{lab(t['code'])} #{t['seq']:03d}: 净 <b>${t['net_base']:+,.2f} ({pct(t['net_base'], PRINCIPAL_USD)})</b>"
              f" · 保守 ${t['net_cons']:+,.2f} ({pct(t['net_cons'], PRINCIPAL_USD)})" for t in ts_]
     return (f"{icon} <b>{t0['sym']} {'多' if t0['d']==1 else '空'}单出场</b>\n━━━━━━━━━━━━━━━\n"
             f"${fp(t0['e'])} → ${fp(t0['x'])} ({tstr(t0['xts'])} UTC) · 持仓 {t0['hold_h']:.1f}h · 毛利 ${t0['gross']:+,.2f}"
@@ -559,9 +569,9 @@ def main():
              f"标的: {' '.join(SYMS)} 永续 (OKX 行情, 1h 信号 + 5m 路径记账)\n"
              "信号: 1h 强突破K (收盘破前 20 根高/低点 · 实体≥70% · 振幅≥1.5×ATR) + 下一根跟进K 同向收盘 → 顺势进\n"
              "止损: 突破K另一端 · 每单打到亏 $40 · 最多拿 72 小时 · 每币每马同时 1 单\n"
-             + "\n".join(f"{c[2:]} {n}: {RULE[c]}" for c, n in HORSES.items()) +
+             + "\n".join(f"{lab(c)}: {RULE[c]}" for c in HORSES) +
              "\n回测 (2023-05→2026-10, 7 币, 扣滑点和资金费, 每匹账户 $7,000):\n"
-             "H1 +$3,291 (+47%) 回撤 27% · H2 +$3,452 (+49%) 回撤 16%\nH3 +$5,888 (+84%) 回撤 12% · H4 +$6,813 (+97%) 回撤 27%\nH5 AMD +$9,411 (+134%) 回撤 35%\n"
+             "H1 +$3,291 (+47%) 回撤 27% · H2 +$3,452 (+49%) 回撤 16%\nH3 +$5,888 (+84%) 回撤 12% · H4 +$6,813 (+97%) 回撤 27%\nAMD马 +$9,411 (+134%) 回撤 35%\n"
              "<i>及格线: 每匹前向 ≥40 笔、基准口径净为正</i>" + PAPER_MARK)
         return
     if not st.get("lineup_v2"):
@@ -580,6 +590,11 @@ def main():
              "回测 (2023-05→2026-10, 7 币): 2,094 笔 · 胜率 53% · +$9,411 (+134%) · 回撤 35%\n"
              "(原 18 根版: 1,610 笔 · +$8,914 · 回撤 31%)" + PAPER_MARK)
     st["lineup_v3"] = True
+    if not st.get("lineup_v4"):
+        st["lineup_v4"] = True
+        send("📣 <b>AMD马 单独成类</b>\n━━━━━━━━━━━━━━━\n"
+             "AMD马 不再算突破赛马里的 H5, 以后就叫 AMD马, 是单独的一种马, 战绩栏单列。\n"
+             "规则和已开的单子都不变, 只是换了名字和编号 (原 H5 #001 = AMD马 #001)。" + PAPER_MARK)
     for kind, p in msgs:
         breakout_feed.emit(kind, p)
         if kind == "entry":
@@ -591,7 +606,7 @@ def main():
             elif kind == "entry5": send(fmt_entry5(p, st))
             elif kind == "tp5": send(fmt_tp5(p, st))
             elif kind == "exit": send(fmt_exit(p, st))
-            elif kind == "bemove": send(f"🔒 <b>{p['sym']} {p['code'][2:]} {HORSES[p['code']]} #{p['seq']:03d} 已保本</b>\n吊灯止损推到 <code>${fp(p['sl'])}</code> (进场 ${fp(p['e'])}), 这单最差打平扣成本" + PAPER_MARK)
+            elif kind == "bemove": send(f"🔒 <b>{p['sym']} {lab(p['code'])} #{p['seq']:03d} 已保本</b>\n吊灯止损推到 <code>${fp(p['sl'])}</code> (进场 ${fp(p['e'])}), 这单最差打平扣成本" + PAPER_MARK)
         except Exception as e:
             print(f"消息失败 {kind}: {e}")
     print(f"ok {len(ok)}/7: 信号 {st['n_sig']} · " + " · ".join(f"{c} {len(st['trades'][c])}笔 {sum(t['net_base'] for t in st['trades'][c]):+.0f}" for c in HORSES))
