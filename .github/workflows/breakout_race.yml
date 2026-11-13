@@ -29,6 +29,7 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.NECKLINE_TG_CHAT_ID != '' && secrets.NECKLINE_TG_CHAT_ID || secrets.TELEGRAM_CHAT_ID }}
           # 与马G 相同的两个群: 颈线群 + 福利群。要加群就在后面用逗号接群 ID
           TELEGRAM_GROUP_CHAT_ID: "-5515956430,-1003953373413"
+          TOKENBEEP_WEBHOOK_URL: ${{ secrets.TOKENBEEP_WEBHOOK_URL }}
         run: |
           python3 breakout_race.py
 

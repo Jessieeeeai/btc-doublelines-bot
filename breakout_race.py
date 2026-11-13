@@ -31,6 +31,9 @@ LOOK, BODY, K_ATR, RR, HOLD_H, BUF, CHAND = 20, 0.7, 1.5, 2.0, 72, 0.0003, 4.0
 RISK_USD, NOTIONAL_CAP, PRINCIPAL_USD = 40.0, 25000.0, 1000.0
 ACCOUNT_USD = PRINCIPAL_USD * len(SYMS)
 SLIP_BASE, SLIP_CONS, STOP_SLIP_CONS, FUND_8H = 0.0004, 0.0008, 0.0005, 0.0001
+# TokenBeep: 一个账号只有一条 webhook 信号流, 只发这里列出的马的开仓信号 (平仓/移动止损该接口不支持)。
+# 地址放在 GitHub Secret TOKENBEEP_WEBHOOK_URL 里; 没设就不发。
+TB_PUBLISH = ["N-H2"]
 PAPER_MARK = "\n🧪 <i>纸面验证 · 实盘记账口径 — 非实盘指令</i>"
 
 
@@ -316,6 +319,30 @@ def fmt_exit(ts_, st):
             f" · 成本 ${t0['cost_base']:,.2f}/${t0['cost_cons']:,.2f}\n" + "\n".join(lines) + board(st))
 
 
+def tb_publish(p):
+    """把一条进场消息里属于 TB_PUBLISH 的马发到 TokenBeep webhook。永不抛异常。"""
+    url = os.environ.get("TOKENBEEP_WEBHOOK_URL")
+    if not url:
+        return
+    for code in p["horses"]:
+        if code not in TB_PUBLISH:
+            continue
+        pos = p["pos"][code]
+        tp = pos["tp"] if pos["tp"] else p["e"] + p["d"] * RR * p["dist"]
+        body = {"client_signal_id": f"{code}-{p['sym']}-{pos['seq']:04d}",
+                "title": f"{p['sym']} 1h 强突破跟进 · {HORSES[code]}（纸面验证）",
+                "asset": f"{p['sym']}USDT", "direction": "long" if p["d"] == 1 else "short",
+                "entry_price": fp(p["e"]).replace(",", ""), "target_prices": [fp(tp).replace(",", "")],
+                "stop_loss": fp(p["sl"]).replace(",", "")}
+        try:
+            req = urllib.request.Request(url, data=json.dumps(body, ensure_ascii=False).encode(),
+                                         headers={"Content-Type": "application/json", "User-Agent": "breakout-race/1.0"})
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                print(f"  [tokenbeep] {body['client_signal_id']} -> {resp.status}")
+        except Exception as e:
+            print(f"  [tokenbeep] {body['client_signal_id']} 失败: {str(e)[:120]}")
+
+
 def group_msgs(msgs):
     """同一币、同一时间、同价出场的几匹马合成一条。"""
     out, key_ix = [], {}
@@ -372,6 +399,8 @@ def main():
         return
     for kind, p in msgs:
         breakout_feed.emit(kind, p)
+        if kind == "entry":
+            tb_publish(p)
     save_state(st); breakout_feed.flush(st)
     for kind, p in group_msgs(msgs)[-12:]:
         try:
