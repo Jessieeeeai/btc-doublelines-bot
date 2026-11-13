@@ -225,7 +225,7 @@ def close_pos(st, ss, sym, code, px, ts, why, msgs):
     t = {"seq": pos["seq"], "code": code, "sym": sym, "d": pos["d"], "e": pos["e"], "x": px, "ts": pos["ts"], "xts": ts,
          "n": pos["n"], "why": why, "gross": round(gross, 2), "cost_base": cb, "cost_cons": cc, "fund": fund,
          "net_base": round(gross - cb, 2), "net_cons": round(gross - cc, 2),
-         "hold_h": round((ts - pos["ts"]) / 3600, 1), "sl": pos["sl"], "sl0": pos["sl0"], "tp": pos["tp"]}
+         "hold_h": round((ts - pos["ts"]) / 3600, 1), "sl": pos["sl"], "sl0": pos["sl0"], "tp": pos["tp"], "ch": pos["ch"]}
     st["trades"][code].append(t)
     msgs.append(("exit", t))
 
@@ -263,7 +263,7 @@ def process_5m(st, ss, sym, b, msgs):
             ss["pos"][AMD] = {"seq": st["seq"][AMD], "d": d, "e": px, "sl": sl, "sl0": sl, "tp": None, "ch": None,
                               "n": round(min(RISK_USD / (dist / px), NOTIONAL_CAP), 0), "ts": ts, "x_ts": ts + AMD_HOLD_H * H,
                               "tg": [px + d * dist, t2, t3], "left": [True, True, True], "hit": 0, "s1": px - d * AMD_BE * dist,
-                              "g": 0.0, "hold": 0.0, "stopped": 0.0, "legs": []}
+                              "g": 0.0, "hold": 0.0, "stopped": 0.0, "legs": [], "box": [p5.get("lo"), p5.get("hi")] if p5.get("lo") else None}
             fresh.add(AMD)
             msgs.append(("entry5", dict(ss["pos"][AMD], sym=sym, dist=dist)))
     for code in list(ss["pos"]):
@@ -385,7 +385,8 @@ def amd_bar(st, ss, sym, pos, b, fresh, msgs):
     t = {"seq": pos["seq"], "code": AMD, "sym": sym, "d": d, "e": pos["e"], "x": pos["legs"][-1][1], "ts": pos["ts"], "xts": ts,
          "n": n, "why": last_why, "gross": round(gross, 2), "cost_base": cb, "cost_cons": cc, "fund": round(fund, 2),
          "net_base": round(gross - cb, 2), "net_cons": round(gross - cc, 2), "hold_h": round((ts - pos["ts"]) / 3600, 1),
-         "sl": pos["sl"], "sl0": pos["sl0"], "tp": None, "legs": pos["legs"], "hit": pos["hit"]}
+         "sl": pos["sl"], "sl0": pos["sl0"], "tp": None, "legs": pos["legs"], "hit": pos["hit"],
+         "tg": pos["tg"], "s1": pos["s1"], "box": pos.get("box")}
     st["trades"][AMD].append(t)
     msgs.append(("exit", t))
 
@@ -428,77 +429,70 @@ def run(HB, M5, st, sym, msgs, feats):
             hour_close(st, ss, sym, HB, idx, hour, feats)
 
 
-# ===== 消息 =====
+# ===== 消息 (与颈线马同一套 SOP: 每匹马各发各的, 带 [代号] 前缀和单马战绩栏; 关单另发复盘图) =====
 
-def board(st, amd=False):
-    rows = {}
-    for code, name in HORSES.items():
-        tr = st["trades"][code]; n = len(tr); w = sum(1 for t in tr if t["net_base"] > 0)
-        nb = sum(t["net_base"] for t in tr); nc = sum(t["net_cons"] for t in tr)
-        op = sum(1 for v in st["syms"].values() if code in v["pos"])
-        rows[code] = (f"{lab(code)}: {n}笔 {w}胜 · 净 <b>{usd(nb, 0)} ({pct(nb)})</b> · 保守 {usd(nc, 0)} ({pct(nc)}) · 持仓{op}")
-    if amd:
-        return ("\n━━━━━━━━━━━━━━━\n📊 <b>AMD马 前向战绩</b> (账户 $7,000 · 每单风险 $40)\n" + rows[AMD] + PAPER_MARK)
-    return ("\n━━━━━━━━━━━━━━━\n📊 <b>突破四马 前向战绩</b> (每匹账户 $7,000 · 每单风险 $40)\n" + "\n".join(rows[c] for c in BO_HORSES) + PAPER_MARK)
+def footer(st, code):
+    tr = st["trades"][code]; n = len(tr); w = sum(1 for t in tr if t["net_base"] > 0)
+    nb = sum(t["net_base"] for t in tr)
+    line = (f"\n━━━━━━━━━━━━━━━\n📊 <b>[{code}] 前向战绩</b> 已完成 {n} 笔 · {w}胜{n - w}败 "
+            f"(胜率 {(w / n * 100 if n else 0):.0f}%) · 累计 <b>{usd(nb, 2)}</b> (<b>{pct(nb)}</b>)"
+            f"\n💵 每单本金 ${PRINCIPAL_USD:,.0f} · 单均 {(nb / n if n else 0) / PRINCIPAL_USD * 100:+.2f}% · 账户 ${ACCOUNT_USD:,.0f} ({len(SYMS)} 币)")
+    held = [f"{y} {'📈多' if v['pos'][code]['d'] == 1 else '📉空'} @${fp(v['pos'][code]['e'])}" for y, v in st["syms"].items() if code in v["pos"]]
+    if held:
+        line += "\n⏳ 持仓: " + " · ".join(held)
+    return line + PAPER_MARK
 
 
-def fmt_entry(p, st):
-    d = p["d"]; n = next(iter(p["pos"].values()))["n"]
-    lines = []
-    for c in p["horses"]:
-        pos = p["pos"][c]
-        tgt = (f"止盈 <code>${fp(pos['tp'])}</code> (赚 ${RISK_USD*RR:,.0f} = 本金 {RISK_USD*RR/PRINCIPAL_USD*100:.0f}%)" if pos["tp"]
-               else f"不设止盈 · 吊灯止损距{'最高点' if d == 1 else '最低点'} ${fp(pos['ch'])}")
-        lines.append(f"✅ {lab(c)} #{pos['seq']:03d}: {tgt}")
-    for c, why in p["skipped"].items():
-        lines.append(f"➖ {lab(c)}: 不做 ({why})")
-    return (f"🚀 <b>{p['sym']} {'📈 做多' if d==1 else '📉 做空'} — 1h 强突破 + 跟进K</b>\n━━━━━━━━━━━━━━━\n"
-            f"进场 <code>${fp(p['e'])}</code> ({tstr(p['ts'])} UTC){' · 🗽纽约时段' if is_ny(p['ts']) else ''}\n"
-            f"🛑 止损 <code>${fp(p['sl'])}</code> · 距离 {p['dist']/p['e']*100:.2f}% · 打到亏 ${RISK_USD:,.0f} (本金 {RISK_USD/PRINCIPAL_USD*100:.0f}%)\n"
-            f"⚖️ 名义 ${n:,.0f} · 杠杆 {n/PRINCIPAL_USD:.1f}× (每币本金 ${PRINCIPAL_USD:,.0f}) · 最多拿 {HOLD_H}h\n"
-            + "\n".join(lines) + board(st))
+def fmt_entry(p, code, st):
+    pos = p["pos"][code]; d = p["d"]; n = pos["n"]; risk = n * p["dist"] / p["e"]
+    tp_txt = (f"🎯 止盈: <code>${fp(pos['tp'])}</code> (2R · 赚约 ${risk * RR:,.0f})" if pos["tp"] else
+              f"🎯 止盈: 无固定TP · 吊灯止损 ({'最高点 −' if d == 1 else '最低点 +'} 4×ATR = ${fp(pos['ch'])})")
+    return (f"[{code}] ✅ <b>强突破单 #{pos['seq']:03d} 已入场 — {HORSES[code]}</b>\n━━━━━━━━━━━━━━━\n"
+            f"币种: <b>{p['sym']}</b>\n"
+            f"方向: {'📈 做多' if d == 1 else '📉 做空'}\n"
+            f"形态: 1h 强突破K + 跟进K{' · 🗽纽约时段' if is_ny(p['ts']) else ''}\n"
+            f"入场: <code>${fp(p['e'])}</code> ({tstr(p['ts'])} UTC)\n"
+            f"🛑 止损: <code>${fp(p['sl'])}</code> · 输约 <b>-${risk:,.0f}</b> ({risk / PRINCIPAL_USD * 100:.1f}%)\n"
+            f"{tp_txt}\n"
+            f"⚖️ 仓位: <b>${n:,.0f}</b> 名义 · 本金 ${PRINCIPAL_USD:,.0f} · 最多拿 {HOLD_H}h" + footer(st, code))
 
 
 def fmt_entry5(p, st):
-    d = p["d"]; n = p["n"]; R = RISK_USD
-    return (f"🎯 <b>{p['sym']} {'📈 做多' if d==1 else '📉 做空'} — 4h AMD (横盘 → 扫{'低' if d==1 else '高'}点 → 收回箱体)</b>\n━━━━━━━━━━━━━━━\n"
-            f"AMD马 #{p['seq']:03d} · 进场 <code>${fp(p['e'])}</code> ({tstr(p['ts'])} UTC)\n"
-            f"🛑 止损 <code>${fp(p['sl'])}</code> (扫到的{'最低' if d==1 else '最高'}点) · 距离 {p['dist']/p['e']*100:.2f}% · 打到亏 ${R:,.0f} (本金 {R/PRINCIPAL_USD*100:.0f}%)\n"
-            f"🥇 第一止盈 <code>${fp(p['tg'][0])}</code> (1R) → 出 1/3, 之后止损移到 <code>${fp(p['s1'])}</code>\n"
-            f"🥈 第二止盈 <code>${fp(p['tg'][1])}</code> (2 倍操纵腿) → 再出 1/3\n"
-            f"🥉 第三止盈 <code>${fp(p['tg'][2])}</code> (4 倍操纵腿) → 出完\n"
-            f"⚖️ 名义 ${n:,.0f} · 杠杆 {n/PRINCIPAL_USD:.1f}× (每币本金 ${PRINCIPAL_USD:,.0f}) · 最多拿 8 天" + board(st, True))
+    d = p["d"]; n = p["n"]; risk = n * p["dist"] / p["e"]
+    box = f" (箱体 {fp(p['box'][0])}~{fp(p['box'][1])})" if p.get("box") else ""
+    return (f"[{AMD}] ✅ <b>AMD单 #{p['seq']:03d} 已入场 — AMD马</b>\n━━━━━━━━━━━━━━━\n"
+            f"币种: <b>{p['sym']}</b>\n"
+            f"方向: {'📈 做多' if d == 1 else '📉 做空'}\n"
+            f"形态: 4h 横盘 → 扫{'低' if d == 1 else '高'}点 → 收回箱体{box}\n"
+            f"入场: <code>${fp(p['e'])}</code> ({tstr(p['ts'])} UTC)\n"
+            f"🛑 止损: <code>${fp(p['sl'])}</code> · 输约 <b>-${risk:,.0f}</b> ({risk / PRINCIPAL_USD * 100:.1f}%)\n"
+            f"🎯 止盈 (各出 1/3): <code>${fp(p['tg'][0])}</code> (1R) / <code>${fp(p['tg'][1])}</code> (2 倍操纵腿) / <code>${fp(p['tg'][2])}</code> (4 倍操纵腿)\n"
+            f"🔒 第一止盈到手后, 止损移到 <code>${fp(p['s1'])}</code>\n"
+            f"⚖️ 仓位: <b>${n:,.0f}</b> 名义 · 本金 ${PRINCIPAL_USD:,.0f} · 最多拿 8 天" + footer(st, AMD))
 
 
 def fmt_tp5(p, st):
     names = {1: "第一止盈 (1R)", 2: "第二止盈 (2 倍操纵腿)", 3: "第三止盈 (4 倍操纵腿)"}
     got = "、".join(f"{names[w]} ${fp(x)}" for w, x in zip(p["which"], p["px"]))
-    return (f"✅ <b>{p['sym']} AMD马 #{p['seq']:03d} — {got} 到手</b>\n"
-            f"出 {len(p['which'])}/3 仓位 · 剩余仓位止损在 <code>${fp(p['sl'])}</code> (进场 ${fp(p['e'])})" + PAPER_MARK)
+    return (f"[{AMD}] 🎯 <b>#{p['seq']:03d} {got} 到手 — AMD马</b>\n━━━━━━━━━━━━━━━\n"
+            f"{p['sym']} {'📈多' if p['d'] == 1 else '📉空'} @${fp(p['e'])} · 出 {len(p['which'])}/3 仓位\n"
+            f"🔒 剩余仓位止损在 <code>${fp(p['sl'])}</code>" + footer(st, AMD))
 
 
-def fmt_exit5(t, st):
-    parts = []
-    for i, px, w, _ in t["legs"]:
-        parts.append(f"第{i}份: {'止盈' if w=='tp' else ('止损' if w=='sl' else '到时平仓')} ${fp(px)}")
-    icon = "🟢" if t["net_base"] > 0 else "🔴"
-    head = {"tp": "三档止盈全部到手", "time": "到时平仓", "sl": ("剩余仓位被止损" if t["hit"] else "止损")}[t["why"]]
-    return (f"{icon} <b>{t['sym']} AMD马 #{t['seq']:03d} {'多' if t['d']==1 else '空'}单结束 — {head}</b>\n━━━━━━━━━━━━━━━\n"
-            f"进场 ${fp(t['e'])} · 持仓 {t['hold_h']:.1f}h\n" + "\n".join(parts) +
-            f"\n净 <b>{usd(t['net_base'], 2)} ({pct(t['net_base'], PRINCIPAL_USD)})</b> · 保守 {usd(t['net_cons'], 2)} ({pct(t['net_cons'], PRINCIPAL_USD)})"
-            + board(st, True))
+def fmt_bemove(p, st):
+    return (f"[{p['code']}] 🔒 <b>#{p['seq']:03d} 已保本 — {HORSES[p['code']]}</b>\n"
+            f"{p['sym']} 吊灯止损推到 <code>${fp(p['sl'])}</code> (入场 ${fp(p['e'])}), 此单最差打平" + footer(st, p["code"]))
 
 
-def fmt_exit(ts_, st):
-    t0 = ts_[0]
-    if t0["code"] == AMD:
-        return fmt_exit5(t0, st)
-    icon = {"tp": "🟢 止盈", "sl": "🔴 止损" if t0["sl"] == t0["sl0"] else "🔒 吊灯止损", "time": "⏱ 到时平仓"}[t0["why"]]
-    lines = [f"{lab(t['code'])} #{t['seq']:03d}: 净 <b>{usd(t['net_base'], 2)} ({pct(t['net_base'], PRINCIPAL_USD)})</b>"
-             f" · 保守 {usd(t['net_cons'], 2)} ({pct(t['net_cons'], PRINCIPAL_USD)})" for t in ts_]
-    return (f"{icon} <b>{t0['sym']} {'多' if t0['d']==1 else '空'}单出场</b>\n━━━━━━━━━━━━━━━\n"
-            f"${fp(t0['e'])} → ${fp(t0['x'])} ({tstr(t0['xts'])} UTC) · 持仓 {t0['hold_h']:.1f}h · 毛利 {usd(t0['gross'], 2)}"
-            f" · 成本 ${t0['cost_base']:,.2f}/${t0['cost_cons']:,.2f}\n" + "\n".join(lines) + board(st))
+def fmt_exit(t, st):
+    code = t["code"]
+    if code == AMD:
+        icon = {"tp": "🟢 止盈", "time": "⏱ 到时平仓", "sl": "🔒 剩余仓位止损" if t["hit"] else "🔴 止损"}[t["why"]]
+    else:
+        icon = {"tp": "🟢 止盈", "sl": "🔴 止损" if t["sl"] == t["sl0"] else "🔒 吊灯止损", "time": "⏱ 到时平仓"}[t["why"]]
+    return (f"[{code}] {icon} <b>#{t['seq']:03d} 出场 — {HORSES[code]}</b>\n━━━━━━━━━━━━━━━\n"
+            f"{t['sym']} {'📈多' if t['d'] == 1 else '📉空'} @${fp(t['e'])} → ${fp(t['x'])} ({tstr(t['xts'])} UTC)\n"
+            f"结果: <b>{usd(t['net_base'], 2)}</b> ({pct(t['net_base'], PRINCIPAL_USD)}) · 持仓 {t['hold_h']:g} 小时" + footer(st, code))
 
 
 def tb_publish(p):
@@ -523,19 +517,6 @@ def tb_publish(p):
                 print(f"  [tokenbeep] {body['client_signal_id']} -> {resp.status}")
         except Exception as e:
             print(f"  [tokenbeep] {body['client_signal_id']} 失败: {str(e)[:120]}")
-
-
-def group_msgs(msgs):
-    """同一币、同一时间、同价出场的几匹马合成一条。"""
-    out, key_ix = [], {}
-    for kind, p in msgs:
-        if kind == "exit":
-            k = (p["sym"], p["xts"], round(p["x"], 8), p["why"], p["ts"], p["code"] == AMD)
-            if k in key_ix: out[key_ix[k]][1].append(p)
-            else: key_ix[k] = len(out); out.append(("exit", [p]))
-        else:
-            out.append((kind, p))
-    return out
 
 
 def main():
@@ -605,13 +586,31 @@ def main():
         if kind == "entry":
             tb_publish(p)
     save_state(st); breakout_feed.flush(st)
-    for kind, p in group_msgs(msgs)[-12:]:
+    if not st.get("lineup_v5"):
+        st["lineup_v5"] = True
+        if any(st["trades"].values()) or any(v["pos"] for v in st["syms"].values()):
+            send("📣 <b>消息格式调整</b>\n━━━━━━━━━━━━━━━\n"
+                 "突破四马和 AMD马 的消息改成和颈线马一样: 每匹马各发各的 (带 [代号] 和自己的战绩栏), 关单后另发一张复盘K线图。规则和单子不变。" + PAPER_MARK)
+        save_state(st)
+    sent = 0
+    for kind, p in msgs:
+        if sent >= 24:
+            print("消息过多, 本轮剩余的不再发送"); break
         try:
-            if kind == "entry": send(fmt_entry(p, st))
-            elif kind == "entry5": send(fmt_entry5(p, st))
-            elif kind == "tp5": send(fmt_tp5(p, st))
-            elif kind == "exit": send(fmt_exit(p, st))
-            elif kind == "bemove": send(f"🔒 <b>{p['sym']} {lab(p['code'])} #{p['seq']:03d} 已保本</b>\n吊灯止损推到 <code>${fp(p['sl'])}</code> (进场 ${fp(p['e'])}), 这单最差打平扣成本" + PAPER_MARK)
+            if kind == "entry":
+                for code in p["horses"]:
+                    send(fmt_entry(p, code, st)); sent += 1
+            elif kind == "entry5": send(fmt_entry5(p, st)); sent += 1
+            elif kind == "tp5": send(fmt_tp5(p, st)); sent += 1
+            elif kind == "bemove": send(fmt_bemove(p, st)); sent += 1
+            elif kind == "exit":
+                send(fmt_exit(p, st)); sent += 1
+                try:
+                    import breakout_report
+                    breakout_report.send_trade_report(p, HORSES[p["code"]], HBS.get(p["sym"], []), footer=footer(st, p["code"]))
+                    time.sleep(0.5); sent += 1
+                except Exception as e:
+                    print(f"  战报失败 {p['code']} {p['sym']}: {e}")
         except Exception as e:
             print(f"消息失败 {kind}: {e}")
     print(f"ok {len(ok)}/7: 信号 {st['n_sig']} · " + " · ".join(f"{c} {len(st['trades'][c])}笔 {sum(t['net_base'] for t in st['trades'][c]):+.0f}" for c in HORSES))

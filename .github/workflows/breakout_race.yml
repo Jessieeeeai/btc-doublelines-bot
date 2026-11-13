@@ -26,6 +26,9 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install matplotlib
+        run: pip install --quiet matplotlib
+
       - name: Run four horses (paper)
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.NECKLINE_TG_BOT_TOKEN != '' && secrets.NECKLINE_TG_BOT_TOKEN || secrets.TELEGRAM_BOT_TOKEN }}
