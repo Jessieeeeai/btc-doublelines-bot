@@ -1,0 +1,53 @@
+name: 强突破跟进四马赛马 (纸面)
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: breakout-race
+  cancel-in-progress: false
+
+jobs:
+  run-breakout-race:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run four horses (paper)
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.NECKLINE_TG_BOT_TOKEN != '' && secrets.NECKLINE_TG_BOT_TOKEN || secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.NECKLINE_TG_CHAT_ID != '' && secrets.NECKLINE_TG_CHAT_ID || secrets.TELEGRAM_CHAT_ID }}
+          # 与马G 相同的两个群: 颈线群 + 福利群。要加群就在后面用逗号接群 ID
+          TELEGRAM_GROUP_CHAT_ID: "-5515956430,-1003953373413"
+        run: |
+          python3 breakout_race.py
+
+      - name: Commit state and feed if changed
+        run: |
+          if [ -n "$(git status --porcelain state_N_H.json breakout_feed*.json 2>/dev/null)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add state_N_H.json breakout_feed*.json 2>/dev/null || true
+            git commit -m "update breakout race $(date -u +'%Y-%m-%d %H:%M UTC')"
+            pushed=0
+            for attempt in 1 2 3 4 5; do
+              if git push; then pushed=1; break; fi
+              git pull --rebase --autostash origin main || true
+              sleep $((RANDOM % 5 + 2))
+            done
+            if [ "$pushed" != "1" ]; then
+              echo "::warning::5 次重试后仍无法 push"
+            fi
+          else
+            echo "unchanged"
+          fi
