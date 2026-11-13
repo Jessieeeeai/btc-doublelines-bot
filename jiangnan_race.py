@@ -14,7 +14,7 @@
   顺 BTC 大势 = BTC 1h 收盘在自己 200 均线(EMA)上方只做多, 下方只做空; 工作日按美东时间算
 记账: 5m 真实路径, 同一根里止损止盈都碰到按止损; 基准口径 (滑点 0.04% + 资金费 0.01%/8h) 与
       保守口径 (滑点 0.08% + 止损再滑 0.05% + 资金费) 并列。每匹马账户 $7,000 (7 币 x $1,000)。
-参数与回测 (research/round_ict/k4.py + run28.py) 一致, 不要调。state: state_JN.json; 订阅源: jiangnan_feed.json。
+参数与回测 (research/round_ict/k4.py + run28.py) 一致, 不要调。state: state_JN.json; 订阅源: jiangnan_feed.json (四匹七币总表) + jiangnan_feed_JN1_BTC.json ... (TokenBeep 用, 每匹马只含 BTC)。
 """
 import os, sys, json, time
 import urllib.request
@@ -35,6 +35,7 @@ RR, BUF, SMA_N = 3.0, 0.0003, 20
 RISK_USD, NOTIONAL_CAP, PRINCIPAL_USD = 40.0, 25000.0, 1000.0
 ACCOUNT_USD = PRINCIPAL_USD * len(SYMS)
 SLIP_BASE, SLIP_CONS, STOP_SLIP_CONS, FUND_8H = 0.0004, 0.0008, 0.0005, 0.0001
+TB_SYM = "BTC"          # TokenBeep 只接 BTC (用户 2026-11-12 定): jiangnan_feed_JN1_BTC.json ... 各接一个量化机器人
 PAPER_MARK = "\n🧪 <i>纸面验证 · 实盘记账口径 — 非实盘指令</i>"
 
 
@@ -308,16 +309,17 @@ def feed_flush(st, msgs):
                 feed = json.load(f)
         seen = {e["dedup"] for e in feed["events"]}
         r = lambda x: None if x is None else float(f"{x:.8g}")
+        added = []
         def ev(code, sym, seq, action, ts, d, e, sl, tp, n, tag, **extra):
             dd = f"{code}-{seq:03d}:{tag}"
             if dd in seen:
                 return
             seen.add(dd)
-            x = {"event_id": feed["next_event_id"], "ts": ts, "time": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+            x = {"event_id": feed["next_event_id"], "ts": ts, "time": datetime.fromtimestamp(ts, tz=timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
                  "strategy": code, "symbol": f"{sym}USDT", "signal_no": seq, "pos_id": f"{code}-{seq:03d}", "paper": True,
                  "action": action, "direction": "long" if d == 1 else "short", "entry_price": r(e), "sl": r(sl), "tp": r(tp),
                  "notional_usd": n, "risk_usd": RISK_USD, "dedup": dd}
-            x.update(extra); feed["events"].append(x); feed["next_event_id"] += 1
+            x.update(extra); feed["events"].append(x); feed["next_event_id"] += 1; added.append(x)
         for kind, p in msgs:
             if kind == "entry":
                 for c in p["horses"]:
@@ -336,6 +338,25 @@ def feed_flush(st, msgs):
         feed["updated_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
         with open(FEED_FILE, "w") as f:
             json.dump(feed, f, indent=2, ensure_ascii=False)
+        # TokenBeep 的量化机器人一个只能绑一个币: 每匹马另写一份只含 TB_SYM 的单马文件 (各自连续编号, 文件内无断档)
+        for code in HORSES:
+            sp = f"jiangnan_feed_{code}_{TB_SYM}.json"
+            sub = {"schema": 1, "paper": True, "strategy": code, "symbol": f"{TB_SYM}USDT", "events": [], "next_event_id": 1}
+            if os.path.exists(sp):
+                with open(sp) as f:
+                    sub = json.load(f)
+            sub["next_event_id"] = (sub["events"][-1]["event_id"] + 1) if sub["events"] else 1
+            sseen = {e["dedup"] for e in sub["events"]}
+            for x in added:
+                if x["strategy"] != code or x["symbol"] != f"{TB_SYM}USDT" or x["dedup"] in sseen:
+                    continue
+                e2 = dict(x); e2["master_event_id"] = x["event_id"]; e2["event_id"] = sub["next_event_id"]
+                sub["next_event_id"] += 1; sub["events"].append(e2)
+            sub["events"] = sub["events"][-1000:]
+            sub["open_positions"] = [p for p in feed["open_positions"] if p["strategy"] == code and p["symbol"] == f"{TB_SYM}USDT"]
+            sub["updated_at"] = feed["updated_at"]
+            with open(sp, "w") as f:
+                json.dump(sub, f, indent=2, ensure_ascii=False)
     except Exception as e:
         print(f"  [feed] 失败: {e}")
 
