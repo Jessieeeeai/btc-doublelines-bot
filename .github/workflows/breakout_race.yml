@@ -4,10 +4,9 @@ on:
   schedule:
     - cron: '*/15 * * * *'
   workflow_dispatch:
-  # GitHub 自带的定时经常不触发; 颈线赛马每 15-20 分钟由 cron-job.org 准时拉起, 它跑完就顺带拉起本任务
-  workflow_run:
-    workflows: ["重叠颈线赛马机器人 (纸面)"]
-    types: [completed]
+  # GitHub 自带的定时经常不触发; 和其它机器人一样, 由 cron-job.org 每 15-20 分钟发来的 check-signals 拉起
+  repository_dispatch:
+    types: [check-signals]
 
 concurrency:
   group: breakout-race
