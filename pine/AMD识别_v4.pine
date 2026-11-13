@@ -4,7 +4,7 @@
 // 一切只在 K 线收盘后判定, 画出来的东西不会事后消失或挪位置。
 //
 // v4 画法 (进单出单一眼看完):
-//   三个方块      A区 吸筹 (蓝) → M区 操纵 (橙, 扫出箱体的那一段) → D区 派发 (绿, 进场价到 D区一, 到了 D区二 就长到 D区二)
+//   三个方块      A区 吸筹 (蓝) → M区 操纵 (橙, 扫出箱体的那一段) → D区 派发 (绿, 从进场价到这一单实际走到的最远处, 跟着行情长)
 //   BUY / SELL   进场旗标, 尖头指着进场价 (鼠标停上去看全部价格)
 //   红点线        原始止损, 从进场画到出场
 //   紫线          1R 到手后移动过的止损
@@ -84,7 +84,8 @@ type Trade
     string tip  = ""
     box   bxA   = na
     box   bxM   = na     // M区: 扫出箱体的那一段
-    box   bxD   = na     // D区: 进场价 → D区一 (到了 D区二 就长到 D区二)
+    box   bxD   = na     // D区: 进场价 → 这一单走到过的最远处
+    float best  = na
     line  lnSL  = na     // 原始止损 (红点线)
     line  lnSt  = na     // 止损移动的那一步 (紫)
     line  lnTr  = na     // 移动后的止损 (紫)
@@ -173,6 +174,12 @@ if barstate.isconfirmed
     // ── 1. 先走已有的一单 (止损优先) ──
     if live and bar_index > cur.bar0
         bool stopHit = cur.dir == 1 ? low <= cur.sl : high >= cur.sl
+        // D区方块跟着走到过的最远处长 (最多到 D区二)
+        cur.best := cur.dir == 1 ? math.min(math.max(cur.best, high), cur.z2a) : math.max(math.min(cur.best, low), cur.z2a)
+        if cur.dir == 1
+            cur.bxD.set_top(cur.best)
+        else
+            cur.bxD.set_bottom(cur.best)
         if stopHit
             evStop := true
             if not cur.hit1
@@ -194,16 +201,11 @@ if barstate.isconfirmed
                 cur.hitD1 := true
                 evD1 := true
                 cD1 += 1
-                cur.bxD.set_bgcolor(color.new(colD, 70))
                 cur.lbD1 := f_icon(bar_index, cur.z1a, "✅", "到达 D区一 " + f_px(cur.z1a))
             if f_reach(cur.dir, cur.z2a)
                 cur.hitD2 := true
                 evD2 := true
                 cD2 += 1
-                if cur.dir == 1
-                    cur.bxD.set_top(cur.z2a)
-                else
-                    cur.bxD.set_bottom(cur.z2a)
                 cur.finish(bar_index, cur.z2a, "✅", "到达 D区二")
             else if bar_index - cur.bar0 >= holdBars
                 cur.finish(bar_index, close, "⏱️", "到时平仓" + (cur.hitD1 ? " (到过 D区一)" : cur.hit1 ? " (到过 1R)" : ""))
@@ -296,7 +298,8 @@ if barstate.isconfirmed
                 t.lnSL := line.new(bar_index, sl, rb, sl, color = colShort, style = line.style_dotted, width = 2)
                 t.lnD1 := line.new(bar_index, z1a, rb, z1a, color = colLong, style = line.style_dashed, width = 1)
                 t.lnD2 := line.new(bar_index, z2a, rb, z2a, color = colLong, style = line.style_dashed, width = 1)
-                t.bxD  := box.new(bar_index, math.max(e, z1a), rb, math.min(e, z1a), border_color = color.new(colD, 100), border_width = 0, bgcolor = color.new(colD, 85))
+                t.best := e
+                t.bxD  := box.new(bar_index, e, rb, e, border_color = color.new(colD, 100), border_width = 0, bgcolor = color.new(colD, 80))
                 // 右侧价格牌 (只在这一单进行中显示)
                 t.tgSL := f_tag(rb, sl, "损 " + f_px(sl), colShort)
                 t.tgD1 := f_tag(rb, z1a, str.tostring(d1a) + "R " + f_px(z1a), colLong)
