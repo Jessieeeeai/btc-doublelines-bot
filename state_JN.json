@@ -1,0 +1,60 @@
+{
+ "started": true,
+ "syms": {
+  "BTC": {
+   "last_5m_ts": 1794548100,
+   "hour_done_ts": 1794542400,
+   "pend": null,
+   "pos": {}
+  },
+  "ETH": {
+   "last_5m_ts": 1794548100,
+   "hour_done_ts": 1794542400,
+   "pend": null,
+   "pos": {}
+  },
+  "SOL": {
+   "last_5m_ts": 1794548100,
+   "hour_done_ts": 1794542400,
+   "pend": null,
+   "pos": {}
+  },
+  "BNB": {
+   "last_5m_ts": 1794548100,
+   "hour_done_ts": 1794542400,
+   "pend": null,
+   "pos": {}
+  },
+  "XRP": {
+   "last_5m_ts": 1794548100,
+   "hour_done_ts": 1794542400,
+   "pend": null,
+   "pos": {}
+  },
+  "DOGE": {
+   "last_5m_ts": 1794548100,
+   "hour_done_ts": 1794542400,
+   "pend": null,
+   "pos": {}
+  },
+  "ADA": {
+   "last_5m_ts": 1794548100,
+   "hour_done_ts": 1794542400,
+   "pend": null,
+   "pos": {}
+  }
+ },
+ "trades": {
+  "JN1": [],
+  "JN2": [],
+  "JN3": [],
+  "JN4": []
+ },
+ "seq": {
+  "JN1": 0,
+  "JN2": 0,
+  "JN3": 0,
+  "JN4": 0
+ },
+ "n_sig": 0
+}
