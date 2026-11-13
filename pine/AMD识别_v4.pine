@@ -236,7 +236,7 @@ if barstate.isconfirmed
             suExt := dn ? low : high
             suBar := bar_index
             if showWait and (not live or not oneLive)
-                suBox := box.new(bar_index - nBox, boxHi, bar_index, boxLo, border_color = color.new(colA, 100), border_width = 0, bgcolor = color.new(colA, 82))
+                suBox := box.new(bar_index - nBox, boxHi, bar_index, boxLo, border_color = color.new(colA, 100), border_width = 0, bgcolor = color.new(colA, 82), text = "A", text_size = size.huge, text_color = color.new(colA, 45), text_formatting = text.format_bold)
             else
                 suBox := na
 
@@ -297,13 +297,13 @@ if barstate.isconfirmed
                     suBox := na
                 else
                     if na(suBox)
-                        suBox := box.new(suBar - nBox, suHi, suBar, suLo, border_color = color.new(colA, 100), border_width = 0, bgcolor = color.new(colA, 82))
+                        suBox := box.new(suBar - nBox, suHi, suBar, suLo, border_color = color.new(colA, 100), border_width = 0, bgcolor = color.new(colA, 82), text = "A", text_size = size.huge, text_color = color.new(colA, 45), text_formatting = text.format_bold)
                     suBox.set_right(suBar)
                     lastARight := suBar
                 t.bxA := suBox
                 // M区: 从扫出那根到破败信号那根, 从被扫的箱体边到扫出的极值
                 float mEdge = suSide == 1 ? suLo : suHi
-                t.bxM := box.new(suBar, math.max(mEdge, suExt), math.max(bar_index, suBar + 1), math.min(mEdge, suExt), border_color = color.new(colM, 100), border_width = 0, bgcolor = color.new(colM, 60))
+                t.bxM := box.new(suBar, math.max(mEdge, suExt), math.max(bar_index, suBar + 1), math.min(mEdge, suExt), border_color = color.new(colM, 100), border_width = 0, bgcolor = color.new(colM, 60), text = "M", text_size = size.auto, text_color = color.new(colM, 30), text_formatting = text.format_bold)
                 // 进场旗标: 尖头指着进场价
                 t.lbSig := label.new(bar_index, e, suSide == 1 ? "BUY" : "SELL", style = label.style_label_right, color = c, textcolor = color.white, size = size.small, tooltip = tip)
                 // 原始止损 (红点线) / D区目标 (绿虚线) / D区方块
@@ -313,7 +313,7 @@ if barstate.isconfirmed
                 t.best := e
                 t.pts  := array.new<chart.point>()
                 t.pts.push(chart.point.from_index(bar_index, e))
-                t.bxD  := box.new(bar_index, e, rb, e, border_color = color.new(colD, 100), border_width = 0, bgcolor = color.new(colD, 80))
+                t.bxD  := box.new(bar_index, e, rb, e, border_color = color.new(colD, 100), border_width = 0, bgcolor = color.new(colD, 80), text = "D", text_size = size.huge, text_color = color.new(colD, 45), text_formatting = text.format_bold)
                 // 右侧价格牌 (只在这一单进行中显示)
                 t.tgSL := f_tag(rb, sl, "损 " + f_px(sl), colShort)
                 t.tgD1 := f_tag(rb, z1a, str.tostring(d1a) + "R " + f_px(z1a), colLong)
