@@ -4,11 +4,11 @@
 // 一切只在 K 线收盘后判定, 画出来的东西不会事后消失或挪位置。
 //
 // v4 画法 (进单出单一眼看完):
-//   淡蓝底        A区 吸筹箱体;  竖短线 = M区 操纵
+//   三个方块      A区 吸筹 (蓝) → M区 操纵 (橙, 扫出箱体的那一段) → D区 派发 (绿, 进场价到 D区一, 到了 D区二 就长到 D区二)
 //   BUY / SELL   进场旗标, 尖头指着进场价 (鼠标停上去看全部价格)
 //   红点线        原始止损, 从进场画到出场
 //   紫线          1R 到手后移动过的止损
-//   绿虚线        D区一 / D区二 目标 (后面带一条淡绿带 = D区范围)
+//   绿虚线        D区一 / D区二 目标
 //   ✅            每到一个目标 (1R、D区一、D区二) 打一个勾
 //   ❌ 止损出场   🛡️ 拿到 1R 后被保护止损带走   ⏱️ 到时平仓
 //@version=6
@@ -47,11 +47,13 @@ int    keepN    = input.int(80, "图上保留多少单", minval = 1, maxval = 80
 bool   showWait = input.bool(true, "显示正在等破败信号的箱体", group = G5, tooltip = "已经扫出、还在等收盘收回的 A区。等不到就消失。")
 bool   showTbl  = input.bool(true, "显示右下角统计", group = G5)
 color  colA     = input.color(#2962FF, "A区颜色", group = G5)
+color  colM     = input.color(#FF9800, "M区颜色", group = G5)
+color  colD     = input.color(#089981, "D区颜色", group = G5)
 color  colLong  = input.color(#089981, "做多 / 盈利区颜色", group = G5)
 color  colShort = input.color(#F23645, "做空 / 止损区颜色", group = G5)
 color  colTrail = input.color(#D05CE3, "移动后的止损线颜色", group = G5)
 bool   showLegend = input.bool(true, "统计表里带图例", group = G5)
-bool   keepMiss = input.bool(false, "走完的单保留没碰到的 D区", group = G5, tooltip = "关: 一单走完后, 没碰到的 D区目标线和带子收掉, 历史图面更干净 (价格仍可在 BUY / SELL 的悬停提示里看)。开: 全部保留。")
+bool   keepMiss = input.bool(false, "走完的单保留没碰到的 D区", group = G5, tooltip = "关: 一单走完后, 没碰到的 D区目标线收掉 (D区方块一直在), 历史图面更干净 (价格仍可在 BUY / SELL 的悬停提示里看)。开: 全部保留。")
 
 // ───────────── 每根都要算的序列 ─────────────
 float boxHi  = ta.highest(high, nBox)[1]
@@ -81,9 +83,8 @@ type Trade
     bool  done  = false
     string tip  = ""
     box   bxA   = na
-    box   bxD1  = na
-    box   bxD2  = na
-    line  lnM   = na     // 操纵腿 (竖)
+    box   bxM   = na     // M区: 扫出箱体的那一段
+    box   bxD   = na     // D区: 进场价 → D区一 (到了 D区二 就长到 D区二)
     line  lnSL  = na     // 原始止损 (红点线)
     line  lnSt  = na     // 止损移动的那一步 (紫)
     line  lnTr  = na     // 移动后的止损 (紫)
@@ -99,8 +100,7 @@ type Trade
 
 // 把右边界拉到 x
 method stretch(Trade t, int x) =>
-    t.bxD1.set_right(x)
-    t.bxD2.set_right(x)
+    t.bxD.set_right(x)
     t.lnD1.set_x2(x)
     t.lnD2.set_x2(x)
     t.lnSL.set_x2(x)
@@ -118,10 +118,8 @@ method finish(Trade t, int x, float px, string icon, string res) =>
     t.tgD2.delete()
     if not keepMiss
         if not t.hitD1
-            t.bxD1.delete()
             t.lnD1.delete()
         if not t.hitD2
-            t.bxD2.delete()
             t.lnD2.delete()
     t.tip := t.tip + "\n结果: " + res
     t.lbX := f_icon(x, px, icon, t.tip)
@@ -130,9 +128,8 @@ method finish(Trade t, int x, float px, string icon, string res) =>
 // 太早的单: 只留 BUY / SELL
 method compact(Trade t) =>
     t.bxA.delete()
-    t.bxD1.delete()
-    t.bxD2.delete()
-    t.lnM.delete()
+    t.bxM.delete()
+    t.bxD.delete()
     t.lnSL.delete()
     t.lnSt.delete()
     t.lnTr.delete()
@@ -197,13 +194,16 @@ if barstate.isconfirmed
                 cur.hitD1 := true
                 evD1 := true
                 cD1 += 1
-                cur.bxD1.set_bgcolor(color.new(colLong, 60))
+                cur.bxD.set_bgcolor(color.new(colD, 70))
                 cur.lbD1 := f_icon(bar_index, cur.z1a, "✅", "到达 D区一 " + f_px(cur.z1a))
             if f_reach(cur.dir, cur.z2a)
                 cur.hitD2 := true
                 evD2 := true
                 cD2 += 1
-                cur.bxD2.set_bgcolor(color.new(colLong, 60))
+                if cur.dir == 1
+                    cur.bxD.set_top(cur.z2a)
+                else
+                    cur.bxD.set_bottom(cur.z2a)
                 cur.finish(bar_index, cur.z2a, "✅", "到达 D区二")
             else if bar_index - cur.bar0 >= holdBars
                 cur.finish(bar_index, close, "⏱️", "到时平仓" + (cur.hitD1 ? " (到过 D区一)" : cur.hit1 ? " (到过 1R)" : ""))
@@ -287,16 +287,16 @@ if barstate.isconfirmed
                     suBox.set_right(suBar)
                     lastARight := suBar
                 t.bxA := suBox
-                // M区: 扫出那根上的一小段竖线, 从被扫的箱体边到极值
-                t.lnM := line.new(suBar, suSide == 1 ? suLo : suHi, suBar, suExt, color = c, style = line.style_solid, width = 3)
+                // M区: 从扫出那根到破败信号那根, 从被扫的箱体边到扫出的极值
+                float mEdge = suSide == 1 ? suLo : suHi
+                t.bxM := box.new(suBar, math.max(mEdge, suExt), math.max(bar_index, suBar + 1), math.min(mEdge, suExt), border_color = color.new(colM, 100), border_width = 0, bgcolor = color.new(colM, 60))
                 // 进场旗标: 尖头指着进场价
                 t.lbSig := label.new(bar_index, e, suSide == 1 ? "BUY" : "SELL", style = label.style_label_right, color = c, textcolor = color.white, size = size.small, tooltip = tip)
-                // 原始止损 (红点线) / D区目标 (绿虚线 + 淡绿带)
+                // 原始止损 (红点线) / D区目标 (绿虚线) / D区方块
                 t.lnSL := line.new(bar_index, sl, rb, sl, color = colShort, style = line.style_dotted, width = 2)
                 t.lnD1 := line.new(bar_index, z1a, rb, z1a, color = colLong, style = line.style_dashed, width = 1)
                 t.lnD2 := line.new(bar_index, z2a, rb, z2a, color = colLong, style = line.style_dashed, width = 1)
-                t.bxD1 := box.new(bar_index, math.max(z1a, z1b), rb, math.min(z1a, z1b), border_color = color.new(colLong, 100), border_width = 0, bgcolor = color.new(colLong, 85))
-                t.bxD2 := box.new(bar_index, math.max(z2a, z2b), rb, math.min(z2a, z2b), border_color = color.new(colLong, 100), border_width = 0, bgcolor = color.new(colLong, 85))
+                t.bxD  := box.new(bar_index, math.max(e, z1a), rb, math.min(e, z1a), border_color = color.new(colD, 100), border_width = 0, bgcolor = color.new(colD, 85))
                 // 右侧价格牌 (只在这一单进行中显示)
                 t.tgSL := f_tag(rb, sl, "损 " + f_px(sl), colShort)
                 t.tgD1 := f_tag(rb, z1a, str.tostring(d1a) + "R " + f_px(z1a), colLong)
@@ -348,7 +348,7 @@ if barstate.islast and showTbl
     table.cell(tb, 0, 5, "没到 1R 就止损", text_color = color.white, text_size = size.small)
     table.cell(tb, 1, 5, str.tostring(cSL), text_color = color.white, text_size = size.small)
     if showLegend
-        table.cell(tb, 0, 6, "BUY/SELL 进场 · 红点线 止损 · 紫线 移动后的止损 · 绿虚线 D区\n✅ 到目标  ❌ 止损  🛡️ 保护止损出场  ⏱️ 到时", text_color = color.new(color.white, 25), text_size = size.tiny, text_halign = text.align_left)
+        table.cell(tb, 0, 6, "蓝 A区 · 橙 M区 · 绿 D区 · BUY/SELL 进场 · 红点线 止损 · 紫线 移动后的止损 · 绿虚线 D区\n✅ 到目标  ❌ 止损  🛡️ 保护止损出场  ⏱️ 到时", text_color = color.new(color.white, 25), text_size = size.tiny, text_halign = text.align_left)
         table.merge_cells(tb, 0, 6, 1, 6)
 
 // ───────────── 单项提醒 (在提醒窗口里单独选) ─────────────
