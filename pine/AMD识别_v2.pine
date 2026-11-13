@@ -291,12 +291,12 @@ if barstate.isconfirmed
                 t.bxRisk := box.new(bar_index, math.max(e, sl), rb, math.min(e, sl), border_color = color.new(colShort, 100), bgcolor = color.new(colShort, 78))
                 t.bxRun  := box.new(bar_index, math.max(e, z2b), rb, math.min(e, z2b), border_color = color.new(colLong, 100), bgcolor = color.new(colLong, 93))
                 t.bxD1   := box.new(bar_index, math.max(z1a, z1b), rb, math.min(z1a, z1b), border_color = color.new(colLong, 40), border_width = 1, bgcolor = color.new(colLong, 72),
-                     text = "D区一  " + str.tostring(d1a) + "~" + str.tostring(d1b) + "R", text_color = color.white, text_size = size.small, text_halign = text.align_left)
+                     text = "D区一  " + str.tostring(d1a) + "~" + str.tostring(d1b) + "R   " + f_px(z1a) + " ~ " + f_px(z1b), text_color = color.white, text_size = size.small, text_halign = text.align_left)
                 t.bxD2   := box.new(bar_index, math.max(z2a, z2b), rb, math.min(z2a, z2b), border_color = color.new(colLong, 40), border_width = 1, bgcolor = color.new(colLong, 72),
-                     text = "D区二  " + str.tostring(d2a) + "~" + str.tostring(d2b) + "R", text_color = color.white, text_size = size.small, text_halign = text.align_left)
+                     text = "D区二  " + str.tostring(d2a) + "~" + str.tostring(d2b) + "R   " + f_px(z2a) + " ~ " + f_px(z2b), text_color = color.white, text_size = size.small, text_halign = text.align_left)
                 t.lnE    := line.new(bar_index, e, rb, e, color = color.new(color.white, 30), style = line.style_solid, width = 1)
                 t.lnTP1  := line.new(bar_index, t.tp1, rb, t.tp1, color = color.new(colLong, 10), style = line.style_dashed, width = 1)
-                t.lbSig  := label.new(bar_index, suSide == 1 ? low : high, suSide == 1 ? "破败 · 多" : "破败 · 空", style = suSide == 1 ? label.style_label_up : label.style_label_down, color = color.new(c, 5), textcolor = color.white, size = size.normal, tooltip = tip)
+                t.lbSig  := label.new(bar_index, suSide == 1 ? low : high, (suSide == 1 ? "破败 · 多\n" : "破败 · 空\n") + "进 " + f_px(e) + " · 损 " + f_px(sl), style = suSide == 1 ? label.style_label_up : label.style_label_down, color = color.new(c, 5), textcolor = color.white, size = size.small, tooltip = tip)
                 // 右侧价格牌 (只在这一单进行中显示)
                 t.tgE   := f_tag(rb, e, "进 " + f_px(e), color.gray)
                 t.tgSL  := f_tag(rb, sl, "损 " + f_px(sl), colShort)
