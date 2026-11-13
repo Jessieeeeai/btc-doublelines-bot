@@ -1,4 +1,4 @@
-// AMD 识别 · 大漂亮 v1
+// AMD 识别 · 大漂亮 v1.1
 // A区 = 吸筹横盘箱体; M区 = 操纵 (扫出箱体一侧); 破败信号 = 扫出后收盘收回箱体; D区 = 派发目标 (破败信号的 2~2.5R、4~4.5R)。
 // 规则与 AMD马 机器人同一套 (箱体 12 根、高度 ≤ 3×ATR、扫出后 3 根内收回、止损 = 扫出的极值)。
 // 一切只在 K 线收盘后判定, 画出来的东西不会事后消失或挪位置。
@@ -33,7 +33,8 @@ int    holdBars = input.int(48, "一单最多跟踪多少根", minval = 5, maxva
 float  beR      = input.float(0.2, "1R 到手后止损移到进场价外 (× 止损距离)", minval = 0, maxval = 1, step = 0.05, group = G4, tooltip = "第一止盈 (1R) 到手后, 止损线移到进场价外侧这么多。0 = 移到进场价。")
 bool   oneLive  = input.bool(true, "同时只跟踪一单", group = G4, tooltip = "开: 上一单没走完时, 新的破败信号只打标记、不画目标 (和 AMD马 一样)。关: 新信号直接接管。")
 
-bool   showFail = input.bool(true, "显示没等到破败信号的箱体", group = G5)
+bool   showFail = input.bool(false, "显示没等到破败信号的箱体", group = G5)
+bool   showSkip = input.bool(false, "显示没跟踪的破败信号", group = G5, tooltip = "上一单没走完时出的破败信号。关: 不画。开: 画一个小灰标。")
 bool   showTbl  = input.bool(true, "显示右上角统计", group = G5)
 color  colA     = input.color(#2962FF, "A区", group = G5, inline = "c1")
 color  colLong  = input.color(#089981, "多", group = G5, inline = "c1")
@@ -163,21 +164,27 @@ if barstate.isconfirmed
             bool  good = dist > 0 and (z1 - e) * suSide >= minGap * dist
             color c    = suSide == 1 ? colLong : colShort
             // M区: 从被扫的箱体边到扫出的极值
-            box.new(suBar - 1, suSide == 1 ? suLo : suExt, bar_index, suSide == 1 ? suExt : suHi, border_color = color.new(c, 40), bgcolor = color.new(c, 85), text = "M", text_color = c, text_size = size.small, text_halign = text.align_right, text_valign = suSide == 1 ? text.align_bottom : text.align_top)
+            if not live or not oneLive or showSkip
+                box.new(suBar - 1, suSide == 1 ? suLo : suExt, bar_index, suSide == 1 ? suExt : suHi, border_color = color.new(c, 40), bgcolor = color.new(c, 85), text = "M", text_color = c, text_size = size.small, text_halign = text.align_right, text_valign = suSide == 1 ? text.align_bottom : text.align_top)
+            else
+                suBox.delete()
             if good
-                cSig += 1
-                sgE  := e
-                sgSL := sl
-                sgD1 := z1
-                sgD2 := base + suSide * d2a * r
-                if suSide == 1
-                    evLong := true
-                else
-                    evShort := true
                 bool track = not live or not oneLive
-                label.new(bar_index, suSide == 1 ? low : high, (suSide == 1 ? "破败信号 · 多\n" : "破败信号 · 空\n") + "进 " + f_px(e) + "  损 " + f_px(sl) + (track ? "" : "\n(上一单未走完, 不跟踪)"),
-                     style = suSide == 1 ? label.style_label_up : label.style_label_down, color = color.new(c, 10), textcolor = color.white, size = size.small)
+                string tip = (suSide == 1 ? "破败信号 · 多" : "破败信号 · 空") + "\n进场 " + f_px(e) + "\n止损 " + f_px(sl) + "\n1R " + f_px(e + suSide * dist) + "\nD区一 " + f_px(z1) + " ~ " + f_px(base + suSide * d1b * r) + "\nD区二 " + f_px(base + suSide * d2a * r) + " ~ " + f_px(base + suSide * d2b * r)
                 if track
+                    label.new(bar_index, suSide == 1 ? low : high, suSide == 1 ? "破败·多" : "破败·空", style = suSide == 1 ? label.style_label_up : label.style_label_down, color = color.new(c, 10), textcolor = color.white, size = size.small, tooltip = tip)
+                else if showSkip
+                    label.new(bar_index, suSide == 1 ? low : high, "·", style = suSide == 1 ? label.style_label_up : label.style_label_down, color = color.new(color.gray, 50), textcolor = color.white, size = size.tiny, tooltip = tip + "\n(上一单未走完, 不跟踪)")
+                if track
+                    cSig += 1
+                    sgE  := e
+                    sgSL := sl
+                    sgD1 := z1
+                    sgD2 := base + suSide * d2a * r
+                    if suSide == 1
+                        evLong := true
+                    else
+                        evShort := true
                     live  := true
                     tDir  := suSide
                     tBar  := bar_index
@@ -197,7 +204,8 @@ if barstate.isconfirmed
                     bxD2  := box.new(bar_index, math.max(tD2, base + suSide * d2b * r), bar_index + 1, math.min(tD2, base + suSide * d2b * r), border_color = color.new(colD, 30), bgcolor = color.new(colD, 85),
                          text = "D区二 " + str.tostring(d2a) + "~" + str.tostring(d2b) + "R", text_color = colD, text_size = size.small, text_halign = text.align_left)
             else
-                label.new(bar_index, suSide == 1 ? low : high, "收回了, 但 D区一太近, 不出信号", style = suSide == 1 ? label.style_label_up : label.style_label_down, color = color.new(color.gray, 40), textcolor = color.white, size = size.tiny)
+                if showSkip
+                    label.new(bar_index, suSide == 1 ? low : high, "D区一太近", style = suSide == 1 ? label.style_label_up : label.style_label_down, color = color.new(color.gray, 40), textcolor = color.white, size = size.tiny)
             suSide := 0
             nextBar := bar_index + 1
         else if bar_index >= suBar + mBars
