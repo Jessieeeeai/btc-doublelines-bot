@@ -12,7 +12,7 @@
 //   ✅            每到一个目标 (1R、D区一、D区二) 打一个勾
 //   ❌ 止损出场   🛡️ 拿到 1R 后被保护止损带走   ⏱️ 到时平仓
 //@version=6
-indicator("AMD 识别 · 大漂亮", shorttitle = "AMD", overlay = true, max_boxes_count = 500, max_lines_count = 500, max_labels_count = 500, max_polylines_count = 100)
+indicator("大漂亮·AMD 识别", shorttitle = "大漂亮AMD", overlay = true, max_boxes_count = 500, max_lines_count = 500, max_labels_count = 500, max_polylines_count = 100)
 
 // ───────────── 常量 ─────────────
 const string R_LEG   = "操纵腿: 箱体对侧 → 扫出的极值 (同 AMD马)"
@@ -25,38 +25,38 @@ const string G5 = "⑤ 显示与提醒"
 const int    AHEAD  = 6       // 正在走的一单, 往最新K线右边多画这么多根
 
 // ───────────── 参数 ─────────────
-int    nBox   = input.int(12, "横盘根数", minval = 4, maxval = 60, group = G1, tooltip = "用信号K线之前的这么多根K线围成箱体 (A区)。AMD马 用的是 4 小时图 12 根。")
-float  kAtr   = input.float(3.0, "箱体高度上限 (× ATR)", minval = 0.5, maxval = 10, step = 0.25, group = G1, tooltip = "箱体最高点减最低点不超过这么多倍 ATR 才算横盘。数越小要求越窄。")
-int    atrLen = input.int(14, "ATR 周期", minval = 2, maxval = 100, group = G1, tooltip = "ATR 取箱体开始之前那一段, 不会被箱体自己的窄幅拉低。")
+int    nBox   = input.int(12, "横盘根数", minval = 4, maxval = 60, group = G1, tooltip = "用信号K线之前的这么多根K线围成箱体 (A区)。AMD马 用的是 4 小时图 12 根。", display = display.none)
+float  kAtr   = input.float(3.0, "箱体高度上限 (× ATR)", minval = 0.5, maxval = 10, step = 0.25, group = G1, tooltip = "箱体最高点减最低点不超过这么多倍 ATR 才算横盘。数越小要求越窄。", display = display.none)
+int    atrLen = input.int(14, "ATR 周期", minval = 2, maxval = 100, group = G1, tooltip = "ATR 取箱体开始之前那一段, 不会被箱体自己的窄幅拉低。", display = display.none)
 
-int    mBars  = input.int(3, "扫出后几根内必须收回", minval = 0, maxval = 10, group = G2, tooltip = "某根K线刺穿箱体一侧 (另一侧没破) 算扫出。扫出那根或之后这么多根内, 收盘回到箱体内 = 破败信号。超时作废。")
-float  bufPct = input.float(0.03, "止损缓冲 (%)", minval = 0, maxval = 1, step = 0.01, group = G2, tooltip = "止损放在扫出的极值外面这么一点。")
+int    mBars  = input.int(3, "扫出后几根内必须收回", minval = 0, maxval = 10, group = G2, tooltip = "某根K线刺穿箱体一侧 (另一侧没破) 算扫出。扫出那根或之后这么多根内, 收盘回到箱体内 = 破败信号。超时作废。", display = display.none)
+float  bufPct = input.float(0.03, "止损缓冲 (%)", minval = 0, maxval = 1, step = 0.01, group = G2, tooltip = "止损放在扫出的极值外面这么一点。", display = display.none)
 
-string rMode  = input.string(R_LEG, "R 怎么量", options = [R_LEG, R_TRADE], group = G3, tooltip = "D区是破败信号的几倍。第一种: 1R = 箱体对侧到扫出极值的距离, 从箱体对侧起算 (AMD马 的算法)。第二种: 1R = 进场到止损的距离, 从进场价起算。")
-float  d1a    = input.float(2.0, "D区一 起 (R)", minval = 0.5, maxval = 20, step = 0.25, group = G3)
-float  d1b    = input.float(2.5, "D区一 止 (R)", minval = 0.5, maxval = 20, step = 0.25, group = G3)
-float  d2a    = input.float(4.0, "D区二 起 (R)", minval = 0.5, maxval = 30, step = 0.25, group = G3)
-float  d2b    = input.float(4.5, "D区二 止 (R)", minval = 0.5, maxval = 30, step = 0.25, group = G3)
-float  minGap = input.float(0.3, "D区一离进场至少 (× 止损距离)", minval = 0, maxval = 5, step = 0.1, group = G3, tooltip = "D区一离进场价太近的信号不出 (没有空间)。填 0 = 不过滤。")
+string rMode  = input.string(R_LEG, "R 怎么量", options = [R_LEG, R_TRADE], group = G3, tooltip = "D区是破败信号的几倍。第一种: 1R = 箱体对侧到扫出极值的距离, 从箱体对侧起算 (AMD马 的算法)。第二种: 1R = 进场到止损的距离, 从进场价起算。", display = display.none)
+float  d1a    = input.float(2.0, "D区一 起 (R)", minval = 0.5, maxval = 20, step = 0.25, group = G3, display = display.none)
+float  d1b    = input.float(2.5, "D区一 止 (R)", minval = 0.5, maxval = 20, step = 0.25, group = G3, display = display.none)
+float  d2a    = input.float(4.0, "D区二 起 (R)", minval = 0.5, maxval = 30, step = 0.25, group = G3, display = display.none)
+float  d2b    = input.float(4.5, "D区二 止 (R)", minval = 0.5, maxval = 30, step = 0.25, group = G3, display = display.none)
+float  minGap = input.float(0.3, "D区一离进场至少 (× 止损距离)", minval = 0, maxval = 5, step = 0.1, group = G3, tooltip = "D区一离进场价太近的信号不出 (没有空间)。填 0 = 不过滤。", display = display.none)
 
-int    holdBars = input.int(48, "一单最多跟踪多少根", minval = 5, maxval = 500, group = G4)
-float  beR      = input.float(0.2, "1R 到手后止损移到进场价外 (× 止损距离)", minval = 0, maxval = 1, step = 0.05, group = G4, tooltip = "第一止盈 (1R) 到手后, 止损移到进场价外侧这么多。0 = 移到进场价。")
-bool   moveSL   = input.bool(true, "移动止损 (1R 到手后)", group = G4, tooltip = "开: 1R 到手后止损移到进场价外侧 (下面那个参数), 红点线跟着变。关: 止损一直留在原位, 红点线就是一条横线。AMD马 机器人是开着的。")
-bool   oneLive  = input.bool(true, "同时只跟踪一单", group = G4, tooltip = "开: 上一单没走完时, 新的破败信号不画也不提醒 (和 AMD马 一样)。关: 新信号直接接管。")
+int    holdBars = input.int(48, "一单最多跟踪多少根", minval = 5, maxval = 500, group = G4, display = display.none)
+float  beR      = input.float(0.2, "1R 到手后止损移到进场价外 (× 止损距离)", minval = 0, maxval = 1, step = 0.05, group = G4, tooltip = "第一止盈 (1R) 到手后, 止损移到进场价外侧这么多。0 = 移到进场价。", display = display.none)
+bool   moveSL   = input.bool(true, "移动止损 (1R 到手后)", group = G4, tooltip = "开: 1R 到手后止损移到进场价外侧 (下面那个参数), 红点线跟着变。关: 止损一直留在原位, 红点线就是一条横线。AMD马 机器人是开着的。", display = display.none)
+bool   oneLive  = input.bool(true, "同时只跟踪一单", group = G4, tooltip = "开: 上一单没走完时, 新的破败信号不画也不提醒 (和 AMD马 一样)。关: 新信号直接接管。", display = display.none)
 
-int    keepN    = input.int(80, "图上保留多少单", minval = 1, maxval = 80, group = G5, tooltip = "最近这么多单完整画出来, 方便往前复盘。更早的只留 BUY / SELL 旗标 (TradingView 对图形数量有上限)。")
-bool   showWait = input.bool(true, "显示正在等破败信号的箱体", group = G5, tooltip = "已经扫出、还在等收盘收回的 A区。等不到就消失。")
-bool   showTbl  = input.bool(true, "显示右下角统计", group = G5)
-color  colA     = input.color(#2962FF, "A区颜色", group = G5)
-color  colM     = input.color(#FF9800, "M区颜色", group = G5)
-color  colD     = input.color(#089981, "D区颜色", group = G5)
-color  colLong  = input.color(#089981, "做多 / 盈利区颜色", group = G5)
-color  colShort = input.color(#F23645, "做空 / 止损区颜色", group = G5)
-int    hugN     = input.int(3, "贴K线细线: 取最近几根的高低点", minval = 1, maxval = 10, group = G5, tooltip = "多单取最近这么多根的最低点, 空单取最高点。数越小贴得越紧。")
-color  colHugL  = input.color(#9CCC65, "多单细线颜色", group = G5)
-color  colHugS  = input.color(#FF8A80, "空单细线颜色", group = G5)
-bool   showLegend = input.bool(true, "统计表里带图例", group = G5)
-bool   keepMiss = input.bool(false, "走完的单保留没碰到的 D区", group = G5, tooltip = "关: 一单走完后, 没碰到的 D区目标线收掉 (D区方块一直在), 历史图面更干净 (价格仍可在 BUY / SELL 的悬停提示里看)。开: 全部保留。")
+int    keepN    = input.int(80, "图上保留多少单", minval = 1, maxval = 80, group = G5, tooltip = "最近这么多单完整画出来, 方便往前复盘。更早的只留 BUY / SELL 旗标 (TradingView 对图形数量有上限)。", display = display.none)
+bool   showWait = input.bool(true, "显示正在等破败信号的箱体", group = G5, tooltip = "已经扫出、还在等收盘收回的 A区。等不到就消失。", display = display.none)
+bool   showTbl  = input.bool(true, "显示右下角统计", group = G5, display = display.none)
+color  colA     = input.color(#2962FF, "A区颜色", group = G5, display = display.none)
+color  colM     = input.color(#FF9800, "M区颜色", group = G5, display = display.none)
+color  colD     = input.color(#089981, "D区颜色", group = G5, display = display.none)
+color  colLong  = input.color(#089981, "做多 / 盈利区颜色", group = G5, display = display.none)
+color  colShort = input.color(#F23645, "做空 / 止损区颜色", group = G5, display = display.none)
+int    hugN     = input.int(3, "贴K线细线: 取最近几根的高低点", minval = 1, maxval = 10, group = G5, tooltip = "多单取最近这么多根的最低点, 空单取最高点。数越小贴得越紧。", display = display.none)
+color  colHugL  = input.color(#9CCC65, "多单细线颜色", group = G5, display = display.none)
+color  colHugS  = input.color(#FF8A80, "空单细线颜色", group = G5, display = display.none)
+bool   showLegend = input.bool(true, "统计表里带图例", group = G5, display = display.none)
+bool   keepMiss = input.bool(false, "走完的单保留没碰到的 D区", group = G5, tooltip = "关: 一单走完后, 没碰到的 D区目标线收掉 (D区方块一直在), 历史图面更干净 (价格仍可在 BUY / SELL 的悬停提示里看)。开: 全部保留。", display = display.none)
 
 // ───────────── 每根都要算的序列 ─────────────
 float boxHi  = ta.highest(high, nBox)[1]
