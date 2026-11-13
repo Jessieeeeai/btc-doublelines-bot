@@ -28,6 +28,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 STATE_FILE = "state_N_H.json"
 SYMS = ["BTC", "ETH", "SOL", "BNB", "XRP", "DOGE", "ADA"]
+AMD_ONLY = ["HYPE"]              # 只跑 AMD马 的币 (不进突破四马, 也不进强弱排名)
+ALL_SYMS = SYMS + AMD_ONLY
 HORSES = {"N-H1": "基准马", "N-H2": "纽约顺势马", "N-H3": "强弱马", "N-H4": "奔跑马", "AMD": "AMD马"}
 BO_HORSES = ["N-H1", "N-H2", "N-H3", "N-H4"]      # 共用 1h 强突破信号的四匹
 CHAND_HORSES = ("N-H3", "N-H4")                   # 不设止盈、吊灯止损的马
@@ -139,8 +141,11 @@ class Feats:
             ema = num / den
             out["btc"] = 1 if hb[j]["close"] > ema else (-1 if hb[j]["close"] < ema else 0)
         rets = {}
-        for s, hb in self.HBS.items():
-            ix = self.idx[s]; j, k = ix.get(h), ix.get(h - 168 * H)
+        for s in SYMS:
+            hb, ix = self.HBS.get(s), self.idx.get(s)
+            if hb is None:
+                continue
+            j, k = ix.get(h), ix.get(h - 168 * H)
             if j is not None and k is not None:
                 rets[s] = hb[j]["close"] / hb[k]["close"] - 1
         if len(rets) == len(SYMS):
@@ -394,7 +399,7 @@ def amd_bar(st, ss, sym, pos, b, fresh, msgs):
 def hour_close(st, ss, sym, HB, idx, h, feats):
     j = idx.get(h)
     if j is not None:
-        s = signal(HB, j)
+        s = signal(HB, j) if sym in SYMS else None
         if s:
             st["n_sig"] += 1
             ft = feats.at(h); horses, skipped = [], {}
@@ -434,9 +439,10 @@ def run(HB, M5, st, sym, msgs, feats):
 def footer(st, code):
     tr = st["trades"][code]; n = len(tr); w = sum(1 for t in tr if t["net_base"] > 0)
     nb = sum(t["net_base"] for t in tr)
+    ncoin = len(ALL_SYMS) if code == AMD else len(SYMS); acct = PRINCIPAL_USD * ncoin
     line = (f"\n━━━━━━━━━━━━━━━\n📊 <b>[{code}] 前向战绩</b> 已完成 {n} 笔 · {w}胜{n - w}败 "
-            f"(胜率 {(w / n * 100 if n else 0):.0f}%) · 累计 <b>{usd(nb, 2)}</b> (<b>{pct(nb)}</b>)"
-            f"\n💵 每单本金 ${PRINCIPAL_USD:,.0f} · 单均 {(nb / n if n else 0) / PRINCIPAL_USD * 100:+.2f}% · 账户 ${ACCOUNT_USD:,.0f} ({len(SYMS)} 币)")
+            f"(胜率 {(w / n * 100 if n else 0):.0f}%) · 累计 <b>{usd(nb, 2)}</b> (<b>{pct(nb, acct)}</b>)"
+            f"\n💵 每单本金 ${PRINCIPAL_USD:,.0f} · 单均 {(nb / n if n else 0) / PRINCIPAL_USD * 100:+.2f}% · 账户 ${acct:,.0f} ({ncoin} 币)")
     held = [f"{y} {'📈多' if v['pos'][code]['d'] == 1 else '📉空'} @${fp(v['pos'][code]['e'])}" for y, v in st["syms"].items() if code in v["pos"]]
     if held:
         line += "\n⏳ 持仓: " + " · ".join(held)
@@ -530,13 +536,13 @@ def main():
     st = load_state()
     first = not st["started"]
     HBS, M5S = {}, {}
-    for sym in SYMS:
+    for sym in ALL_SYMS:
         try:
             HBS[sym] = fetch_okx(sym, "1H", pages=3 if sym == "BTC" else 1)
             M5S[sym] = fetch_okx(sym, "5m")
         except Exception as e:
             print(f"{sym} 行情失败: {e}"); HBS.pop(sym, None)
-    ok = [s for s in SYMS if len(HBS.get(s, [])) >= 200 and len(M5S.get(s, [])) >= 24]
+    ok = [s for s in ALL_SYMS if len(HBS.get(s, [])) >= 200 and len(M5S.get(s, [])) >= 24]
     if not ok:
         print("全部行情失败"); sys.exit(1)
     feats = Feats({s: HBS[s] for s in ok})
@@ -592,6 +598,13 @@ def main():
             send("📣 <b>消息格式调整</b>\n━━━━━━━━━━━━━━━\n"
                  "突破四马和 AMD马 的消息改成和颈线马一样: 每匹马各发各的 (带 [代号] 和自己的战绩栏), 关单后另发一张复盘K线图。规则和单子不变。" + PAPER_MARK)
         save_state(st)
+    if not st.get("lineup_v6"):
+        st["lineup_v6"] = True
+        send("📣 <b>AMD马 加入 HYPE</b>\n━━━━━━━━━━━━━━━\n"
+             "AMD马 从 7 个币扩到 8 个: 新增 HYPE (规则和参数不变, 多空都做)。突破四马不变, 仍是原来 7 个币。\n"
+             "HYPE 回测 (2025-05-30→2026-10-31, 17 个月, 本金 $1,000): 114 笔 · 胜率 62% · +$3,605 (+361%) · 回撤 $393\n"
+             "<i>只有一个币、一段大涨行情, 且对箱体参数敏感, 这个数字不能当预期</i>" + PAPER_MARK)
+        save_state(st)
     sent = 0
     for kind, p in msgs:
         if sent >= 24:
@@ -613,7 +626,7 @@ def main():
                     print(f"  战报失败 {p['code']} {p['sym']}: {e}")
         except Exception as e:
             print(f"消息失败 {kind}: {e}")
-    print(f"ok {len(ok)}/7: 信号 {st['n_sig']} · " + " · ".join(f"{c} {len(st['trades'][c])}笔 {sum(t['net_base'] for t in st['trades'][c]):+.0f}" for c in HORSES))
+    print(f"ok {len(ok)}/{len(ALL_SYMS)}: 信号 {st['n_sig']} · " + " · ".join(f"{c} {len(st['trades'][c])}笔 {sum(t['net_base'] for t in st['trades'][c]):+.0f}" for c in HORSES))
 
 
 if __name__ == "__main__":
