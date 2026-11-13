@@ -1,0 +1,360 @@
+// AMD 识别 · 大漂亮 v4
+// A区 = 吸筹横盘箱体; M区 = 操纵 (扫出箱体一侧); 破败信号 = 扫出后收盘收回箱体; D区 = 派发目标 (破败信号的 2~2.5R、4~4.5R)。
+// 规则与 AMD马 机器人同一套 (箱体 12 根、高度 ≤ 3×ATR、扫出后 3 根内收回、止损 = 扫出的极值)。
+// 一切只在 K 线收盘后判定, 画出来的东西不会事后消失或挪位置。
+//
+// v4 画法 (进单出单一眼看完):
+//   淡蓝底        A区 吸筹箱体;  竖短线 = M区 操纵
+//   BUY / SELL   进场旗标, 尖头指着进场价 (鼠标停上去看全部价格)
+//   红点线        原始止损, 从进场画到出场
+//   紫线          1R 到手后移动过的止损
+//   绿虚线        D区一 / D区二 目标 (后面带一条淡绿带 = D区范围)
+//   ✅            每到一个目标 (1R、D区一、D区二) 打一个勾
+//   ❌ 止损出场   🛡️ 拿到 1R 后被保护止损带走   ⏱️ 到时平仓
+//@version=6
+indicator("AMD 识别 · 大漂亮", shorttitle = "AMD", overlay = true, max_boxes_count = 500, max_lines_count = 500, max_labels_count = 500)
+
+// ───────────── 常量 ─────────────
+const string R_LEG   = "操纵腿: 箱体对侧 → 扫出的极值 (同 AMD马)"
+const string R_TRADE = "止损距离: 进场价 → 止损"
+const string G1 = "① A区 · 吸筹横盘"
+const string G2 = "② M区 · 操纵与破败信号"
+const string G3 = "③ D区 · 派发目标"
+const string G4 = "④ 跟踪"
+const string G5 = "⑤ 显示与提醒"
+const int    AHEAD  = 6       // 正在走的一单, 往最新K线右边多画这么多根
+
+// ───────────── 参数 ─────────────
+int    nBox   = input.int(12, "横盘根数", minval = 4, maxval = 60, group = G1, tooltip = "用信号K线之前的这么多根K线围成箱体 (A区)。AMD马 用的是 4 小时图 12 根。")
+float  kAtr   = input.float(3.0, "箱体高度上限 (× ATR)", minval = 0.5, maxval = 10, step = 0.25, group = G1, tooltip = "箱体最高点减最低点不超过这么多倍 ATR 才算横盘。数越小要求越窄。")
+int    atrLen = input.int(14, "ATR 周期", minval = 2, maxval = 100, group = G1, tooltip = "ATR 取箱体开始之前那一段, 不会被箱体自己的窄幅拉低。")
+
+int    mBars  = input.int(3, "扫出后几根内必须收回", minval = 0, maxval = 10, group = G2, tooltip = "某根K线刺穿箱体一侧 (另一侧没破) 算扫出。扫出那根或之后这么多根内, 收盘回到箱体内 = 破败信号。超时作废。")
+float  bufPct = input.float(0.03, "止损缓冲 (%)", minval = 0, maxval = 1, step = 0.01, group = G2, tooltip = "止损放在扫出的极值外面这么一点。")
+
+string rMode  = input.string(R_LEG, "R 怎么量", options = [R_LEG, R_TRADE], group = G3, tooltip = "D区是破败信号的几倍。第一种: 1R = 箱体对侧到扫出极值的距离, 从箱体对侧起算 (AMD马 的算法)。第二种: 1R = 进场到止损的距离, 从进场价起算。")
+float  d1a    = input.float(2.0, "D区一 起 (R)", minval = 0.5, maxval = 20, step = 0.25, group = G3)
+float  d1b    = input.float(2.5, "D区一 止 (R)", minval = 0.5, maxval = 20, step = 0.25, group = G3)
+float  d2a    = input.float(4.0, "D区二 起 (R)", minval = 0.5, maxval = 30, step = 0.25, group = G3)
+float  d2b    = input.float(4.5, "D区二 止 (R)", minval = 0.5, maxval = 30, step = 0.25, group = G3)
+float  minGap = input.float(0.3, "D区一离进场至少 (× 止损距离)", minval = 0, maxval = 5, step = 0.1, group = G3, tooltip = "D区一离进场价太近的信号不出 (没有空间)。填 0 = 不过滤。")
+
+int    holdBars = input.int(48, "一单最多跟踪多少根", minval = 5, maxval = 500, group = G4)
+float  beR      = input.float(0.2, "1R 到手后止损移到进场价外 (× 止损距离)", minval = 0, maxval = 1, step = 0.05, group = G4, tooltip = "第一止盈 (1R) 到手后, 止损移到进场价外侧这么多。0 = 移到进场价。")
+bool   oneLive  = input.bool(true, "同时只跟踪一单", group = G4, tooltip = "开: 上一单没走完时, 新的破败信号不画也不提醒 (和 AMD马 一样)。关: 新信号直接接管。")
+
+int    keepN    = input.int(80, "图上保留多少单", minval = 1, maxval = 80, group = G5, tooltip = "最近这么多单完整画出来, 方便往前复盘。更早的只留 BUY / SELL 旗标 (TradingView 对图形数量有上限)。")
+bool   showWait = input.bool(true, "显示正在等破败信号的箱体", group = G5, tooltip = "已经扫出、还在等收盘收回的 A区。等不到就消失。")
+bool   showTbl  = input.bool(true, "显示右下角统计", group = G5)
+color  colA     = input.color(#2962FF, "A区颜色", group = G5)
+color  colLong  = input.color(#089981, "做多 / 盈利区颜色", group = G5)
+color  colShort = input.color(#F23645, "做空 / 止损区颜色", group = G5)
+color  colTrail = input.color(#D05CE3, "移动后的止损线颜色", group = G5)
+bool   showLegend = input.bool(true, "统计表里带图例", group = G5)
+bool   keepMiss = input.bool(false, "走完的单保留没碰到的 D区", group = G5, tooltip = "关: 一单走完后, 没碰到的 D区带子收掉, 历史图面更干净 (价格仍可在 BUY / SELL 的悬停提示里看)。开: 全部保留。")
+
+// ───────────── 每根都要算的序列 ─────────────
+float boxHi  = ta.highest(high, nBox)[1]
+float boxLo  = ta.lowest(low, nBox)[1]
+float atrRef = ta.sma(ta.tr(true), atrLen)[nBox + 1]
+
+f_reach(int dir, float lvl) => dir == 1 ? high >= lvl : low <= lvl
+f_px(float x) => str.tostring(x, format.mintick)
+f_icon(int x, float y, string txt, string tip) => label.new(x, y, txt, style = label.style_none, size = size.normal, tooltip = tip)
+f_tag(int x, float y, string txt, color c) => label.new(x, y, txt, style = label.style_label_left, color = color.new(c, 15), textcolor = color.white, size = size.tiny)
+
+// ───────────── 一单 ─────────────
+type Trade
+    int   dir   = 0
+    int   bar0  = 0
+    float e     = na
+    float sl    = na
+    float dist  = na
+    float tp1   = na
+    float z1a   = na     // D区一 近端
+    float z1b   = na     // D区一 远端
+    float z2a   = na
+    float z2b   = na
+    bool  hit1  = false
+    bool  hitD1 = false
+    bool  hitD2 = false
+    bool  done  = false
+    string tip  = ""
+    box   bxA   = na
+    box   bxD1  = na
+    box   bxD2  = na
+    line  lnM   = na     // 操纵腿 (竖)
+    line  lnSL  = na     // 原始止损 (红点线)
+    line  lnSt  = na     // 止损移动的那一步 (紫)
+    line  lnTr  = na     // 移动后的止损 (紫)
+    line  lnD1  = na     // D区一 目标线
+    line  lnD2  = na
+    label lbSig = na     // BUY / SELL
+    label lb1   = na     // 1R 的勾
+    label lbD1  = na     // D区一 的勾
+    label lbX   = na     // 出场图标
+    label tgSL  = na
+    label tgD1  = na
+    label tgD2  = na
+
+// 把右边界拉到 x
+method stretch(Trade t, int x) =>
+    t.bxD1.set_right(x)
+    t.bxD2.set_right(x)
+    t.lnD1.set_x2(x)
+    t.lnD2.set_x2(x)
+    t.lnSL.set_x2(x)
+    t.lnTr.set_x2(x)
+    t.tgSL.set_x(x)
+    t.tgD1.set_x(x)
+    t.tgD2.set_x(x)
+
+// 走完: 所有线停在出场那根, 去掉右侧价格牌, 贴出场图标
+method finish(Trade t, int x, float px, string icon, string res) =>
+    t.done := true
+    t.stretch(x)
+    t.tgSL.delete()
+    t.tgD1.delete()
+    t.tgD2.delete()
+    if not keepMiss
+        if not t.hitD1
+            t.bxD1.delete()
+            t.bxD2.delete()
+            t.lnD2.delete()
+        else if not t.hitD2
+            t.bxD2.delete()
+    t.tip := t.tip + "\n结果: " + res
+    t.lbX := f_icon(x, px, icon, t.tip)
+    t.lbSig.set_tooltip(t.tip)
+
+// 太早的单: 只留 BUY / SELL
+method compact(Trade t) =>
+    t.bxA.delete()
+    t.bxD1.delete()
+    t.bxD2.delete()
+    t.lnM.delete()
+    t.lnSL.delete()
+    t.lnSt.delete()
+    t.lnTr.delete()
+    t.lnD1.delete()
+    t.lnD2.delete()
+    t.lb1.delete()
+    t.lbD1.delete()
+    t.lbX.delete()
+
+// ───────────── 状态 ─────────────
+var int   suSide  = 0          // 1 = 扫了低点 (等做多), -1 = 扫了高点 (等做空), 0 = 没有
+var float suLo    = na
+var float suHi    = na
+var float suExt   = na
+var int   suBar   = na
+var int   nextBar = 0
+var box   suBox   = na
+var Trade cur = na
+var array<Trade> hist = array.new<Trade>()
+var int   lastARight = -1   // 上一个画出来的 A区 右边界, 重叠的 A区 不再重复画
+var int cSig = 0
+var int cTP1 = 0
+var int cD1  = 0
+var int cD2  = 0
+var int cSL  = 0
+
+bool  evLong  = false
+bool  evShort = false
+bool  evTP1   = false
+bool  evD1    = false
+bool  evD2    = false
+bool  evStop  = false
+float sgE  = na
+float sgSL = na
+float sgD1 = na
+float sgD2 = na
+
+if barstate.isconfirmed
+    bool live = not na(cur) and not cur.done
+
+    // ── 1. 先走已有的一单 (止损优先) ──
+    if live and bar_index > cur.bar0
+        bool stopHit = cur.dir == 1 ? low <= cur.sl : high >= cur.sl
+        if stopHit
+            evStop := true
+            if not cur.hit1
+                cSL += 1
+            cur.finish(bar_index, cur.sl, cur.hit1 ? "🛡️" : "❌", cur.hitD1 ? "到过 D区一, 之后保护止损出场" : cur.hit1 ? "到过 1R, 之后保护止损出场" : "止损")
+        else
+            if not cur.hit1 and f_reach(cur.dir, cur.tp1)
+                cur.hit1 := true
+                evTP1 := true
+                cTP1 += 1
+                float sl0 = cur.sl
+                cur.sl := cur.e - cur.dir * beR * cur.dist
+                cur.lb1  := f_icon(bar_index, cur.tp1, "✅", "1R 到手 " + f_px(cur.tp1) + ", 止损移到 " + f_px(cur.sl))
+                cur.lnSt := line.new(bar_index - 1, sl0, bar_index, cur.sl, color = colTrail, style = line.style_solid, width = 2)
+                cur.lnTr := line.new(bar_index, cur.sl, bar_index + AHEAD, cur.sl, color = colTrail, style = line.style_solid, width = 2)
+                cur.tgSL.set_y(cur.sl)
+                cur.tgSL.set_text("损 " + f_px(cur.sl))
+            if not cur.hitD1 and f_reach(cur.dir, cur.z1a)
+                cur.hitD1 := true
+                evD1 := true
+                cD1 += 1
+                cur.bxD1.set_bgcolor(color.new(colLong, 60))
+                cur.lbD1 := f_icon(bar_index, cur.z1a, "✅", "到达 D区一 " + f_px(cur.z1a))
+            if f_reach(cur.dir, cur.z2a)
+                cur.hitD2 := true
+                evD2 := true
+                cD2 += 1
+                cur.bxD2.set_bgcolor(color.new(colLong, 60))
+                cur.finish(bar_index, cur.z2a, "✅", "到达 D区二")
+            else if bar_index - cur.bar0 >= holdBars
+                cur.finish(bar_index, close, "⏱️", "到时平仓" + (cur.hitD1 ? " (到过 D区一)" : cur.hit1 ? " (到过 1R)" : ""))
+            else
+                cur.stretch(bar_index + AHEAD)
+        live := not cur.done
+
+    // ── 2. 找新的 A区 + 扫出 ──
+    if suSide == 0 and bar_index >= nextBar and not na(atrRef) and boxHi - boxLo <= kAtr * atrRef
+        bool dn = low < boxLo and high <= boxHi
+        bool up = high > boxHi and low >= boxLo
+        if dn or up
+            suSide := dn ? 1 : -1
+            suLo := boxLo
+            suHi := boxHi
+            suExt := dn ? low : high
+            suBar := bar_index
+            if showWait and (not live or not oneLive)
+                suBox := box.new(bar_index - nBox, boxHi, bar_index, boxLo, border_color = color.new(colA, 100), border_width = 0, bgcolor = color.new(colA, 82))
+            else
+                suBox := na
+
+    // ── 3. 等破败信号 ──
+    if suSide != 0
+        suExt := suSide == 1 ? math.min(suExt, low) : math.max(suExt, high)
+        bool back = suSide == 1 ? close > suLo : close < suHi
+        if back
+            float e    = close
+            float sl   = suExt * (1 - suSide * bufPct / 100)
+            float dist = (e - sl) * suSide
+            float far  = suSide == 1 ? suHi : suLo
+            float leg  = (far - suExt) * suSide
+            float base = rMode == R_LEG ? far : e
+            float r    = rMode == R_LEG ? leg : dist
+            float z1a  = base + suSide * d1a * r
+            float z1b  = base + suSide * d1b * r
+            float z2a  = base + suSide * d2a * r
+            float z2b  = base + suSide * d2b * r
+            bool  good = dist > 0 and (z1a - e) * suSide >= minGap * dist
+            bool  track = good and (not live or not oneLive)
+            if track
+                // 上一单 (若被接管) 收尾; 太早的单只留箭头
+                if not na(cur)
+                    if not cur.done
+                        cur.finish(bar_index, close, "➡️", "被新信号接管")
+                    hist.push(cur)
+                while hist.size() > keepN - 1
+                    Trade old = hist.shift()
+                    old.compact()
+                cSig += 1
+                sgE  := e
+                sgSL := sl
+                sgD1 := z1a
+                sgD2 := z2a
+                if suSide == 1
+                    evLong := true
+                else
+                    evShort := true
+                color c  = suSide == 1 ? colLong : colShort
+                int   rb = bar_index + AHEAD
+                string tip = (suSide == 1 ? "破败信号 · 多" : "破败信号 · 空") + "\n进场 " + f_px(e) + "\n止损 " + f_px(sl) + "\n1R " + f_px(e + suSide * dist) + "\nD区一 " + f_px(z1a) + " ~ " + f_px(z1b) + "\nD区二 " + f_px(z2a) + " ~ " + f_px(z2b)
+                Trade t = Trade.new()
+                t.dir  := suSide
+                t.bar0 := bar_index
+                t.e    := e
+                t.sl   := sl
+                t.dist := dist
+                t.tp1  := e + suSide * dist
+                t.z1a  := z1a
+                t.z1b  := z1b
+                t.z2a  := z2a
+                t.z2b  := z2b
+                t.tip  := tip
+                // A区: 和上一个画出来的 A区 重叠就不重复画
+                if suBar - nBox <= lastARight
+                    suBox.delete()
+                    suBox := na
+                else
+                    if na(suBox)
+                        suBox := box.new(suBar - nBox, suHi, suBar, suLo, border_color = color.new(colA, 100), border_width = 0, bgcolor = color.new(colA, 82))
+                    suBox.set_right(suBar)
+                    lastARight := suBar
+                t.bxA := suBox
+                // M区: 扫出那根上的一小段竖线, 从被扫的箱体边到极值
+                t.lnM := line.new(suBar, suSide == 1 ? suLo : suHi, suBar, suExt, color = c, style = line.style_solid, width = 3)
+                // 进场旗标: 尖头指着进场价
+                t.lbSig := label.new(bar_index, e, suSide == 1 ? "BUY" : "SELL", style = label.style_label_right, color = c, textcolor = color.white, size = size.small, tooltip = tip)
+                // 原始止损 (红点线) / D区目标 (绿虚线 + 淡绿带)
+                t.lnSL := line.new(bar_index, sl, rb, sl, color = colShort, style = line.style_dotted, width = 2)
+                t.lnD1 := line.new(bar_index, z1a, rb, z1a, color = colLong, style = line.style_dashed, width = 1)
+                t.lnD2 := line.new(bar_index, z2a, rb, z2a, color = colLong, style = line.style_dashed, width = 1)
+                t.bxD1 := box.new(bar_index, math.max(z1a, z1b), rb, math.min(z1a, z1b), border_color = color.new(colLong, 100), border_width = 0, bgcolor = color.new(colLong, 85))
+                t.bxD2 := box.new(bar_index, math.max(z2a, z2b), rb, math.min(z2a, z2b), border_color = color.new(colLong, 100), border_width = 0, bgcolor = color.new(colLong, 85))
+                // 右侧价格牌 (只在这一单进行中显示)
+                t.tgSL := f_tag(rb, sl, "损 " + f_px(sl), colShort)
+                t.tgD1 := f_tag(rb, z1a, str.tostring(d1a) + "R " + f_px(z1a), colLong)
+                t.tgD2 := f_tag(rb, z2a, str.tostring(d2a) + "R " + f_px(z2a), colLong)
+                cur := t
+            else
+                suBox.delete()
+            suBox := na
+            suSide := 0
+            nextBar := bar_index + 1
+        else if bar_index >= suBar + mBars
+            suBox.delete()
+            suBox := na
+            suSide := 0
+            nextBar := bar_index + 1
+        else
+            suBox.set_right(bar_index)
+
+    // ── 4. 提醒: 每根收盘最多一条, 用「任何 alert() 函数调用」创建 ──
+    string msg = ""
+    if evLong
+        msg += "破败信号·多 进 " + f_px(sgE) + " 损 " + f_px(sgSL) + " D区一 " + f_px(sgD1) + " D区二 " + f_px(sgD2) + "; "
+    if evShort
+        msg += "破败信号·空 进 " + f_px(sgE) + " 损 " + f_px(sgSL) + " D区一 " + f_px(sgD1) + " D区二 " + f_px(sgD2) + "; "
+    if evTP1
+        msg += "1R 到手, 止损上移; "
+    if evD1
+        msg += "到达 D区一; "
+    if evD2
+        msg += "到达 D区二; "
+    if evStop
+        msg += "打到止损; "
+    if msg != ""
+        alert("AMD " + syminfo.ticker + " " + timeframe.period + ": " + msg, alert.freq_once_per_bar_close)
+
+// ───────────── 统计表 ─────────────
+var table tb = table.new(position.bottom_right, 2, 7, bgcolor = color.new(color.black, 35), border_width = 1, border_color = color.new(color.gray, 60))
+if barstate.islast and showTbl
+    table.cell(tb, 0, 0, "AMD 识别", text_color = color.white, text_size = size.small)
+    table.cell(tb, 1, 0, str.tostring(nBox) + " 根 · ≤" + str.tostring(kAtr) + "×ATR", text_color = color.white, text_size = size.small)
+    table.cell(tb, 0, 1, "破败信号", text_color = color.white, text_size = size.small)
+    table.cell(tb, 1, 1, str.tostring(cSig), text_color = color.white, text_size = size.small)
+    table.cell(tb, 0, 2, "到 1R", text_color = color.white, text_size = size.small)
+    table.cell(tb, 1, 2, str.tostring(cTP1), text_color = color.white, text_size = size.small)
+    table.cell(tb, 0, 3, "到 D区一", text_color = color.white, text_size = size.small)
+    table.cell(tb, 1, 3, str.tostring(cD1), text_color = color.white, text_size = size.small)
+    table.cell(tb, 0, 4, "到 D区二", text_color = color.white, text_size = size.small)
+    table.cell(tb, 1, 4, str.tostring(cD2), text_color = color.white, text_size = size.small)
+    table.cell(tb, 0, 5, "没到 1R 就止损", text_color = color.white, text_size = size.small)
+    table.cell(tb, 1, 5, str.tostring(cSL), text_color = color.white, text_size = size.small)
+    if showLegend
+        table.cell(tb, 0, 6, "BUY/SELL 进场 · 红点线 止损 · 紫线 移动后的止损 · 绿虚线 D区\n✅ 到目标  ❌ 止损  🛡️ 保护止损出场  ⏱️ 到时", text_color = color.new(color.white, 25), text_size = size.tiny, text_halign = text.align_left)
+        table.merge_cells(tb, 0, 6, 1, 6)
+
+// ───────────── 单项提醒 (在提醒窗口里单独选) ─────────────
+alertcondition(evLong,  "破败信号 · 多", "AMD 破败信号·多 {{ticker}} {{interval}} 收盘 {{close}}")
+alertcondition(evShort, "破败信号 · 空", "AMD 破败信号·空 {{ticker}} {{interval}} 收盘 {{close}}")
+alertcondition(evTP1,   "1R 到手",       "AMD 1R 到手 {{ticker}} {{interval}}")
+alertcondition(evD1,    "到达 D区一",    "AMD 到达 D区一 {{ticker}} {{interval}}")
+alertcondition(evD2,    "到达 D区二",    "AMD 到达 D区二 {{ticker}} {{interval}}")
+alertcondition(evStop,  "打到止损",      "AMD 打到止损 {{ticker}} {{interval}}")
