@@ -1,10 +1,43 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-14 16:00 UTC",
-  "next_event_id": 1,
-  "events": [],
-  "open_positions": [],
+  "updated_at": "2026-11-14 16:15 UTC",
+  "next_event_id": 2,
+  "events": [
+    {
+      "ts": 1794672000,
+      "time": "2026-11-14 16:15 UTC",
+      "strategy": "N-H4",
+      "symbol": "SOLUSDT",
+      "signal_no": 6,
+      "pos_id": "N-H4-006",
+      "paper": true,
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 73.84,
+      "sl": 75.542656,
+      "tp": null,
+      "notional_usd": 1735.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H4-006:open",
+      "event_id": 1,
+      "master_event_id": 23
+    }
+  ],
+  "open_positions": [
+    {
+      "strategy": "N-H4",
+      "symbol": "SOLUSDT",
+      "signal_no": 6,
+      "pos_id": "N-H4-006",
+      "paper": true,
+      "direction": "short",
+      "entry_price": 73.84,
+      "sl": 75.542656,
+      "tp": null,
+      "notional_usd": 1735.0
+    }
+  ],
   "strategy": "N-H4",
   "symbol": "SOLUSDT"
 }
