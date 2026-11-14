@@ -1,24 +1,24 @@
 {
   "started": true,
-  "last_5m_ts": 1794634800,
-  "hour_done_ts": 1794628800,
-  "active": [
-    {
-      "L": 328.0,
-      "side": 1,
-      "neck": 67654.5,
-      "ext": 66574.8,
-      "entry": 67588.9,
-      "sl": 66509.2,
-      "sd_pct": 0.015974516525642482,
-      "sig_ts": 1794628800,
-      "h_from": 1794632400,
-      "h_until": 1794643200,
-      "vr": 1.77
-    }
-  ],
+  "last_5m_ts": 1794661800,
+  "hour_done_ts": 1794657600,
+  "active": [],
   "pend": null,
-  "position": null,
+  "position": {
+    "seq": 7,
+    "d": -1,
+    "e": 66991.74,
+    "sl": 67521.74,
+    "sl0": 67521.74,
+    "D0": 530.0,
+    "pk": 66991.74,
+    "n": 2528.0,
+    "ts": 1794661200,
+    "trailed": false,
+    "be_notified": false,
+    "neck": 66969.0,
+    "L": 113.70000000001164
+  },
   "trades": [
     {
       "seq": 1,
@@ -135,8 +135,8 @@
       "D0": 386.7
     }
   ],
-  "seq": 6,
-  "n_pat": 37,
+  "seq": 7,
+  "n_pat": 38,
   "n_gate_fail": 23,
   "n_no_break": 0,
   "n_no_pullback": 0,
