@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-14 16:45 UTC",
+  "updated_at": "2026-11-14 17:00 UTC",
   "next_event_id": 11,
   "events": [
     {
@@ -248,7 +248,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 599.42,
-      "sl": 609.6014285714285,
+      "sl": 607.8914285714285,
       "tp": null,
       "notional_usd": 1642.0
     },
