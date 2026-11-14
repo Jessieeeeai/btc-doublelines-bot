@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-14 22:00 UTC",
-  "next_event_id": 12,
+  "updated_at": "2026-11-14 22:15 UTC",
+  "next_event_id": 15,
   "events": [
     {
       "ts": 1794542400,
@@ -232,20 +232,93 @@
       "pnl_pct": 7.92,
       "event_id": 11,
       "master_event_id": 37
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1794694200,
+      "time": "2026-11-14 22:15 UTC",
       "strategy": "N-H1",
       "symbol": "BTCUSDT",
       "signal_no": 3,
       "pos_id": "N-H1-003",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 65714.3,
-      "sl": 66871.25536,
-      "tp": 63400.38928000002,
-      "notional_usd": 2272.0
+      "sl": 66871.255,
+      "tp": 63400.389,
+      "notional_usd": 2272.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H1-003:close",
+      "reason": "tp",
+      "exit_price": 63400.389,
+      "pnl_usd": 78.92,
+      "pnl_pct": 7.89,
+      "event_id": 12,
+      "master_event_id": 43
+    },
+    {
+      "ts": 1794693600,
+      "time": "2026-11-14 22:15 UTC",
+      "strategy": "N-H1",
+      "symbol": "ETHUSDT",
+      "signal_no": 7,
+      "pos_id": "N-H1-007",
+      "paper": true,
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 1772.42,
+      "sl": 1839.2916,
+      "tp": 1638.6768,
+      "notional_usd": 1060.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H1-007:open",
+      "event_id": 13,
+      "master_event_id": 45
+    },
+    {
+      "ts": 1794693600,
+      "time": "2026-11-14 22:15 UTC",
+      "strategy": "N-H1",
+      "symbol": "ADAUSDT",
+      "signal_no": 8,
+      "pos_id": "N-H1-008",
+      "paper": true,
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 0.1472,
+      "sl": 0.15484644,
+      "tp": 0.13190712,
+      "notional_usd": 770.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H1-008:open",
+      "event_id": 14,
+      "master_event_id": 50
+    }
+  ],
+  "open_positions": [
+    {
+      "strategy": "N-H1",
+      "symbol": "ETHUSDT",
+      "signal_no": 7,
+      "pos_id": "N-H1-007",
+      "paper": true,
+      "direction": "short",
+      "entry_price": 1772.42,
+      "sl": 1839.291622,
+      "tp": 1638.6767560000003,
+      "notional_usd": 1060.0
+    },
+    {
+      "strategy": "N-H1",
+      "symbol": "ADAUSDT",
+      "signal_no": 8,
+      "pos_id": "N-H1-008",
+      "paper": true,
+      "direction": "short",
+      "entry_price": 0.1472,
+      "sl": 0.15484644,
+      "tp": 0.13190712,
+      "notional_usd": 770.0
     }
   ],
   "strategy": "N-H1"

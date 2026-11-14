@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-14 22:00 UTC",
-  "next_event_id": 10,
+  "updated_at": "2026-11-14 22:15 UTC",
+  "next_event_id": 13,
   "events": [
     {
       "ts": 1794668400,
@@ -186,45 +186,77 @@
       "pnl_pct": 7.92,
       "event_id": 9,
       "master_event_id": 38
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1794694200,
+      "time": "2026-11-14 22:15 UTC",
       "strategy": "N-H2",
       "symbol": "BTCUSDT",
       "signal_no": 2,
       "pos_id": "N-H2-002",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 65714.3,
-      "sl": 66871.25536,
-      "tp": 63400.38928000002,
-      "notional_usd": 2272.0
+      "sl": 66871.255,
+      "tp": 63400.389,
+      "notional_usd": 2272.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H2-002:close",
+      "reason": "tp",
+      "exit_price": 63400.389,
+      "pnl_usd": 78.92,
+      "pnl_pct": 7.89,
+      "event_id": 10,
+      "master_event_id": 44
     },
     {
+      "ts": 1794694200,
+      "time": "2026-11-14 22:15 UTC",
       "strategy": "N-H2",
       "symbol": "ETHUSDT",
       "signal_no": 3,
       "pos_id": "N-H2-003",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 1840.29,
-      "sl": 1894.3281279999999,
-      "tp": 1732.2137440000001,
-      "notional_usd": 1362.0
+      "sl": 1894.3281,
+      "tp": 1732.2137,
+      "notional_usd": 1362.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H2-003:close",
+      "reason": "tp",
+      "exit_price": 1732.2137,
+      "pnl_usd": 79.34,
+      "pnl_pct": 7.93,
+      "event_id": 11,
+      "master_event_id": 46
     },
     {
+      "ts": 1794694200,
+      "time": "2026-11-14 22:15 UTC",
       "strategy": "N-H2",
       "symbol": "BNBUSDT",
       "signal_no": 1,
       "pos_id": "N-H2-001",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 599.42,
-      "sl": 614.024152,
-      "tp": 570.211696,
-      "notional_usd": 1642.0
+      "sl": 614.02415,
+      "tp": 570.2117,
+      "notional_usd": 1642.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H2-001:close",
+      "reason": "tp",
+      "exit_price": 570.2117,
+      "pnl_usd": 79.21,
+      "pnl_pct": 7.92,
+      "event_id": 12,
+      "master_event_id": 49
     }
   ],
+  "open_positions": [],
   "strategy": "N-H2"
 }

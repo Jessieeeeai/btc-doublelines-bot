@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-14 22:00 UTC",
-  "next_event_id": 15,
+  "updated_at": "2026-11-14 22:15 UTC",
+  "next_event_id": 16,
   "events": [
     {
       "ts": 1794542400,
@@ -277,6 +277,25 @@
       "dedup": "N-H4-003:stop:596.60143",
       "event_id": 14,
       "master_event_id": 42
+    },
+    {
+      "ts": 1794694200,
+      "time": "2026-11-14 22:15 UTC",
+      "strategy": "N-H4",
+      "symbol": "ETHUSDT",
+      "signal_no": 5,
+      "pos_id": "N-H4-005",
+      "paper": true,
+      "action": "move_stop",
+      "direction": "short",
+      "entry_price": 1840.29,
+      "sl": 1833.8029,
+      "tp": null,
+      "notional_usd": 1362.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H4-005:stop:1833.8029",
+      "event_id": 15,
+      "master_event_id": 48
     }
   ],
   "open_positions": [
@@ -288,7 +307,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 65714.3,
-      "sl": 66439.9857142857,
+      "sl": 66083.9857142857,
       "tp": null,
       "notional_usd": 2272.0
     },
@@ -300,7 +319,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 1840.29,
-      "sl": 1845.8028571428572,
+      "sl": 1833.8028571428572,
       "tp": null,
       "notional_usd": 1362.0
     },
@@ -324,7 +343,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 599.42,
-      "sl": 596.6014285714285,
+      "sl": 595.5814285714285,
       "tp": null,
       "notional_usd": 1642.0
     },
@@ -336,7 +355,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 0.06108,
-      "sl": 0.05936428571428572,
+      "sl": 0.059294285714285716,
       "tp": null,
       "notional_usd": 1609.0
     },
@@ -348,7 +367,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 0.1571,
-      "sl": 0.15322857142857144,
+      "sl": 0.15292857142857144,
       "tp": null,
       "notional_usd": 1722.0
     }

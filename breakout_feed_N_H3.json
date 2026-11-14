@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-14 22:00 UTC",
-  "next_event_id": 6,
+  "updated_at": "2026-11-14 22:15 UTC",
+  "next_event_id": 7,
   "events": [
     {
       "ts": 1794546000,
@@ -102,6 +102,25 @@
       "dedup": "N-H3-003:stop:73.337143",
       "event_id": 5,
       "master_event_id": 40
+    },
+    {
+      "ts": 1794694200,
+      "time": "2026-11-14 22:15 UTC",
+      "strategy": "N-H3",
+      "symbol": "ETHUSDT",
+      "signal_no": 2,
+      "pos_id": "N-H3-002",
+      "paper": true,
+      "action": "move_stop",
+      "direction": "short",
+      "entry_price": 1840.29,
+      "sl": 1833.8029,
+      "tp": null,
+      "notional_usd": 1362.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H3-002:stop:1833.8029",
+      "event_id": 6,
+      "master_event_id": 47
     }
   ],
   "open_positions": [
@@ -113,7 +132,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 1840.29,
-      "sl": 1845.8028571428572,
+      "sl": 1833.8028571428572,
       "tp": null,
       "notional_usd": 1362.0
     },
