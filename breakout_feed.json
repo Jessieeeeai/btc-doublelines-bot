@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-14 22:15 UTC",
+  "updated_at": "2026-11-14 22:30 UTC",
   "next_event_id": 51,
   "events": [
     {
@@ -982,7 +982,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 65714.3,
-      "sl": 66083.9857142857,
+      "sl": 65855.6857142857,
       "tp": null,
       "notional_usd": 2272.0
     },
@@ -994,7 +994,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 1840.29,
-      "sl": 1833.8028571428572,
+      "sl": 1823.6328571428571,
       "tp": null,
       "notional_usd": 1362.0
     },
@@ -1006,7 +1006,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 1840.29,
-      "sl": 1833.8028571428572,
+      "sl": 1823.6328571428571,
       "tp": null,
       "notional_usd": 1362.0
     },
@@ -1030,7 +1030,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 73.84,
-      "sl": 72.62714285714286,
+      "sl": 72.38714285714286,
       "tp": null,
       "notional_usd": 1735.0
     },
@@ -1042,7 +1042,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 73.84,
-      "sl": 72.62714285714286,
+      "sl": 72.38714285714286,
       "tp": null,
       "notional_usd": 1735.0
     },
@@ -1054,7 +1054,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 599.42,
-      "sl": 595.5814285714285,
+      "sl": 593.4014285714285,
       "tp": null,
       "notional_usd": 1642.0
     },
@@ -1066,7 +1066,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 0.06108,
-      "sl": 0.059294285714285716,
+      "sl": 0.058814285714285715,
       "tp": null,
       "notional_usd": 1609.0
     },
@@ -1078,7 +1078,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 0.1571,
-      "sl": 0.15292857142857144,
+      "sl": 0.15182857142857142,
       "tp": null,
       "notional_usd": 1722.0
     },
