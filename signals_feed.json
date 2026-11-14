@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "updated_at": "2026-11-14 03:30 UTC",
-  "next_event_id": 298,
+  "updated_at": "2026-11-14 03:45 UTC",
+  "next_event_id": 300,
   "events": [
     {
       "ts": 1782982800,
@@ -5633,6 +5633,42 @@
       "lock": "+2R",
       "dedup": "C-070:stop:70989.2",
       "event_id": 297
+    },
+    {
+      "ts": 1794434400,
+      "time": "2026-11-14 03:45 UTC",
+      "strategy": "B",
+      "signal_no": 68,
+      "pos_id": "B-068",
+      "action": "move_stop",
+      "direction": "short",
+      "entry_price": 74359.9,
+      "sl": 70546.04,
+      "tp": 59104.48,
+      "size_mult": 1.0,
+      "r_dollar": 1906.93,
+      "notional_usd": 10000,
+      "lock": "+2R",
+      "dedup": "B-068:stop:70546.04",
+      "event_id": 298
+    },
+    {
+      "ts": 1794434400,
+      "time": "2026-11-14 03:45 UTC",
+      "strategy": "C",
+      "signal_no": 71,
+      "pos_id": "C-071",
+      "action": "move_stop",
+      "direction": "short",
+      "entry_price": 74359.9,
+      "sl": 70546.04,
+      "tp": 59104.48,
+      "size_mult": 0.7,
+      "r_dollar": 1906.93,
+      "notional_usd": 10000,
+      "lock": "+2R",
+      "dedup": "C-071:stop:70546.04",
+      "event_id": 299
     }
   ],
   "open_positions": [
@@ -5656,7 +5692,7 @@
       "pos_id": "B-068",
       "direction": "short",
       "entry_price": 74359.9,
-      "sl": 72452.97,
+      "sl": 70546.04,
       "tp": 59104.48,
       "size_mult": 1.0,
       "r_dollar": 1906.93,
@@ -5684,7 +5720,7 @@
       "pos_id": "C-071",
       "direction": "short",
       "entry_price": 74359.9,
-      "sl": 72452.97,
+      "sl": 70546.04,
       "tp": 59104.48,
       "size_mult": 0.7,
       "r_dollar": 1906.93,
