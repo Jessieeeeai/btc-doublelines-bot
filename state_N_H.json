@@ -2,9 +2,22 @@
  "started": true,
  "syms": {
   "BTC": {
-   "last_5m_ts": 1794671400,
-   "hour_done_ts": 1794664800,
-   "pend": null,
+   "last_5m_ts": 1794671700,
+   "hour_done_ts": 1794668400,
+   "pend": {
+    "side": -1,
+    "sl": 66871.25536,
+    "from_ts": 1794672000,
+    "atr": 645.8714285714274,
+    "horses": [
+     "N-H1",
+     "N-H2",
+     "N-H4"
+    ],
+    "skipped": {
+     "N-H3": "7日涨幅排第1"
+    }
+   },
    "pos": {},
    "pend5": null,
    "amd": {
@@ -13,9 +26,22 @@
    }
   },
   "ETH": {
-   "last_5m_ts": 1794671400,
-   "hour_done_ts": 1794664800,
-   "pend": null,
+   "last_5m_ts": 1794671700,
+   "hour_done_ts": 1794668400,
+   "pend": {
+    "side": -1,
+    "sl": 1894.3281279999999,
+    "from_ts": 1794672000,
+    "atr": 23.950714285714298,
+    "horses": [
+     "N-H2",
+     "N-H3",
+     "N-H4"
+    ],
+    "skipped": {
+     "N-H1": "已有持仓"
+    }
+   },
    "pos": {
     "N-H1": {
      "seq": 2,
@@ -38,9 +64,21 @@
    }
   },
   "SOL": {
-   "last_5m_ts": 1794671400,
-   "hour_done_ts": 1794664800,
-   "pend": null,
+   "last_5m_ts": 1794671700,
+   "hour_done_ts": 1794668400,
+   "pend": {
+    "side": -1,
+    "sl": 75.542656,
+    "from_ts": 1794672000,
+    "atr": 0.9692857142857138,
+    "horses": [
+     "N-H1",
+     "N-H2",
+     "N-H3",
+     "N-H4"
+    ],
+    "skipped": {}
+   },
    "pos": {},
    "pend5": null,
    "amd": {
@@ -49,8 +87,8 @@
    }
   },
   "BNB": {
-   "last_5m_ts": 1794671400,
-   "hour_done_ts": 1794664800,
+   "last_5m_ts": 1794671700,
+   "hour_done_ts": 1794668400,
    "pend": null,
    "pos": {
     "N-H1": {
@@ -100,26 +138,33 @@
    }
   },
   "XRP": {
-   "last_5m_ts": 1794671400,
-   "hour_done_ts": 1794664800,
+   "last_5m_ts": 1794671700,
+   "hour_done_ts": 1794668400,
    "pend": null,
    "pos": {},
    "pend5": null,
    "amd": {
-    "next_ts": 0,
-    "setup": {
-     "side": 1,
-     "lo": 0.9967,
-     "hi": 1.0607,
-     "ext": 0.9787,
-     "i_ts": 1794614400
-    }
+    "next_ts": 1794672000,
+    "setup": null
    }
   },
   "DOGE": {
-   "last_5m_ts": 1794671400,
-   "hour_done_ts": 1794664800,
-   "pend": null,
+   "last_5m_ts": 1794671700,
+   "hour_done_ts": 1794668400,
+   "pend": {
+    "side": -1,
+    "sl": 0.062598774,
+    "from_ts": 1794672000,
+    "atr": 0.0008685714285714279,
+    "horses": [
+     "N-H1",
+     "N-H2",
+     "N-H4"
+    ],
+    "skipped": {
+     "N-H3": "7日涨幅排第4"
+    }
+   },
    "pos": {},
    "pend5": null,
    "amd": {
@@ -128,25 +173,32 @@
    }
   },
   "ADA": {
-   "last_5m_ts": 1794671400,
-   "hour_done_ts": 1794664800,
-   "pend": null,
+   "last_5m_ts": 1794671700,
+   "hour_done_ts": 1794668400,
+   "pend": {
+    "side": -1,
+    "sl": 0.16074821,
+    "from_ts": 1794672000,
+    "atr": 0.0022071428571428598,
+    "horses": [
+     "N-H1",
+     "N-H2",
+     "N-H4"
+    ],
+    "skipped": {
+     "N-H3": "7日涨幅排第2"
+    }
+   },
    "pos": {},
    "pend5": null,
    "amd": {
-    "next_ts": 1794542400,
-    "setup": {
-     "side": 1,
-     "lo": 0.1657,
-     "hi": 0.1755,
-     "ext": 0.1616,
-     "i_ts": 1794614400
-    }
+    "next_ts": 1794672000,
+    "setup": null
    }
   },
   "HYPE": {
-   "last_5m_ts": 1794671400,
-   "hour_done_ts": 1794664800,
+   "last_5m_ts": 1794671700,
+   "hour_done_ts": 1794668400,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -292,7 +344,7 @@
   "N-H4": 3,
   "AMD": 1
  },
- "n_sig": 4,
+ "n_sig": 10,
  "n_amd": 1,
  "lineup_v2": true,
  "lineup_v3": true,
