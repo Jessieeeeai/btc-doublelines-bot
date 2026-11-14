@@ -2028,7 +2028,7 @@
       "stair_4r_locked": true,
       "pyramid_entered": true,
       "pyramid_entry_price": 73012.35,
-      "last_checked_ts": 1794643200,
+      "last_checked_ts": 1794646800,
       "close_notified": false,
       "touched_2r": true
     },
@@ -2058,7 +2058,7 @@
       "stair_4r_locked": true,
       "pyramid_entered": true,
       "pyramid_entry_price": 72452.97,
-      "last_checked_ts": 1794643200,
+      "last_checked_ts": 1794646800,
       "close_notified": false,
       "touched_2r": true
     }
