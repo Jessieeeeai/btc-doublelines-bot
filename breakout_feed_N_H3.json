@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-14 21:15 UTC",
-  "next_event_id": 5,
+  "updated_at": "2026-11-14 21:30 UTC",
+  "next_event_id": 6,
   "events": [
     {
       "ts": 1794546000,
@@ -83,6 +83,25 @@
       "dedup": "N-H3-003:open",
       "event_id": 4,
       "master_event_id": 22
+    },
+    {
+      "ts": 1794690900,
+      "time": "2026-11-14 21:30 UTC",
+      "strategy": "N-H3",
+      "symbol": "SOLUSDT",
+      "signal_no": 3,
+      "pos_id": "N-H3-003",
+      "paper": true,
+      "action": "move_stop",
+      "direction": "short",
+      "entry_price": 73.84,
+      "sl": 73.337143,
+      "tp": null,
+      "notional_usd": 1735.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H3-003:stop:73.337143",
+      "event_id": 5,
+      "master_event_id": 40
     }
   ],
   "open_positions": [
@@ -94,7 +113,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 1840.29,
-      "sl": 1864.4428571428573,
+      "sl": 1845.8028571428572,
       "tp": null,
       "notional_usd": 1362.0
     },
@@ -106,7 +125,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 73.84,
-      "sl": 73.88714285714286,
+      "sl": 72.62714285714286,
       "tp": null,
       "notional_usd": 1735.0
     }

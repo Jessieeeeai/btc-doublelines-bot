@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-14 21:15 UTC",
-  "next_event_id": 13,
+  "updated_at": "2026-11-14 21:30 UTC",
+  "next_event_id": 15,
   "events": [
     {
       "ts": 1794542400,
@@ -239,6 +239,44 @@
       "dedup": "N-H4-008:stop:0.15572857",
       "event_id": 12,
       "master_event_id": 39
+    },
+    {
+      "ts": 1794690900,
+      "time": "2026-11-14 21:30 UTC",
+      "strategy": "N-H4",
+      "symbol": "SOLUSDT",
+      "signal_no": 6,
+      "pos_id": "N-H4-006",
+      "paper": true,
+      "action": "move_stop",
+      "direction": "short",
+      "entry_price": 73.84,
+      "sl": 73.337143,
+      "tp": null,
+      "notional_usd": 1735.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H4-006:stop:73.337143",
+      "event_id": 13,
+      "master_event_id": 41
+    },
+    {
+      "ts": 1794691200,
+      "time": "2026-11-14 21:30 UTC",
+      "strategy": "N-H4",
+      "symbol": "BNBUSDT",
+      "signal_no": 3,
+      "pos_id": "N-H4-003",
+      "paper": true,
+      "action": "move_stop",
+      "direction": "short",
+      "entry_price": 599.42,
+      "sl": 596.60143,
+      "tp": null,
+      "notional_usd": 1642.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H4-003:stop:596.60143",
+      "event_id": 14,
+      "master_event_id": 42
     }
   ],
   "open_positions": [
@@ -250,7 +288,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 65714.3,
-      "sl": 66871.25536,
+      "sl": 66439.9857142857,
       "tp": null,
       "notional_usd": 2272.0
     },
@@ -262,7 +300,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 1840.29,
-      "sl": 1864.4428571428573,
+      "sl": 1845.8028571428572,
       "tp": null,
       "notional_usd": 1362.0
     },
@@ -274,7 +312,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 73.84,
-      "sl": 73.88714285714286,
+      "sl": 72.62714285714286,
       "tp": null,
       "notional_usd": 1735.0
     },
@@ -286,7 +324,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 599.42,
-      "sl": 602.2514285714285,
+      "sl": 596.6014285714285,
       "tp": null,
       "notional_usd": 1642.0
     },
@@ -298,7 +336,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 0.06108,
-      "sl": 0.06061428571428572,
+      "sl": 0.05936428571428572,
       "tp": null,
       "notional_usd": 1609.0
     },
@@ -310,7 +348,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 0.1571,
-      "sl": 0.15572857142857144,
+      "sl": 0.15322857142857144,
       "tp": null,
       "notional_usd": 1722.0
     }
