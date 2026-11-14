@@ -2,8 +2,8 @@
  "started": true,
  "syms": {
   "BTC": {
-   "last_5m_ts": 1794627600,
-   "hour_done_ts": 1794621600,
+   "last_5m_ts": 1794628500,
+   "hour_done_ts": 1794625200,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -13,8 +13,8 @@
    }
   },
   "ETH": {
-   "last_5m_ts": 1794627600,
-   "hour_done_ts": 1794621600,
+   "last_5m_ts": 1794628500,
+   "hour_done_ts": 1794625200,
    "pend": null,
    "pos": {
     "N-H1": {
@@ -38,8 +38,8 @@
    }
   },
   "SOL": {
-   "last_5m_ts": 1794627600,
-   "hour_done_ts": 1794621600,
+   "last_5m_ts": 1794628500,
+   "hour_done_ts": 1794625200,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -49,8 +49,8 @@
    }
   },
   "BNB": {
-   "last_5m_ts": 1794627600,
-   "hour_done_ts": 1794621600,
+   "last_5m_ts": 1794628500,
+   "hour_done_ts": 1794625200,
    "pend": null,
    "pos": {
     "N-H1": {
@@ -63,7 +63,7 @@
      "n": 1197.0,
      "ts": 1794542400,
      "x_ts": 1794801600,
-     "pk": 615.02,
+     "pk": 614.38,
      "ch": null
     }
    },
@@ -74,19 +74,25 @@
    }
   },
   "XRP": {
-   "last_5m_ts": 1794627600,
-   "hour_done_ts": 1794621600,
+   "last_5m_ts": 1794628500,
+   "hour_done_ts": 1794625200,
    "pend": null,
    "pos": {},
    "pend5": null,
    "amd": {
     "next_ts": 0,
-    "setup": null
+    "setup": {
+     "side": 1,
+     "lo": 0.9967,
+     "hi": 1.0607,
+     "ext": 0.9835,
+     "i_ts": 1794614400
+    }
    }
   },
   "DOGE": {
-   "last_5m_ts": 1794627600,
-   "hour_done_ts": 1794621600,
+   "last_5m_ts": 1794628500,
+   "hour_done_ts": 1794625200,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -96,19 +102,25 @@
    }
   },
   "ADA": {
-   "last_5m_ts": 1794627600,
-   "hour_done_ts": 1794621600,
+   "last_5m_ts": 1794628500,
+   "hour_done_ts": 1794625200,
    "pend": null,
    "pos": {},
    "pend5": null,
    "amd": {
     "next_ts": 1794542400,
-    "setup": null
+    "setup": {
+     "side": 1,
+     "lo": 0.1657,
+     "hi": 0.1755,
+     "ext": 0.1619,
+     "i_ts": 1794614400
+    }
    }
   },
   "HYPE": {
-   "last_5m_ts": 1794627600,
-   "hour_done_ts": 1794621600,
+   "last_5m_ts": 1794628500,
+   "hour_done_ts": 1794625200,
    "pend": null,
    "pos": {},
    "pend5": null,
