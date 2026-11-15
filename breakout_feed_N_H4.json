@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-15 02:30 UTC",
-  "next_event_id": 19,
+  "updated_at": "2026-11-15 02:45 UTC",
+  "next_event_id": 21,
   "events": [
     {
       "ts": 1794542400,
@@ -361,33 +361,55 @@
       "pnl_pct": 2.55,
       "event_id": 18,
       "master_event_id": 54
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1794710100,
+      "time": "2026-11-15 02:45 UTC",
       "strategy": "N-H4",
       "symbol": "SOLUSDT",
       "signal_no": 6,
       "pos_id": "N-H4-006",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 73.84,
-      "sl": 71.20714285714286,
+      "sl": 71.207143,
       "tp": null,
-      "notional_usd": 1735.0
+      "notional_usd": 1735.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H4-006:close",
+      "reason": "trail",
+      "exit_price": 71.207143,
+      "pnl_usd": 60.94,
+      "pnl_pct": 6.09,
+      "event_id": 19,
+      "master_event_id": 56
     },
     {
+      "ts": 1794710100,
+      "time": "2026-11-15 02:45 UTC",
       "strategy": "N-H4",
       "symbol": "BNBUSDT",
       "signal_no": 3,
       "pos_id": "N-H4-003",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 599.42,
-      "sl": 590.6914285714286,
+      "sl": 590.69143,
       "tp": null,
-      "notional_usd": 1642.0
-    },
+      "notional_usd": 1642.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H4-003:close",
+      "reason": "trail",
+      "exit_price": 590.69143,
+      "pnl_usd": 23.02,
+      "pnl_pct": 2.3,
+      "event_id": 20,
+      "master_event_id": 57
+    }
+  ],
+  "open_positions": [
     {
       "strategy": "N-H4",
       "symbol": "DOGEUSDT",
