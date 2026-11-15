@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-15 03:00 UTC",
-  "next_event_id": 21,
+  "updated_at": "2026-11-15 03:15 UTC",
+  "next_event_id": 23,
   "events": [
     {
       "ts": 1794542400,
@@ -407,33 +407,54 @@
       "pnl_pct": 2.3,
       "event_id": 20,
       "master_event_id": 57
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1794711600,
+      "time": "2026-11-15 03:15 UTC",
       "strategy": "N-H4",
       "symbol": "DOGEUSDT",
       "signal_no": 7,
       "pos_id": "N-H4-007",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 0.06108,
-      "sl": 0.058814285714285715,
+      "sl": 0.058814286,
       "tp": null,
-      "notional_usd": 1609.0
+      "notional_usd": 1609.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H4-007:close",
+      "reason": "trail",
+      "exit_price": 0.058814286,
+      "pnl_usd": 58.82,
+      "pnl_pct": 5.88,
+      "event_id": 21,
+      "master_event_id": 58
     },
     {
+      "ts": 1794711600,
+      "time": "2026-11-15 03:15 UTC",
       "strategy": "N-H4",
       "symbol": "ADAUSDT",
       "signal_no": 8,
       "pos_id": "N-H4-008",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 0.1571,
-      "sl": 0.15112857142857145,
+      "sl": 0.15112857,
       "tp": null,
-      "notional_usd": 1722.0
+      "notional_usd": 1722.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H4-008:close",
+      "reason": "trail",
+      "exit_price": 0.15112857,
+      "pnl_usd": 64.52,
+      "pnl_pct": 6.45,
+      "event_id": 22,
+      "master_event_id": 59
     }
   ],
+  "open_positions": [],
   "strategy": "N-H4"
 }
