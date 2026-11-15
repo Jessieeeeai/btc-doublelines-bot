@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-15 01:00 UTC",
-  "next_event_id": 16,
+  "updated_at": "2026-11-15 01:15 UTC",
+  "next_event_id": 17,
   "events": [
     {
       "ts": 1794542400,
@@ -296,6 +296,25 @@
       "dedup": "N-H4-005:stop:1833.8029",
       "event_id": 15,
       "master_event_id": 48
+    },
+    {
+      "ts": 1794704700,
+      "time": "2026-11-15 01:15 UTC",
+      "strategy": "N-H4",
+      "symbol": "BTCUSDT",
+      "signal_no": 4,
+      "pos_id": "N-H4-004",
+      "paper": true,
+      "action": "move_stop",
+      "direction": "short",
+      "entry_price": 65714.3,
+      "sl": 65389.786,
+      "tp": null,
+      "notional_usd": 2272.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H4-004:stop:65389.786",
+      "event_id": 16,
+      "master_event_id": 51
     }
   ],
   "open_positions": [
@@ -307,7 +326,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 65714.3,
-      "sl": 65855.6857142857,
+      "sl": 65101.48571428571,
       "tp": null,
       "notional_usd": 2272.0
     },
@@ -319,7 +338,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 1840.29,
-      "sl": 1823.6328571428571,
+      "sl": 1809.0528571428572,
       "tp": null,
       "notional_usd": 1362.0
     },
@@ -331,7 +350,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 73.84,
-      "sl": 72.38714285714286,
+      "sl": 72.30714285714286,
       "tp": null,
       "notional_usd": 1735.0
     },
