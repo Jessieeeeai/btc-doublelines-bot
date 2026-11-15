@@ -1,7 +1,7 @@
 {
   "started": true,
-  "last_5m_ts": 1794735900,
-  "hour_done_ts": 1794729600,
+  "last_5m_ts": 1794761100,
+  "hour_done_ts": 1794754800,
   "active": [],
   "pend": null,
   "position": null,
@@ -176,12 +176,50 @@
       "trailed": false,
       "sl0": 63148.04,
       "D0": 1155.3
+    },
+    {
+      "seq": 10,
+      "d": -1,
+      "e": 65360.74,
+      "x": 65609.34,
+      "ts": 1794744300,
+      "xts": 1794748500,
+      "n": 5258.0,
+      "gross": -20.0,
+      "cost_base": 2.18,
+      "cost_cons": 6.91,
+      "fund": 0.08,
+      "net_base": -22.18,
+      "net_cons": -26.91,
+      "hold_h": 1.2,
+      "trailed": false,
+      "sl0": 65609.34,
+      "D0": 248.6
+    },
+    {
+      "seq": 11,
+      "d": -1,
+      "e": 65342.3,
+      "x": 64886.7,
+      "ts": 1794752100,
+      "xts": 1794760200,
+      "n": 2911.0,
+      "gross": 20.3,
+      "cost_base": 1.25,
+      "cost_cons": 3.87,
+      "fund": 0.08,
+      "net_base": 19.05,
+      "net_cons": 16.43,
+      "hold_h": 2.2,
+      "trailed": true,
+      "sl0": 65791.3,
+      "D0": 449.0
     }
   ],
-  "seq": 9,
-  "n_pat": 44,
+  "seq": 11,
+  "n_pat": 47,
   "n_gate_fail": 23,
   "n_no_break": 0,
   "n_no_pullback": 0,
-  "block_until": 1794708000
+  "block_until": 1794762000
 }
