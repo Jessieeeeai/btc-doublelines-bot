@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-17 23:00 UTC",
-  "next_event_id": 80,
+  "updated_at": "2026-11-17 23:15 UTC",
+  "next_event_id": 83,
   "events": [
     {
       "ts": 1794542400,
@@ -1577,6 +1577,68 @@
       "risk_usd": 40.0,
       "dedup": "AMD-006:stop:585.84718",
       "event_id": 79
+    },
+    {
+      "ts": 1794956400,
+      "time": "2026-11-17 23:15 UTC",
+      "strategy": "AMD",
+      "symbol": "BTCUSDT",
+      "signal_no": 3,
+      "pos_id": "AMD-003",
+      "paper": true,
+      "action": "move_stop",
+      "direction": "long",
+      "entry_price": 64081.7,
+      "sl": 63921.562,
+      "tp": null,
+      "notional_usd": 3201.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-003:stop:63921.562",
+      "event_id": 80
+    },
+    {
+      "ts": 1794956700,
+      "time": "2026-11-17 23:15 UTC",
+      "strategy": "AMD",
+      "symbol": "SOLUSDT",
+      "signal_no": 5,
+      "pos_id": "AMD-005",
+      "paper": true,
+      "action": "close",
+      "direction": "short",
+      "entry_price": 72.4,
+      "sl": 74.32229,
+      "tp": null,
+      "notional_usd": 1507.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-005:close",
+      "reason": "sl",
+      "exit_price": 74.32229,
+      "pnl_usd": -40.75,
+      "pnl_pct": -4.08,
+      "event_id": 81
+    },
+    {
+      "ts": 1794956700,
+      "time": "2026-11-17 23:15 UTC",
+      "strategy": "AMD",
+      "symbol": "XRPUSDT",
+      "signal_no": 7,
+      "pos_id": "AMD-007",
+      "paper": true,
+      "action": "close",
+      "direction": "short",
+      "entry_price": 0.9599,
+      "sl": 0.97909364,
+      "tp": null,
+      "notional_usd": 2000.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-007:close",
+      "reason": "sl",
+      "exit_price": 0.97909364,
+      "pnl_usd": -40.97,
+      "pnl_pct": -4.1,
+      "event_id": 82
     }
   ],
   "open_positions": [
@@ -1588,7 +1650,7 @@
       "paper": true,
       "direction": "long",
       "entry_price": 64081.7,
-      "sl": 63281.01,
+      "sl": 63921.562,
       "tp": null,
       "notional_usd": 3201.0
     },
@@ -1606,18 +1668,6 @@
     },
     {
       "strategy": "AMD",
-      "symbol": "SOLUSDT",
-      "signal_no": 5,
-      "pos_id": "AMD-005",
-      "paper": true,
-      "direction": "short",
-      "entry_price": 72.4,
-      "sl": 74.32229,
-      "tp": null,
-      "notional_usd": 1507.0
-    },
-    {
-      "strategy": "AMD",
       "symbol": "BNBUSDT",
       "signal_no": 6,
       "pos_id": "AMD-006",
@@ -1627,18 +1677,6 @@
       "sl": 585.8471754,
       "tp": null,
       "notional_usd": 3349.0
-    },
-    {
-      "strategy": "AMD",
-      "symbol": "XRPUSDT",
-      "signal_no": 7,
-      "pos_id": "AMD-007",
-      "paper": true,
-      "direction": "short",
-      "entry_price": 0.9599,
-      "sl": 0.97909364,
-      "tp": null,
-      "notional_usd": 2000.0
     },
     {
       "strategy": "AMD",
