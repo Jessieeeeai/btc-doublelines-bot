@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-17 22:45 UTC",
-  "next_event_id": 78,
+  "updated_at": "2026-11-17 23:00 UTC",
+  "next_event_id": 80,
   "events": [
     {
       "ts": 1794542400,
@@ -1541,6 +1541,42 @@
       "risk_usd": 40.0,
       "dedup": "AMD-009:stop:0.15131106",
       "event_id": 77
+    },
+    {
+      "ts": 1794955800,
+      "time": "2026-11-17 23:00 UTC",
+      "strategy": "AMD",
+      "symbol": "ETHUSDT",
+      "signal_no": 4,
+      "pos_id": "AMD-004",
+      "paper": true,
+      "action": "move_stop",
+      "direction": "long",
+      "entry_price": 1784.41,
+      "sl": 1777.433,
+      "tp": null,
+      "notional_usd": 2046.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-004:stop:1777.433",
+      "event_id": 78
+    },
+    {
+      "ts": 1794955800,
+      "time": "2026-11-17 23:00 UTC",
+      "strategy": "AMD",
+      "symbol": "BNBUSDT",
+      "signal_no": 6,
+      "pos_id": "AMD-006",
+      "paper": true,
+      "action": "move_stop",
+      "direction": "long",
+      "entry_price": 587.25,
+      "sl": 585.84718,
+      "tp": null,
+      "notional_usd": 3349.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-006:stop:585.84718",
+      "event_id": 79
     }
   ],
   "open_positions": [
@@ -1564,7 +1600,7 @@
       "paper": true,
       "direction": "long",
       "entry_price": 1784.41,
-      "sl": 1749.524985,
+      "sl": 1777.4329970000001,
       "tp": null,
       "notional_usd": 2046.0
     },
@@ -1588,7 +1624,7 @@
       "paper": true,
       "direction": "long",
       "entry_price": 587.25,
-      "sl": 580.235877,
+      "sl": 585.8471754,
       "tp": null,
       "notional_usd": 3349.0
     },
