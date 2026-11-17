@@ -2,7 +2,7 @@
  "started": true,
  "syms": {
   "BTC": {
-   "last_5m_ts": 1794925500,
+   "last_5m_ts": 1794926400,
    "hour_done_ts": 1794920400,
    "pend": null,
    "pos": {},
@@ -13,7 +13,7 @@
    }
   },
   "ETH": {
-   "last_5m_ts": 1794925500,
+   "last_5m_ts": 1794926400,
    "hour_done_ts": 1794920400,
    "pend": null,
    "pos": {},
@@ -24,7 +24,7 @@
    }
   },
   "SOL": {
-   "last_5m_ts": 1794925500,
+   "last_5m_ts": 1794926400,
    "hour_done_ts": 1794920400,
    "pend": null,
    "pos": {
@@ -38,7 +38,7 @@
      "n": 1794.0,
      "ts": 1794920400,
      "x_ts": 1795179600,
-     "pk": 74.11,
+     "pk": 74.3,
      "ch": null
     }
    },
@@ -55,7 +55,7 @@
    }
   },
   "BNB": {
-   "last_5m_ts": 1794925500,
+   "last_5m_ts": 1794926400,
    "hour_done_ts": 1794920400,
    "pend": null,
    "pos": {},
@@ -66,7 +66,7 @@
    }
   },
   "XRP": {
-   "last_5m_ts": 1794925500,
+   "last_5m_ts": 1794926400,
    "hour_done_ts": 1794920400,
    "pend": null,
    "pos": {
@@ -91,7 +91,7 @@
    }
   },
   "DOGE": {
-   "last_5m_ts": 1794925500,
+   "last_5m_ts": 1794926400,
    "hour_done_ts": 1794920400,
    "pend": null,
    "pos": {},
@@ -102,7 +102,7 @@
    }
   },
   "ADA": {
-   "last_5m_ts": 1794925500,
+   "last_5m_ts": 1794926400,
    "hour_done_ts": 1794920400,
    "pend": null,
    "pos": {},
@@ -113,7 +113,7 @@
    }
   },
   "HYPE": {
-   "last_5m_ts": 1794925500,
+   "last_5m_ts": 1794926400,
    "hour_done_ts": 1794920400,
    "pend": null,
    "pos": {},
