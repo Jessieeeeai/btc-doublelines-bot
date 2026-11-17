@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-17 16:00 UTC",
-  "next_event_id": 4,
+  "updated_at": "2026-11-17 16:15 UTC",
+  "next_event_id": 5,
   "events": [
     {
       "ts": 1794902400,
@@ -68,9 +68,45 @@
       "pnl_pct": 0.47,
       "event_id": 3,
       "master_event_id": 64
+    },
+    {
+      "ts": 1794931200,
+      "time": "2026-11-17 16:15 UTC",
+      "strategy": "AMD",
+      "symbol": "SOLUSDT",
+      "signal_no": 5,
+      "pos_id": "AMD-005",
+      "paper": true,
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 72.4,
+      "sl": 74.32229,
+      "tp": 51.5,
+      "notional_usd": 1507.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-005:open",
+      "tp1": 70.47771,
+      "tp2": 60.62,
+      "tp3": 51.5,
+      "stop_after_tp1": 72.784458,
+      "event_id": 4,
+      "master_event_id": 71
     }
   ],
-  "open_positions": [],
+  "open_positions": [
+    {
+      "strategy": "AMD",
+      "symbol": "SOLUSDT",
+      "signal_no": 5,
+      "pos_id": "AMD-005",
+      "paper": true,
+      "direction": "short",
+      "entry_price": 72.4,
+      "sl": 74.32229,
+      "tp": null,
+      "notional_usd": 1507.0
+    }
+  ],
   "strategy": "AMD",
   "symbol": "SOLUSDT"
 }
