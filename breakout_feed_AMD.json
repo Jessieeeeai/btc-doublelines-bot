@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-17 20:30 UTC",
-  "next_event_id": 14,
+  "updated_at": "2026-11-17 20:45 UTC",
+  "next_event_id": 15,
   "events": [
     {
       "ts": 1794542400,
@@ -294,6 +294,25 @@
       "stop_after_tp1": 0.15131106,
       "event_id": 13,
       "master_event_id": 75
+    },
+    {
+      "ts": 1794947400,
+      "time": "2026-11-17 20:45 UTC",
+      "strategy": "AMD",
+      "symbol": "DOGEUSDT",
+      "signal_no": 8,
+      "pos_id": "AMD-008",
+      "paper": true,
+      "action": "move_stop",
+      "direction": "long",
+      "entry_price": 0.05835,
+      "sl": 0.058152557,
+      "tp": null,
+      "notional_usd": 2364.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-008:stop:0.058152557",
+      "event_id": 14,
+      "master_event_id": 76
     }
   ],
   "open_positions": [
@@ -365,7 +384,7 @@
       "paper": true,
       "direction": "long",
       "entry_price": 0.05835,
-      "sl": 0.057362786,
+      "sl": 0.058152557199999996,
       "tp": null,
       "notional_usd": 2364.0
     },
