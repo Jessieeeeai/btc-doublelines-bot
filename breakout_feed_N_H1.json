@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-17 13:00 UTC",
-  "next_event_id": 17,
+  "updated_at": "2026-11-17 13:15 UTC",
+  "next_event_id": 19,
   "events": [
     {
       "ts": 1794542400,
@@ -339,8 +339,71 @@
       "pnl_pct": -4.04,
       "event_id": 16,
       "master_event_id": 61
+    },
+    {
+      "ts": 1794920400,
+      "time": "2026-11-17 13:15 UTC",
+      "strategy": "N-H1",
+      "symbol": "SOLUSDT",
+      "signal_no": 9,
+      "pos_id": "N-H1-009",
+      "paper": true,
+      "action": "open_long",
+      "direction": "long",
+      "entry_price": 73.63,
+      "sl": 71.988397,
+      "tp": 76.913206,
+      "notional_usd": 1794.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H1-009:open",
+      "event_id": 17,
+      "master_event_id": 65
+    },
+    {
+      "ts": 1794920400,
+      "time": "2026-11-17 13:15 UTC",
+      "strategy": "N-H1",
+      "symbol": "XRPUSDT",
+      "signal_no": 10,
+      "pos_id": "N-H1-010",
+      "paper": true,
+      "action": "open_long",
+      "direction": "long",
+      "entry_price": 0.9715,
+      "sl": 0.95491344,
+      "tp": 1.0046731,
+      "notional_usd": 2343.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H1-010:open",
+      "event_id": 18,
+      "master_event_id": 66
     }
   ],
-  "open_positions": [],
+  "open_positions": [
+    {
+      "strategy": "N-H1",
+      "symbol": "SOLUSDT",
+      "signal_no": 9,
+      "pos_id": "N-H1-009",
+      "paper": true,
+      "direction": "long",
+      "entry_price": 73.63,
+      "sl": 71.988397,
+      "tp": 76.91320599999997,
+      "notional_usd": 1794.0
+    },
+    {
+      "strategy": "N-H1",
+      "symbol": "XRPUSDT",
+      "signal_no": 10,
+      "pos_id": "N-H1-010",
+      "paper": true,
+      "direction": "long",
+      "entry_price": 0.9715,
+      "sl": 0.9549134400000001,
+      "tp": 1.0046731199999999,
+      "notional_usd": 2343.0
+    }
+  ],
   "strategy": "N-H1"
 }
