@@ -2,8 +2,8 @@
  "started": true,
  "syms": {
   "BTC": {
-   "last_5m_ts": 1794901200,
-   "hour_done_ts": 1794895200,
+   "last_5m_ts": 1794902100,
+   "hour_done_ts": 1794898800,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -13,8 +13,8 @@
    }
   },
   "ETH": {
-   "last_5m_ts": 1794901200,
-   "hour_done_ts": 1794895200,
+   "last_5m_ts": 1794902100,
+   "hour_done_ts": 1794898800,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -24,19 +24,27 @@
    }
   },
   "SOL": {
-   "last_5m_ts": 1794901200,
-   "hour_done_ts": 1794895200,
+   "last_5m_ts": 1794902100,
+   "hour_done_ts": 1794898800,
    "pend": null,
    "pos": {},
-   "pend5": null,
+   "pend5": {
+    "side": -1,
+    "sl": 73.28197800000001,
+    "from_ts": 1794902400,
+    "st": 69.46,
+    "D": 3.8000000000000114,
+    "lo": 69.46,
+    "hi": 73.23
+   },
    "amd": {
-    "next_ts": 0,
+    "next_ts": 1794902400,
     "setup": null
    }
   },
   "BNB": {
-   "last_5m_ts": 1794901200,
-   "hour_done_ts": 1794895200,
+   "last_5m_ts": 1794902100,
+   "hour_done_ts": 1794898800,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -46,8 +54,8 @@
    }
   },
   "XRP": {
-   "last_5m_ts": 1794901200,
-   "hour_done_ts": 1794895200,
+   "last_5m_ts": 1794902100,
+   "hour_done_ts": 1794898800,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -57,8 +65,8 @@
    }
   },
   "DOGE": {
-   "last_5m_ts": 1794901200,
-   "hour_done_ts": 1794895200,
+   "last_5m_ts": 1794902100,
+   "hour_done_ts": 1794898800,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -68,8 +76,8 @@
    }
   },
   "ADA": {
-   "last_5m_ts": 1794901200,
-   "hour_done_ts": 1794895200,
+   "last_5m_ts": 1794902100,
+   "hour_done_ts": 1794898800,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -79,8 +87,8 @@
    }
   },
   "HYPE": {
-   "last_5m_ts": 1794901200,
-   "hour_done_ts": 1794895200,
+   "last_5m_ts": 1794902100,
+   "hour_done_ts": 1794898800,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -735,7 +743,7 @@
   "AMD": 1
  },
  "n_sig": 12,
- "n_amd": 1,
+ "n_amd": 2,
  "lineup_v2": true,
  "lineup_v3": true,
  "lineup_v4": true,
