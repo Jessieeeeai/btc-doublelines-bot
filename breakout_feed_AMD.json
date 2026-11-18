@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-18 16:15 UTC",
-  "next_event_id": 28,
+  "updated_at": "2026-11-18 16:30 UTC",
+  "next_event_id": 30,
   "events": [
     {
       "ts": 1794542400,
@@ -596,6 +596,48 @@
       "pnl_pct": 0.67,
       "event_id": 27,
       "master_event_id": 89
+    },
+    {
+      "ts": 1795018800,
+      "time": "2026-11-18 16:30 UTC",
+      "strategy": "AMD",
+      "symbol": "XRPUSDT",
+      "signal_no": 11,
+      "pos_id": "AMD-011",
+      "paper": true,
+      "action": "move_stop",
+      "direction": "short",
+      "entry_price": 0.9872,
+      "sl": 0.99130044,
+      "tp": null,
+      "notional_usd": 1926.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-011:stop:0.99130044",
+      "event_id": 28,
+      "master_event_id": 90
+    },
+    {
+      "ts": 1795018500,
+      "time": "2026-11-18 16:30 UTC",
+      "strategy": "AMD",
+      "symbol": "DOGEUSDT",
+      "signal_no": 8,
+      "pos_id": "AMD-008",
+      "paper": true,
+      "action": "close",
+      "direction": "long",
+      "entry_price": 0.05835,
+      "sl": 0.058152557,
+      "tp": null,
+      "notional_usd": 2364.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-008:close",
+      "reason": "trail",
+      "exit_price": 0.058152557,
+      "pnl_usd": 6.53,
+      "pnl_pct": 0.65,
+      "event_id": 29,
+      "master_event_id": 91
     }
   ],
   "open_positions": [
@@ -607,21 +649,9 @@
       "paper": true,
       "direction": "short",
       "entry_price": 0.9872,
-      "sl": 1.00770222,
+      "sl": 0.991300444,
       "tp": null,
       "notional_usd": 1926.0
-    },
-    {
-      "strategy": "AMD",
-      "symbol": "DOGEUSDT",
-      "signal_no": 8,
-      "pos_id": "AMD-008",
-      "paper": true,
-      "direction": "long",
-      "entry_price": 0.05835,
-      "sl": 0.058152557199999996,
-      "tp": null,
-      "notional_usd": 2364.0
     }
   ],
   "strategy": "AMD"
