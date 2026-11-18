@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-18 04:00 UTC",
-  "next_event_id": 83,
+  "updated_at": "2026-11-18 04:15 UTC",
+  "next_event_id": 84,
   "events": [
     {
       "ts": 1794542400,
@@ -1639,6 +1639,28 @@
       "pnl_usd": -40.97,
       "pnl_pct": -4.1,
       "event_id": 82
+    },
+    {
+      "ts": 1794974400,
+      "time": "2026-11-18 04:15 UTC",
+      "strategy": "AMD",
+      "symbol": "XRPUSDT",
+      "signal_no": 10,
+      "pos_id": "AMD-010",
+      "paper": true,
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 0.9767,
+      "sl": 0.99119727,
+      "tp": 0.7429,
+      "notional_usd": 2695.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-010:open",
+      "tp1": 0.96220273,
+      "tp2": 0.8421,
+      "tp3": 0.7429,
+      "stop_after_tp1": 0.97959945,
+      "event_id": 83
     }
   ],
   "open_positions": [
@@ -1677,6 +1699,18 @@
       "sl": 585.8471754,
       "tp": null,
       "notional_usd": 3349.0
+    },
+    {
+      "strategy": "AMD",
+      "symbol": "XRPUSDT",
+      "signal_no": 10,
+      "pos_id": "AMD-010",
+      "paper": true,
+      "direction": "short",
+      "entry_price": 0.9767,
+      "sl": 0.99119727,
+      "tp": null,
+      "notional_usd": 2695.0
     },
     {
       "strategy": "AMD",
