@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-18 20:00 UTC",
-  "next_event_id": 30,
+  "updated_at": "2026-11-18 20:15 UTC",
+  "next_event_id": 32,
   "events": [
     {
       "ts": 1794542400,
@@ -638,9 +638,67 @@
       "pnl_pct": 0.65,
       "event_id": 29,
       "master_event_id": 91
+    },
+    {
+      "ts": 1795032000,
+      "time": "2026-11-18 20:15 UTC",
+      "strategy": "AMD",
+      "symbol": "ETHUSDT",
+      "signal_no": 12,
+      "pos_id": "AMD-012",
+      "paper": true,
+      "action": "open_long",
+      "direction": "long",
+      "entry_price": 1755.31,
+      "sl": 1731.0105,
+      "tp": 2289.88,
+      "notional_usd": 2889.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-012:open",
+      "tp1": 1779.6095,
+      "tp2": 2066.54,
+      "tp3": 2289.88,
+      "stop_after_tp1": 1750.4501,
+      "event_id": 30,
+      "master_event_id": 95
+    },
+    {
+      "ts": 1795032000,
+      "time": "2026-11-18 20:15 UTC",
+      "strategy": "AMD",
+      "symbol": "HYPEUSDT",
+      "signal_no": 13,
+      "pos_id": "AMD-013",
+      "paper": true,
+      "action": "open_long",
+      "direction": "long",
+      "entry_price": 66.897,
+      "sl": 65.020488,
+      "tp": 94.945,
+      "notional_usd": 1426.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-013:open",
+      "tp1": 68.773512,
+      "tp2": 82.983,
+      "tp3": 94.945,
+      "stop_after_tp1": 66.521698,
+      "event_id": 31,
+      "master_event_id": 96
     }
   ],
   "open_positions": [
+    {
+      "strategy": "AMD",
+      "symbol": "ETHUSDT",
+      "signal_no": 12,
+      "pos_id": "AMD-012",
+      "paper": true,
+      "direction": "long",
+      "entry_price": 1755.31,
+      "sl": 1731.010541,
+      "tp": null,
+      "notional_usd": 2889.0
+    },
     {
       "strategy": "AMD",
       "symbol": "XRPUSDT",
@@ -652,6 +710,18 @@
       "sl": 0.991300444,
       "tp": null,
       "notional_usd": 1926.0
+    },
+    {
+      "strategy": "AMD",
+      "symbol": "HYPEUSDT",
+      "signal_no": 13,
+      "pos_id": "AMD-013",
+      "paper": true,
+      "direction": "long",
+      "entry_price": 66.897,
+      "sl": 65.02048800000001,
+      "tp": null,
+      "notional_usd": 1426.0
     }
   ],
   "strategy": "AMD"

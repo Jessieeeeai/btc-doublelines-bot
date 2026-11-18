@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-18 20:00 UTC",
-  "next_event_id": 4,
+  "updated_at": "2026-11-18 20:15 UTC",
+  "next_event_id": 5,
   "events": [
     {
       "ts": 1794931200,
@@ -68,9 +68,45 @@
       "pnl_pct": 0.67,
       "event_id": 3,
       "master_event_id": 87
+    },
+    {
+      "ts": 1795032000,
+      "time": "2026-11-18 20:15 UTC",
+      "strategy": "AMD",
+      "symbol": "ETHUSDT",
+      "signal_no": 12,
+      "pos_id": "AMD-012",
+      "paper": true,
+      "action": "open_long",
+      "direction": "long",
+      "entry_price": 1755.31,
+      "sl": 1731.0105,
+      "tp": 2289.88,
+      "notional_usd": 2889.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-012:open",
+      "tp1": 1779.6095,
+      "tp2": 2066.54,
+      "tp3": 2289.88,
+      "stop_after_tp1": 1750.4501,
+      "event_id": 4,
+      "master_event_id": 95
     }
   ],
-  "open_positions": [],
+  "open_positions": [
+    {
+      "strategy": "AMD",
+      "symbol": "ETHUSDT",
+      "signal_no": 12,
+      "pos_id": "AMD-012",
+      "paper": true,
+      "direction": "long",
+      "entry_price": 1755.31,
+      "sl": 1731.010541,
+      "tp": null,
+      "notional_usd": 2889.0
+    }
+  ],
   "strategy": "AMD",
   "symbol": "ETHUSDT"
 }
