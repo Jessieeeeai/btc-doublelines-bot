@@ -2,8 +2,8 @@
  "started": true,
  "syms": {
   "BTC": {
-   "last_5m_ts": 1795038000,
-   "hour_done_ts": 1795032000,
+   "last_5m_ts": 1795038900,
+   "hour_done_ts": 1795035600,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -19,8 +19,8 @@
    }
   },
   "ETH": {
-   "last_5m_ts": 1795038000,
-   "hour_done_ts": 1795032000,
+   "last_5m_ts": 1795038900,
+   "hour_done_ts": 1795035600,
    "pend": null,
    "pos": {
     "AMD": {
@@ -63,8 +63,8 @@
    }
   },
   "SOL": {
-   "last_5m_ts": 1795038000,
-   "hour_done_ts": 1795032000,
+   "last_5m_ts": 1795038900,
+   "hour_done_ts": 1795035600,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -74,8 +74,8 @@
    }
   },
   "BNB": {
-   "last_5m_ts": 1795038000,
-   "hour_done_ts": 1795032000,
+   "last_5m_ts": 1795038900,
+   "hour_done_ts": 1795035600,
    "pend": null,
    "pos": {
     "N-H1": {
@@ -88,7 +88,7 @@
      "n": 2540.0,
      "ts": 1795021200,
      "x_ts": 1795280400,
-     "pk": 576.65,
+     "pk": 576.32,
      "ch": null
     },
     "N-H2": {
@@ -101,7 +101,7 @@
      "n": 2540.0,
      "ts": 1795021200,
      "x_ts": 1795280400,
-     "pk": 576.65,
+     "pk": 576.32,
      "ch": null
     },
     "N-H4": {
@@ -114,7 +114,7 @@
      "n": 2540.0,
      "ts": 1795021200,
      "x_ts": 1795280400,
-     "pk": 576.65,
+     "pk": 576.32,
      "ch": 13.794285714285609
     }
    },
@@ -131,8 +131,8 @@
    }
   },
   "XRP": {
-   "last_5m_ts": 1795038000,
-   "hour_done_ts": 1795032000,
+   "last_5m_ts": 1795038900,
+   "hour_done_ts": 1795035600,
    "pend": null,
    "pos": {
     "AMD": {
@@ -182,8 +182,8 @@
    }
   },
   "DOGE": {
-   "last_5m_ts": 1795038000,
-   "hour_done_ts": 1795032000,
+   "last_5m_ts": 1795038900,
+   "hour_done_ts": 1795035600,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -193,8 +193,8 @@
    }
   },
   "ADA": {
-   "last_5m_ts": 1795038000,
-   "hour_done_ts": 1795032000,
+   "last_5m_ts": 1795038900,
+   "hour_done_ts": 1795035600,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -204,8 +204,8 @@
    }
   },
   "HYPE": {
-   "last_5m_ts": 1795038000,
-   "hour_done_ts": 1795032000,
+   "last_5m_ts": 1795038900,
+   "hour_done_ts": 1795035600,
    "pend": null,
    "pos": {
     "AMD": {
