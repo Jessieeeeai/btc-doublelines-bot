@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-18 17:00 UTC",
-  "next_event_id": 13,
+  "updated_at": "2026-11-18 17:15 UTC",
+  "next_event_id": 14,
   "events": [
     {
       "ts": 1794668400,
@@ -255,8 +255,40 @@
       "pnl_pct": 7.92,
       "event_id": 12,
       "master_event_id": 49
+    },
+    {
+      "ts": 1795021200,
+      "time": "2026-11-18 17:15 UTC",
+      "strategy": "N-H2",
+      "symbol": "BNBUSDT",
+      "signal_no": 7,
+      "pos_id": "N-H2-007",
+      "paper": true,
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 579.49,
+      "sl": 588.61653,
+      "tp": 561.23694,
+      "notional_usd": 2540.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H2-007:open",
+      "event_id": 13,
+      "master_event_id": 93
     }
   ],
-  "open_positions": [],
+  "open_positions": [
+    {
+      "strategy": "N-H2",
+      "symbol": "BNBUSDT",
+      "signal_no": 7,
+      "pos_id": "N-H2-007",
+      "paper": true,
+      "direction": "short",
+      "entry_price": 579.49,
+      "sl": 588.616532,
+      "tp": 561.236936,
+      "notional_usd": 2540.0
+    }
+  ],
   "strategy": "N-H2"
 }
