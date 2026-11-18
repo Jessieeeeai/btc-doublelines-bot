@@ -2,8 +2,8 @@
  "started": true,
  "syms": {
   "BTC": {
-   "last_5m_ts": 1794958800,
-   "hour_done_ts": 1794952800,
+   "last_5m_ts": 1794959700,
+   "hour_done_ts": 1794956400,
    "pend": null,
    "pos": {
     "AMD": {
@@ -53,8 +53,8 @@
    }
   },
   "ETH": {
-   "last_5m_ts": 1794958800,
-   "hour_done_ts": 1794952800,
+   "last_5m_ts": 1794959700,
+   "hour_done_ts": 1794956400,
    "pend": null,
    "pos": {
     "AMD": {
@@ -104,19 +104,25 @@
    }
   },
   "SOL": {
-   "last_5m_ts": 1794958800,
-   "hour_done_ts": 1794952800,
+   "last_5m_ts": 1794959700,
+   "hour_done_ts": 1794956400,
    "pend": null,
    "pos": {},
    "pend5": null,
    "amd": {
     "next_ts": 1794931200,
-    "setup": null
+    "setup": {
+     "side": -1,
+     "lo": 69.87,
+     "hi": 74.3,
+     "ext": 75.76,
+     "i_ts": 1794945600
+    }
    }
   },
   "BNB": {
-   "last_5m_ts": 1794958800,
-   "hour_done_ts": 1794952800,
+   "last_5m_ts": 1794959700,
+   "hour_done_ts": 1794956400,
    "pend": null,
    "pos": {
     "AMD": {
@@ -159,26 +165,40 @@
      ]
     }
    },
-   "pend5": null,
+   "pend5": {
+    "side": -1,
+    "sl": 599.319742,
+    "from_ts": 1794960000,
+    "st": 580.41,
+    "D": 18.730000000000018,
+    "lo": 580.41,
+    "hi": 598.19
+   },
    "amd": {
-    "next_ts": 1794931200,
+    "next_ts": 1794960000,
     "setup": null
    }
   },
   "XRP": {
-   "last_5m_ts": 1794958800,
-   "hour_done_ts": 1794952800,
+   "last_5m_ts": 1794959700,
+   "hour_done_ts": 1794956400,
    "pend": null,
    "pos": {},
    "pend5": null,
    "amd": {
     "next_ts": 1794931200,
-    "setup": null
+    "setup": {
+     "side": -1,
+     "lo": 0.9413,
+     "hi": 0.9788,
+     "ext": 0.9909,
+     "i_ts": 1794945600
+    }
    }
   },
   "DOGE": {
-   "last_5m_ts": 1794958800,
-   "hour_done_ts": 1794952800,
+   "last_5m_ts": 1794959700,
+   "hour_done_ts": 1794956400,
    "pend": null,
    "pos": {
     "AMD": {
@@ -224,12 +244,18 @@
    "pend5": null,
    "amd": {
     "next_ts": 1794931200,
-    "setup": null
+    "setup": {
+     "side": -1,
+     "lo": 0.05738,
+     "hi": 0.06008,
+     "ext": 0.06042,
+     "i_ts": 1794945600
+    }
    }
   },
   "ADA": {
-   "last_5m_ts": 1794958800,
-   "hour_done_ts": 1794952800,
+   "last_5m_ts": 1794959700,
+   "hour_done_ts": 1794956400,
    "pend": null,
    "pos": {
     "AMD": {
@@ -272,15 +298,23 @@
      ]
     }
    },
-   "pend5": null,
+   "pend5": {
+    "side": -1,
+    "sl": 0.15644692000000002,
+    "from_ts": 1794960000,
+    "st": 0.149,
+    "D": 0.007400000000000018,
+    "lo": 0.149,
+    "hi": 0.156
+   },
    "amd": {
-    "next_ts": 1794931200,
+    "next_ts": 1794960000,
     "setup": null
    }
   },
   "HYPE": {
-   "last_5m_ts": 1794958800,
-   "hour_done_ts": 1794952800,
+   "last_5m_ts": 1794959700,
+   "hour_done_ts": 1794956400,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -1140,7 +1174,7 @@
   "AMD": 9
  },
  "n_sig": 14,
- "n_amd": 9,
+ "n_amd": 11,
  "lineup_v2": true,
  "lineup_v3": true,
  "lineup_v4": true,
