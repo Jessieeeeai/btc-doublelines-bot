@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-19 11:45 UTC",
-  "next_event_id": 37,
+  "updated_at": "2026-11-19 12:00 UTC",
+  "next_event_id": 39,
   "events": [
     {
       "ts": 1794542400,
@@ -787,6 +787,48 @@
       "dedup": "AMD-013:stop:66.521698",
       "event_id": 36,
       "master_event_id": 104
+    },
+    {
+      "ts": 1795088700,
+      "time": "2026-11-19 12:00 UTC",
+      "strategy": "AMD",
+      "symbol": "XRPUSDT",
+      "signal_no": 11,
+      "pos_id": "AMD-011",
+      "paper": true,
+      "action": "close",
+      "direction": "short",
+      "entry_price": 0.9872,
+      "sl": 0.99130044,
+      "tp": null,
+      "notional_usd": 1926.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-011:close",
+      "reason": "trail",
+      "exit_price": 0.99130044,
+      "pnl_usd": 6.81,
+      "pnl_pct": 0.68,
+      "event_id": 37,
+      "master_event_id": 105
+    },
+    {
+      "ts": 1795088700,
+      "time": "2026-11-19 12:00 UTC",
+      "strategy": "AMD",
+      "symbol": "ADAUSDT",
+      "signal_no": 15,
+      "pos_id": "AMD-015",
+      "paper": true,
+      "action": "move_stop",
+      "direction": "long",
+      "entry_price": 0.1513,
+      "sl": 0.15063112,
+      "tp": null,
+      "notional_usd": 1810.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-015:stop:0.15063112",
+      "event_id": 38,
+      "master_event_id": 106
     }
   ],
   "open_positions": [
@@ -816,25 +858,13 @@
     },
     {
       "strategy": "AMD",
-      "symbol": "XRPUSDT",
-      "signal_no": 11,
-      "pos_id": "AMD-011",
-      "paper": true,
-      "direction": "short",
-      "entry_price": 0.9872,
-      "sl": 0.991300444,
-      "tp": null,
-      "notional_usd": 1926.0
-    },
-    {
-      "strategy": "AMD",
       "symbol": "ADAUSDT",
       "signal_no": 15,
       "pos_id": "AMD-015",
       "paper": true,
       "direction": "long",
       "entry_price": 0.1513,
-      "sl": 0.1479556,
+      "sl": 0.15063111999999998,
       "tp": null,
       "notional_usd": 1810.0
     },
