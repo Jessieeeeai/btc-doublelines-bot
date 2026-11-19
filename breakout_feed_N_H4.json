@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-19 06:30 UTC",
-  "next_event_id": 24,
+  "updated_at": "2026-11-19 06:45 UTC",
+  "next_event_id": 25,
   "events": [
     {
       "ts": 1794542400,
@@ -472,21 +472,31 @@
       "dedup": "N-H4-009:open",
       "event_id": 23,
       "master_event_id": 94
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1795069800,
+      "time": "2026-11-19 06:45 UTC",
       "strategy": "N-H4",
       "symbol": "BNBUSDT",
       "signal_no": 9,
       "pos_id": "N-H4-009",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 579.49,
-      "sl": 588.5742857142856,
+      "sl": 588.57429,
       "tp": null,
-      "notional_usd": 2540.0
+      "notional_usd": 2540.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H4-009:close",
+      "reason": "trail",
+      "exit_price": 588.57429,
+      "pnl_usd": -41.26,
+      "pnl_pct": -4.13,
+      "event_id": 24,
+      "master_event_id": 102
     }
   ],
+  "open_positions": [],
   "strategy": "N-H4"
 }
