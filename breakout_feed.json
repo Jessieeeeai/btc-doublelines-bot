@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-19 00:00 UTC",
-  "next_event_id": 98,
+  "updated_at": "2026-11-19 00:15 UTC",
+  "next_event_id": 100,
   "events": [
     {
       "ts": 1794542400,
@@ -1949,6 +1949,50 @@
       "risk_usd": 40.0,
       "dedup": "AMD-012:stop:1750.4501",
       "event_id": 97
+    },
+    {
+      "ts": 1795046400,
+      "time": "2026-11-19 00:15 UTC",
+      "strategy": "AMD",
+      "symbol": "BNBUSDT",
+      "signal_no": 14,
+      "pos_id": "AMD-014",
+      "paper": true,
+      "action": "open_long",
+      "direction": "long",
+      "entry_price": 582.38,
+      "sl": 574.60757,
+      "tp": 696.58,
+      "notional_usd": 2997.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-014:open",
+      "tp1": 590.15243,
+      "tp2": 647.86,
+      "tp3": 696.58,
+      "stop_after_tp1": 580.82551,
+      "event_id": 98
+    },
+    {
+      "ts": 1795046400,
+      "time": "2026-11-19 00:15 UTC",
+      "strategy": "AMD",
+      "symbol": "ADAUSDT",
+      "signal_no": 15,
+      "pos_id": "AMD-015",
+      "paper": true,
+      "action": "open_long",
+      "direction": "long",
+      "entry_price": 0.1513,
+      "sl": 0.1479556,
+      "tp": 0.19,
+      "notional_usd": 1810.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-015:open",
+      "tp1": 0.1546444,
+      "tp2": 0.1732,
+      "tp3": 0.19,
+      "stop_after_tp1": 0.15063112,
+      "event_id": 99
     }
   ],
   "open_positions": [
@@ -2002,6 +2046,18 @@
     },
     {
       "strategy": "AMD",
+      "symbol": "BNBUSDT",
+      "signal_no": 14,
+      "pos_id": "AMD-014",
+      "paper": true,
+      "direction": "long",
+      "entry_price": 582.38,
+      "sl": 574.607566,
+      "tp": null,
+      "notional_usd": 2997.0
+    },
+    {
+      "strategy": "AMD",
       "symbol": "XRPUSDT",
       "signal_no": 11,
       "pos_id": "AMD-011",
@@ -2011,6 +2067,18 @@
       "sl": 0.991300444,
       "tp": null,
       "notional_usd": 1926.0
+    },
+    {
+      "strategy": "AMD",
+      "symbol": "ADAUSDT",
+      "signal_no": 15,
+      "pos_id": "AMD-015",
+      "paper": true,
+      "direction": "long",
+      "entry_price": 0.1513,
+      "sl": 0.1479556,
+      "tp": null,
+      "notional_usd": 1810.0
     },
     {
       "strategy": "AMD",
