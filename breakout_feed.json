@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-19 20:30 UTC",
-  "next_event_id": 109,
+  "updated_at": "2026-11-19 20:45 UTC",
+  "next_event_id": 110,
   "events": [
     {
       "ts": 1794542400,
@@ -2179,6 +2179,28 @@
       "pnl_usd": 6.29,
       "pnl_pct": 0.63,
       "event_id": 108
+    },
+    {
+      "ts": 1795120200,
+      "time": "2026-11-19 20:45 UTC",
+      "strategy": "AMD",
+      "symbol": "HYPEUSDT",
+      "signal_no": 13,
+      "pos_id": "AMD-013",
+      "paper": true,
+      "action": "close",
+      "direction": "long",
+      "entry_price": 66.897,
+      "sl": 66.521698,
+      "tp": null,
+      "notional_usd": 1426.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-013:close",
+      "reason": "trail",
+      "exit_price": 66.521698,
+      "pnl_usd": 7.05,
+      "pnl_pct": 0.7,
+      "event_id": 109
     }
   ],
   "open_positions": [
@@ -2193,18 +2215,6 @@
       "sl": 0.15063111999999998,
       "tp": null,
       "notional_usd": 1810.0
-    },
-    {
-      "strategy": "AMD",
-      "symbol": "HYPEUSDT",
-      "signal_no": 13,
-      "pos_id": "AMD-013",
-      "paper": true,
-      "direction": "long",
-      "entry_price": 66.897,
-      "sl": 66.52169760000001,
-      "tp": null,
-      "notional_usd": 1426.0
     }
   ]
 }
