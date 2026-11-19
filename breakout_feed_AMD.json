@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-19 07:00 UTC",
-  "next_event_id": 35,
+  "updated_at": "2026-11-19 07:15 UTC",
+  "next_event_id": 36,
   "events": [
     {
       "ts": 1794542400,
@@ -749,6 +749,25 @@
       "stop_after_tp1": 0.15063112,
       "event_id": 34,
       "master_event_id": 99
+    },
+    {
+      "ts": 1795071600,
+      "time": "2026-11-19 07:15 UTC",
+      "strategy": "AMD",
+      "symbol": "BNBUSDT",
+      "signal_no": 14,
+      "pos_id": "AMD-014",
+      "paper": true,
+      "action": "move_stop",
+      "direction": "long",
+      "entry_price": 582.38,
+      "sl": 580.82551,
+      "tp": null,
+      "notional_usd": 2997.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-014:stop:580.82551",
+      "event_id": 35,
+      "master_event_id": 103
     }
   ],
   "open_positions": [
@@ -772,7 +791,7 @@
       "paper": true,
       "direction": "long",
       "entry_price": 582.38,
-      "sl": 574.607566,
+      "sl": 580.8255132,
       "tp": null,
       "notional_usd": 2997.0
     },
