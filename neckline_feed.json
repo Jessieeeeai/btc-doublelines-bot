@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-19 11:45 UTC",
+  "updated_at": "2026-11-19 12:00 UTC",
   "next_event_id": 1689,
   "events": [
     {
@@ -20246,7 +20246,7 @@
       "paper": true,
       "direction": "long",
       "entry_price": 63609.65,
-      "sl": 63622.6,
+      "sl": 63728.7,
       "tp": null,
       "L": 218.2,
       "neck_lo": 63336.9,
@@ -20274,7 +20274,7 @@
       "paper": true,
       "direction": "long",
       "entry_price": 63609.65,
-      "sl": 63622.6,
+      "sl": 63728.7,
       "tp": null,
       "L": 218.2,
       "neck_lo": 63336.9,
@@ -20288,7 +20288,7 @@
       "paper": true,
       "direction": "long",
       "entry_price": 63609.65,
-      "sl": 63622.6,
+      "sl": 63728.7,
       "tp": null,
       "L": 218.2,
       "neck_lo": 63336.9,
