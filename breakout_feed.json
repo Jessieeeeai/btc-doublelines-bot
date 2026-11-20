@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-20 01:45 UTC",
-  "next_event_id": 115,
+  "updated_at": "2026-11-20 02:00 UTC",
+  "next_event_id": 118,
   "events": [
     {
       "ts": 1794542400,
@@ -2307,44 +2307,73 @@
       "risk_usd": 40.0,
       "dedup": "AMD-017:stop:0.95818288",
       "event_id": 114
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1795139400,
+      "time": "2026-11-20 02:00 UTC",
       "strategy": "AMD",
       "symbol": "SOLUSDT",
       "signal_no": 16,
       "pos_id": "AMD-016",
       "paper": true,
+      "action": "close",
       "direction": "long",
       "entry_price": 73.11,
       "sl": 72.028385,
       "tp": null,
-      "notional_usd": 2704.0
+      "notional_usd": 2704.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-016:close",
+      "reason": "sl",
+      "exit_price": 72.028385,
+      "pnl_usd": -41.14,
+      "pnl_pct": -4.11,
+      "event_id": 115
     },
     {
+      "ts": 1795139400,
+      "time": "2026-11-20 02:00 UTC",
       "strategy": "AMD",
       "symbol": "XRPUSDT",
       "signal_no": 17,
       "pos_id": "AMD-017",
       "paper": true,
+      "action": "close",
       "direction": "long",
       "entry_price": 0.9598,
       "sl": 0.95818288,
       "tp": null,
-      "notional_usd": 4748.0
+      "notional_usd": 4748.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-017:close",
+      "reason": "trail",
+      "exit_price": 0.95818288,
+      "pnl_usd": 6.01,
+      "pnl_pct": 0.6,
+      "event_id": 116
     },
     {
+      "ts": 1795139400,
+      "time": "2026-11-20 02:00 UTC",
       "strategy": "AMD",
       "symbol": "DOGEUSDT",
       "signal_no": 18,
       "pos_id": "AMD-018",
       "paper": true,
+      "action": "close",
       "direction": "long",
       "entry_price": 0.05818,
-      "sl": 0.057402774000000004,
+      "sl": 0.057402774,
       "tp": null,
-      "notional_usd": 2994.0
+      "notional_usd": 2994.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-018:close",
+      "reason": "sl",
+      "exit_price": 0.057402774,
+      "pnl_usd": -41.27,
+      "pnl_pct": -4.13,
+      "event_id": 117
     }
-  ]
+  ],
+  "open_positions": []
 }
