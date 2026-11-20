@@ -1940,7 +1940,7 @@
       "stair_4r_locked": true,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1795125600,
+      "last_checked_ts": 1795129200,
       "close_notified": false,
       "touched_2r": true
     },
@@ -1970,7 +1970,7 @@
       "stair_4r_locked": true,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1795125600,
+      "last_checked_ts": 1795129200,
       "close_notified": false,
       "touched_2r": true
     },
@@ -2000,7 +2000,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1795125600,
+      "last_checked_ts": 1795129200,
       "close_notified": false
     },
     {
@@ -2029,7 +2029,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1795125600,
+      "last_checked_ts": 1795129200,
       "close_notified": false,
       "touched_2r": true
     },
@@ -2059,7 +2059,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": false,
       "pyramid_entry_price": null,
-      "last_checked_ts": 1795125600,
+      "last_checked_ts": 1795129200,
       "close_notified": false
     }
   ],
