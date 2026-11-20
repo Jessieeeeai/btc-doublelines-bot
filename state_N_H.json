@@ -2,8 +2,8 @@
  "started": true,
  "syms": {
   "BTC": {
-   "last_5m_ts": 1795192800,
-   "hour_done_ts": 1795186800,
+   "last_5m_ts": 1795193700,
+   "hour_done_ts": 1795190400,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -19,9 +19,21 @@
    }
   },
   "ETH": {
-   "last_5m_ts": 1795192800,
-   "hour_done_ts": 1795186800,
-   "pend": null,
+   "last_5m_ts": 1795193700,
+   "hour_done_ts": 1795190400,
+   "pend": {
+    "side": -1,
+    "sl": 1748.5244,
+    "from_ts": 1795194000,
+    "atr": 27.25214285714287,
+    "horses": [
+     "N-H1",
+     "N-H2",
+     "N-H3",
+     "N-H4"
+    ],
+    "skipped": {}
+   },
    "pos": {},
    "pend5": null,
    "amd": {
@@ -36,8 +48,8 @@
    }
   },
   "SOL": {
-   "last_5m_ts": 1795192800,
-   "hour_done_ts": 1795186800,
+   "last_5m_ts": 1795193700,
+   "hour_done_ts": 1795190400,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -53,8 +65,8 @@
    }
   },
   "BNB": {
-   "last_5m_ts": 1795192800,
-   "hour_done_ts": 1795186800,
+   "last_5m_ts": 1795193700,
+   "hour_done_ts": 1795190400,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -64,8 +76,8 @@
    }
   },
   "XRP": {
-   "last_5m_ts": 1795192800,
-   "hour_done_ts": 1795186800,
+   "last_5m_ts": 1795193700,
+   "hour_done_ts": 1795190400,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -81,8 +93,8 @@
    }
   },
   "DOGE": {
-   "last_5m_ts": 1795192800,
-   "hour_done_ts": 1795186800,
+   "last_5m_ts": 1795193700,
+   "hour_done_ts": 1795190400,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -98,8 +110,8 @@
    }
   },
   "ADA": {
-   "last_5m_ts": 1795192800,
-   "hour_done_ts": 1795186800,
+   "last_5m_ts": 1795193700,
+   "hour_done_ts": 1795190400,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -115,8 +127,8 @@
    }
   },
   "HYPE": {
-   "last_5m_ts": 1795192800,
-   "hour_done_ts": 1795186800,
+   "last_5m_ts": 1795193700,
+   "hour_done_ts": 1795190400,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -2322,7 +2334,7 @@
   "N-H4": 9,
   "AMD": 28
  },
- "n_sig": 15,
+ "n_sig": 16,
  "n_amd": 31,
  "lineup_v2": true,
  "lineup_v3": true,
