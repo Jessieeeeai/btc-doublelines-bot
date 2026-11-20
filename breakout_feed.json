@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-20 01:00 UTC",
-  "next_event_id": 114,
+  "updated_at": "2026-11-20 01:15 UTC",
+  "next_event_id": 115,
   "events": [
     {
       "ts": 1794542400,
@@ -2289,6 +2289,24 @@
       "tp3": 0.07242,
       "stop_after_tp1": 0.058024555,
       "event_id": 113
+    },
+    {
+      "ts": 1795136700,
+      "time": "2026-11-20 01:15 UTC",
+      "strategy": "AMD",
+      "symbol": "XRPUSDT",
+      "signal_no": 17,
+      "pos_id": "AMD-017",
+      "paper": true,
+      "action": "move_stop",
+      "direction": "long",
+      "entry_price": 0.9598,
+      "sl": 0.95818288,
+      "tp": null,
+      "notional_usd": 4748.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-017:stop:0.95818288",
+      "event_id": 114
     }
   ],
   "open_positions": [
@@ -2312,7 +2330,7 @@
       "paper": true,
       "direction": "long",
       "entry_price": 0.9598,
-      "sl": 0.9517144,
+      "sl": 0.95818288,
       "tp": null,
       "notional_usd": 4748.0
     },
