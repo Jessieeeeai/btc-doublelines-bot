@@ -229,7 +229,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 0.9623,
-      "sl": 0.94480222,
+      "sl": 0.9362022200000001,
       "tp": null,
       "notional_usd": 848.0
     },
@@ -253,7 +253,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 0.9623,
-      "sl": 0.94480222,
+      "sl": 0.9362022200000001,
       "tp": null,
       "notional_usd": 848.0
     },
@@ -277,7 +277,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 0.149,
-      "sl": 0.14514674,
+      "sl": 0.14454673999999998,
       "tp": null,
       "notional_usd": 870.0
     },
@@ -301,7 +301,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 0.149,
-      "sl": 0.14514674,
+      "sl": 0.14454673999999998,
       "tp": null,
       "notional_usd": 870.0
     },
@@ -318,5 +318,5 @@
       "notional_usd": 870.0
     }
   ],
-  "updated_at": "2026-11-20 19:15 UTC"
+  "updated_at": "2026-11-20 19:30 UTC"
 }
