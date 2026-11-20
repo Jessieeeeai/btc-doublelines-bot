@@ -1,10 +1,24 @@
 {
   "started": true,
-  "last_5m_ts": 1795111200,
-  "hour_done_ts": 1795107600,
+  "last_5m_ts": 1795134600,
+  "hour_done_ts": 1795129200,
   "active": [],
   "pend": null,
-  "position": null,
+  "position": {
+    "seq": 17,
+    "d": 1,
+    "e": 62025.04,
+    "sl": 61374.84,
+    "sl0": 61374.84,
+    "D0": 650.2,
+    "pk": 62025.04,
+    "n": 1908.0,
+    "ts": 1795129500,
+    "trailed": false,
+    "be_notified": false,
+    "neck": 62142.5,
+    "L": 587.3000000000029
+  },
   "trades": [
     {
       "seq": 1,
@@ -311,8 +325,8 @@
       "D0": 368.64
     }
   ],
-  "seq": 16,
-  "n_pat": 73,
+  "seq": 17,
+  "n_pat": 75,
   "n_gate_fail": 36,
   "n_no_break": 0,
   "n_no_pullback": 1,
