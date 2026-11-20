@@ -2028,7 +2028,7 @@
       "stair_4r_locked": true,
       "pyramid_entered": true,
       "pyramid_entry_price": 73012.35,
-      "last_checked_ts": 1795183200,
+      "last_checked_ts": 1795186800,
       "close_notified": false,
       "touched_2r": true
     },
@@ -2058,7 +2058,7 @@
       "stair_4r_locked": true,
       "pyramid_entered": true,
       "pyramid_entry_price": 72452.97,
-      "last_checked_ts": 1795183200,
+      "last_checked_ts": 1795186800,
       "close_notified": false,
       "touched_2r": true
     },
@@ -2068,7 +2068,7 @@
       "direction": "short",
       "trigger_price": 64440.8,
       "sl0": 66992.78,
-      "current_sl": 66992.78,
+      "current_sl": 61888.82,
       "tp": 44024.93,
       "r_dollar": 2551.98,
       "expires_at": "2026-11-16 19:00 UTC",
@@ -2084,12 +2084,13 @@
       "result_r": null,
       "result_r_raw": null,
       "size_multiplier": 0.7,
-      "stair_2r_locked": false,
+      "stair_2r_locked": true,
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 61888.82,
-      "last_checked_ts": 1795183200,
-      "close_notified": false
+      "last_checked_ts": 1795186800,
+      "close_notified": false,
+      "touched_2r": true
     },
     {
       "signal_time": "2026-11-18 08:00 UTC",
@@ -2117,7 +2118,7 @@
       "stair_4r_locked": false,
       "pyramid_entered": true,
       "pyramid_entry_price": 63077.41,
-      "last_checked_ts": 1795183200,
+      "last_checked_ts": 1795186800,
       "close_notified": false,
       "touched_2r": true
     },
