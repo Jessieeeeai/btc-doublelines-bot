@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-20 04:30 UTC",
-  "next_event_id": 124,
+  "updated_at": "2026-11-20 04:45 UTC",
+  "next_event_id": 127,
   "events": [
     {
       "ts": 1794542400,
@@ -2505,21 +2505,75 @@
       "tp3": 92.288,
       "stop_after_tp1": 65.701317,
       "event_id": 123
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1795149300,
+      "time": "2026-11-20 04:45 UTC",
       "strategy": "AMD",
       "symbol": "ETHUSDT",
       "signal_no": 19,
       "pos_id": "AMD-019",
       "paper": true,
+      "action": "close",
       "direction": "long",
       "entry_price": 1745.48,
-      "sl": 1721.503394,
+      "sl": 1721.5034,
       "tp": null,
-      "notional_usd": 2912.0
+      "notional_usd": 2912.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-019:close",
+      "reason": "sl",
+      "exit_price": 1721.5034,
+      "pnl_usd": -41.19,
+      "pnl_pct": -4.12,
+      "event_id": 124
     },
+    {
+      "ts": 1795149300,
+      "time": "2026-11-20 04:45 UTC",
+      "strategy": "AMD",
+      "symbol": "DOGEUSDT",
+      "signal_no": 22,
+      "pos_id": "AMD-022",
+      "paper": true,
+      "action": "close",
+      "direction": "long",
+      "entry_price": 0.05744,
+      "sl": 0.056722978,
+      "tp": null,
+      "notional_usd": 3204.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-022:close",
+      "reason": "sl",
+      "exit_price": 0.056722978,
+      "pnl_usd": -41.3,
+      "pnl_pct": -4.13,
+      "event_id": 125
+    },
+    {
+      "ts": 1795149000,
+      "time": "2026-11-20 04:45 UTC",
+      "strategy": "AMD",
+      "symbol": "ADAUSDT",
+      "signal_no": 23,
+      "pos_id": "AMD-023",
+      "paper": true,
+      "action": "close",
+      "direction": "long",
+      "entry_price": 0.1494,
+      "sl": 0.14765569,
+      "tp": null,
+      "notional_usd": 3426.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-023:close",
+      "reason": "sl",
+      "exit_price": 0.14765569,
+      "pnl_usd": -41.39,
+      "pnl_pct": -4.14,
+      "event_id": 126
+    }
+  ],
+  "open_positions": [
     {
       "strategy": "AMD",
       "symbol": "SOLUSDT",
@@ -2543,30 +2597,6 @@
       "sl": 0.9467158999999999,
       "tp": null,
       "notional_usd": 2409.0
-    },
-    {
-      "strategy": "AMD",
-      "symbol": "DOGEUSDT",
-      "signal_no": 22,
-      "pos_id": "AMD-022",
-      "paper": true,
-      "direction": "long",
-      "entry_price": 0.05744,
-      "sl": 0.056722978,
-      "tp": null,
-      "notional_usd": 3204.0
-    },
-    {
-      "strategy": "AMD",
-      "symbol": "ADAUSDT",
-      "signal_no": 23,
-      "pos_id": "AMD-023",
-      "paper": true,
-      "direction": "long",
-      "entry_price": 0.1494,
-      "sl": 0.14765569,
-      "tp": null,
-      "notional_usd": 3426.0
     },
     {
       "strategy": "AMD",
