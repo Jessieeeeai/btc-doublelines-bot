@@ -145,9 +145,81 @@
       "notional_usd": 870.0,
       "risk_usd": 40.0,
       "dedup": "JN4-002:open"
+    },
+    {
+      "event_id": 9,
+      "ts": 1795188000,
+      "time": "2026-11-20 15:20 UTC",
+      "strategy": "JN1",
+      "symbol": "XRPUSDT",
+      "signal_no": 1,
+      "pos_id": "JN1-001",
+      "paper": true,
+      "action": "move_stop",
+      "direction": "short",
+      "entry_price": 0.9623,
+      "sl": 0.95820222,
+      "tp": null,
+      "notional_usd": 848.0,
+      "risk_usd": 40.0,
+      "dedup": "JN1-001:stop:0.95820222"
+    },
+    {
+      "event_id": 10,
+      "ts": 1795188000,
+      "time": "2026-11-20 15:20 UTC",
+      "strategy": "JN3",
+      "symbol": "XRPUSDT",
+      "signal_no": 1,
+      "pos_id": "JN3-001",
+      "paper": true,
+      "action": "move_stop",
+      "direction": "short",
+      "entry_price": 0.9623,
+      "sl": 0.95820222,
+      "tp": null,
+      "notional_usd": 848.0,
+      "risk_usd": 40.0,
+      "dedup": "JN3-001:stop:0.95820222"
+    },
+    {
+      "event_id": 11,
+      "ts": 1795188000,
+      "time": "2026-11-20 15:20 UTC",
+      "strategy": "JN1",
+      "symbol": "ADAUSDT",
+      "signal_no": 2,
+      "pos_id": "JN1-002",
+      "paper": true,
+      "action": "move_stop",
+      "direction": "short",
+      "entry_price": 0.149,
+      "sl": 0.14694674,
+      "tp": null,
+      "notional_usd": 870.0,
+      "risk_usd": 40.0,
+      "dedup": "JN1-002:stop:0.14694674"
+    },
+    {
+      "event_id": 12,
+      "ts": 1795188000,
+      "time": "2026-11-20 15:20 UTC",
+      "strategy": "JN3",
+      "symbol": "ADAUSDT",
+      "signal_no": 2,
+      "pos_id": "JN3-002",
+      "paper": true,
+      "action": "move_stop",
+      "direction": "short",
+      "entry_price": 0.149,
+      "sl": 0.14694674,
+      "tp": null,
+      "notional_usd": 870.0,
+      "risk_usd": 40.0,
+      "dedup": "JN3-002:stop:0.14694674"
     }
   ],
-  "next_event_id": 9,
+  "next_event_id": 13,
   "open_positions": [
     {
       "strategy": "JN1",
@@ -157,7 +229,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 0.9623,
-      "sl": 1.00770222,
+      "sl": 0.95410222,
       "tp": null,
       "notional_usd": 848.0
     },
@@ -181,7 +253,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 0.9623,
-      "sl": 1.00770222,
+      "sl": 0.95410222,
       "tp": null,
       "notional_usd": 848.0
     },
@@ -205,7 +277,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 0.149,
-      "sl": 0.15584673999999998,
+      "sl": 0.14664674,
       "tp": null,
       "notional_usd": 870.0
     },
@@ -229,7 +301,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 0.149,
-      "sl": 0.15584673999999998,
+      "sl": 0.14664674,
       "tp": null,
       "notional_usd": 870.0
     },
@@ -246,5 +318,5 @@
       "notional_usd": 870.0
     }
   ],
-  "updated_at": "2026-11-20 15:15 UTC"
+  "updated_at": "2026-11-20 15:30 UTC"
 }
