@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-21 05:00 UTC",
-  "next_event_id": 3,
+  "updated_at": "2026-11-21 05:15 UTC",
+  "next_event_id": 4,
   "events": [
     {
       "ts": 1794672000,
@@ -45,9 +45,41 @@
       "pnl_pct": 7.89,
       "event_id": 2,
       "master_event_id": 43
+    },
+    {
+      "ts": 1795237200,
+      "time": "2026-11-21 05:15 UTC",
+      "strategy": "N-H1",
+      "symbol": "BTCUSDT",
+      "signal_no": 13,
+      "pos_id": "N-H1-013",
+      "paper": true,
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 56270.7,
+      "sl": 58588.471,
+      "tp": 51635.157,
+      "notional_usd": 971.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H1-013:open",
+      "event_id": 3,
+      "master_event_id": 142
     }
   ],
-  "open_positions": [],
+  "open_positions": [
+    {
+      "strategy": "N-H1",
+      "symbol": "BTCUSDT",
+      "signal_no": 13,
+      "pos_id": "N-H1-013",
+      "paper": true,
+      "direction": "short",
+      "entry_price": 56270.7,
+      "sl": 58588.47127,
+      "tp": 51635.15745999999,
+      "notional_usd": 971.0
+    }
+  ],
   "strategy": "N-H1",
   "symbol": "BTCUSDT"
 }
