@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-21 12:30 UTC",
-  "next_event_id": 34,
+  "updated_at": "2026-11-21 12:41 UTC",
+  "next_event_id": 37,
   "events": [
     {
       "ts": 1794542400,
@@ -678,45 +678,77 @@
       "pnl_pct": -4.05,
       "event_id": 33,
       "master_event_id": 159
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1795264500,
+      "time": "2026-11-21 12:41 UTC",
       "strategy": "N-H4",
       "symbol": "BNBUSDT",
       "signal_no": 13,
       "pos_id": "N-H4-013",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 512.09,
       "sl": 535.26053,
       "tp": null,
-      "notional_usd": 884.0
+      "notional_usd": 884.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H4-013:close",
+      "reason": "sl",
+      "exit_price": 535.26053,
+      "pnl_usd": -40.44,
+      "pnl_pct": -4.04,
+      "event_id": 34,
+      "master_event_id": 161
     },
     {
+      "ts": 1795264500,
+      "time": "2026-11-21 12:41 UTC",
       "strategy": "N-H4",
       "symbol": "DOGEUSDT",
       "signal_no": 14,
       "pos_id": "N-H4-014",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 0.05185,
       "sl": 0.054206257,
       "tp": null,
-      "notional_usd": 880.0
+      "notional_usd": 880.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H4-014:close",
+      "reason": "sl",
+      "exit_price": 0.054206257,
+      "pnl_usd": -40.43,
+      "pnl_pct": -4.04,
+      "event_id": 35,
+      "master_event_id": 164
     },
     {
+      "ts": 1795264500,
+      "time": "2026-11-21 12:41 UTC",
       "strategy": "N-H4",
       "symbol": "ADAUSDT",
       "signal_no": 15,
       "pos_id": "N-H4-015",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 0.1355,
       "sl": 0.14214263,
       "tp": null,
-      "notional_usd": 816.0
+      "notional_usd": 816.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H4-015:close",
+      "reason": "sl",
+      "exit_price": 0.14214263,
+      "pnl_usd": -40.4,
+      "pnl_pct": -4.04,
+      "event_id": 36,
+      "master_event_id": 167
     }
   ],
+  "open_positions": [],
   "strategy": "N-H4"
 }
