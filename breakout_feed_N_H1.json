@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-21 11:30 UTC",
-  "next_event_id": 30,
+  "updated_at": "2026-11-21 11:45 UTC",
+  "next_event_id": 31,
   "events": [
     {
       "ts": 1794542400,
@@ -602,6 +602,29 @@
       "pnl_pct": -4.04,
       "event_id": 29,
       "master_event_id": 156
+    },
+    {
+      "ts": 1795260600,
+      "time": "2026-11-21 11:45 UTC",
+      "strategy": "N-H1",
+      "symbol": "SOLUSDT",
+      "signal_no": 14,
+      "pos_id": "N-H1-014",
+      "paper": true,
+      "action": "close",
+      "direction": "short",
+      "entry_price": 66.01,
+      "sl": 68.560562,
+      "tp": 60.908876,
+      "notional_usd": 1035.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H1-014:close",
+      "reason": "sl",
+      "exit_price": 68.560562,
+      "pnl_usd": -40.49,
+      "pnl_pct": -4.05,
+      "event_id": 30,
+      "master_event_id": 158
     }
   ],
   "open_positions": [
@@ -616,18 +639,6 @@
       "sl": 1748.5244,
       "tp": 1436.1212000000003,
       "notional_usd": 632.0
-    },
-    {
-      "strategy": "N-H1",
-      "symbol": "SOLUSDT",
-      "signal_no": 14,
-      "pos_id": "N-H1-014",
-      "paper": true,
-      "direction": "short",
-      "entry_price": 66.01,
-      "sl": 68.560562,
-      "tp": 60.90887600000001,
-      "notional_usd": 1035.0
     },
     {
       "strategy": "N-H1",
