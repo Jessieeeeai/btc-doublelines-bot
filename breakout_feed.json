@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-21 06:45 UTC",
-  "next_event_id": 154,
+  "updated_at": "2026-11-21 07:00 UTC",
+  "next_event_id": 156,
   "events": [
     {
       "ts": 1794542400,
@@ -3101,6 +3101,50 @@
       "risk_usd": 40.0,
       "dedup": "N-H4-015:open",
       "event_id": 153
+    },
+    {
+      "ts": 1795243500,
+      "time": "2026-11-21 07:00 UTC",
+      "strategy": "N-H3",
+      "symbol": "ETHUSDT",
+      "signal_no": 4,
+      "pos_id": "N-H3-004",
+      "paper": true,
+      "action": "close",
+      "direction": "short",
+      "entry_price": 1644.39,
+      "sl": 1645.2886,
+      "tp": null,
+      "notional_usd": 632.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H3-004:close",
+      "reason": "trail",
+      "exit_price": 1645.2886,
+      "pnl_usd": -0.71,
+      "pnl_pct": -0.07,
+      "event_id": 154
+    },
+    {
+      "ts": 1795243500,
+      "time": "2026-11-21 07:00 UTC",
+      "strategy": "N-H4",
+      "symbol": "ETHUSDT",
+      "signal_no": 10,
+      "pos_id": "N-H4-010",
+      "paper": true,
+      "action": "close",
+      "direction": "short",
+      "entry_price": 1644.39,
+      "sl": 1645.2886,
+      "tp": null,
+      "notional_usd": 632.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H4-010:close",
+      "reason": "trail",
+      "exit_price": 1645.2886,
+      "pnl_usd": -0.71,
+      "pnl_pct": -0.07,
+      "event_id": 155
     }
   ],
   "open_positions": [
@@ -3150,30 +3194,6 @@
       "entry_price": 1644.39,
       "sl": 1748.5244,
       "tp": 1436.1212000000003,
-      "notional_usd": 632.0
-    },
-    {
-      "strategy": "N-H3",
-      "symbol": "ETHUSDT",
-      "signal_no": 4,
-      "pos_id": "N-H3-004",
-      "paper": true,
-      "direction": "short",
-      "entry_price": 1644.39,
-      "sl": 1645.2885714285715,
-      "tp": null,
-      "notional_usd": 632.0
-    },
-    {
-      "strategy": "N-H4",
-      "symbol": "ETHUSDT",
-      "signal_no": 10,
-      "pos_id": "N-H4-010",
-      "paper": true,
-      "direction": "short",
-      "entry_price": 1644.39,
-      "sl": 1645.2885714285715,
-      "tp": null,
       "notional_usd": 632.0
     },
     {
