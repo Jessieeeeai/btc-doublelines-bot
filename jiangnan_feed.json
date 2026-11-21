@@ -317,7 +317,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 0.149,
-      "sl": 0.14034674,
+      "sl": 0.13994674,
       "tp": null,
       "notional_usd": 870.0
     },
@@ -341,7 +341,7 @@
       "paper": true,
       "direction": "short",
       "entry_price": 0.149,
-      "sl": 0.14034674,
+      "sl": 0.13994674,
       "tp": null,
       "notional_usd": 870.0
     },
@@ -358,5 +358,5 @@
       "notional_usd": 870.0
     }
   ],
-  "updated_at": "2026-11-21 06:15 UTC"
+  "updated_at": "2026-11-21 06:30 UTC"
 }
