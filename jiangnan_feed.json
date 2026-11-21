@@ -217,58 +217,98 @@
       "notional_usd": 870.0,
       "risk_usd": 40.0,
       "dedup": "JN3-002:stop:0.14694674"
-    }
-  ],
-  "next_event_id": 13,
-  "open_positions": [
+    },
     {
+      "event_id": 13,
+      "ts": 1795218900,
+      "time": "2026-11-20 23:55 UTC",
       "strategy": "JN1",
       "symbol": "XRPUSDT",
       "signal_no": 1,
       "pos_id": "JN1-001",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 0.9623,
-      "sl": 0.9290022200000001,
+      "sl": 0.92900222,
       "tp": null,
-      "notional_usd": 848.0
+      "notional_usd": 848.0,
+      "risk_usd": 40.0,
+      "dedup": "JN1-001:close",
+      "reason": "time",
+      "exit_price": 0.9101,
+      "pnl_usd": 45.17,
+      "pnl_pct": 4.52
     },
     {
+      "event_id": 14,
+      "ts": 1795218900,
+      "time": "2026-11-20 23:55 UTC",
       "strategy": "JN2",
       "symbol": "XRPUSDT",
       "signal_no": 1,
       "pos_id": "JN2-001",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 0.9623,
-      "sl": 1.00770222,
-      "tp": 0.8260933399999999,
-      "notional_usd": 848.0
+      "sl": 1.0077022,
+      "tp": 0.82609334,
+      "notional_usd": 848.0,
+      "risk_usd": 40.0,
+      "dedup": "JN2-001:close",
+      "reason": "time",
+      "exit_price": 0.9101,
+      "pnl_usd": 45.17,
+      "pnl_pct": 4.52
     },
     {
+      "event_id": 15,
+      "ts": 1795218900,
+      "time": "2026-11-20 23:55 UTC",
       "strategy": "JN3",
       "symbol": "XRPUSDT",
       "signal_no": 1,
       "pos_id": "JN3-001",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 0.9623,
-      "sl": 0.9290022200000001,
+      "sl": 0.92900222,
       "tp": null,
-      "notional_usd": 848.0
+      "notional_usd": 848.0,
+      "risk_usd": 40.0,
+      "dedup": "JN3-001:close",
+      "reason": "time",
+      "exit_price": 0.9101,
+      "pnl_usd": 45.17,
+      "pnl_pct": 4.52
     },
     {
+      "event_id": 16,
+      "ts": 1795218900,
+      "time": "2026-11-20 23:55 UTC",
       "strategy": "JN4",
       "symbol": "XRPUSDT",
       "signal_no": 1,
       "pos_id": "JN4-001",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 0.9623,
-      "sl": 1.00770222,
-      "tp": 0.8260933399999999,
-      "notional_usd": 848.0
-    },
+      "sl": 1.0077022,
+      "tp": 0.82609334,
+      "notional_usd": 848.0,
+      "risk_usd": 40.0,
+      "dedup": "JN4-001:close",
+      "reason": "time",
+      "exit_price": 0.9101,
+      "pnl_usd": 45.17,
+      "pnl_pct": 4.52
+    }
+  ],
+  "next_event_id": 17,
+  "open_positions": [
     {
       "strategy": "JN1",
       "symbol": "ADAUSDT",
@@ -318,5 +358,5 @@
       "notional_usd": 870.0
     }
   ],
-  "updated_at": "2026-11-20 23:45 UTC"
+  "updated_at": "2026-11-21 00:00 UTC"
 }
