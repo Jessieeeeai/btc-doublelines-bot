@@ -1,25 +1,10 @@
 {
   "started": true,
   "anchor_ts": 1787022000,
-  "last_bar_ts": 1795356000,
+  "last_bar_ts": 1795359600,
   "active": [],
   "forming": null,
-  "position": {
-    "seq": 219,
-    "direction": "short",
-    "entry": 60797.22,
-    "entry_ts": 1795352400,
-    "entry_time": "2026-11-22 13:00 UTC",
-    "level": 60797.22,
-    "L": 191.1,
-    "neck_lo": 60845.0,
-    "neck_hi": 61036.1,
-    "sl": 60874.25,
-    "tp": null,
-    "peak": 60587.6,
-    "trailed": true,
-    "notional": 8484.0
-  },
+  "position": null,
   "trades": [
     {
       "seq": 1,
@@ -4161,6 +4146,25 @@
       "tp": null,
       "neck_lo": 58900.4,
       "neck_hi": 59129.2,
+      "bars_held": 2
+    },
+    {
+      "seq": 219,
+      "direction": "short",
+      "entry": 60797.22,
+      "entry_time": "2026-11-22 13:00 UTC",
+      "entry_ts": 1795352400,
+      "exit": 60874.25,
+      "exit_time": "2026-11-22 15:00 UTC",
+      "exit_ts": 1795359600,
+      "exit_reason": "TRAIL",
+      "pnl_usd": -10.75,
+      "notional": 8484.0,
+      "L": 191.1,
+      "level": 60797.22,
+      "tp": null,
+      "neck_lo": 60845.0,
+      "neck_hi": 61036.1,
       "bars_held": 2
     }
   ],
