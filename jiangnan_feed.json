@@ -349,34 +349,53 @@
       "exit_price": 0.13994674,
       "pnl_usd": 52.2,
       "pnl_pct": 5.22
-    }
-  ],
-  "next_event_id": 19,
-  "open_positions": [
+    },
     {
+      "event_id": 19,
+      "ts": 1795305300,
+      "time": "2026-11-21 23:55 UTC",
       "strategy": "JN2",
       "symbol": "ADAUSDT",
       "signal_no": 2,
       "pos_id": "JN2-002",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 0.149,
-      "sl": 0.15584673999999998,
-      "tp": 0.12845978000000002,
-      "notional_usd": 870.0
+      "sl": 0.15584674,
+      "tp": 0.12845978,
+      "notional_usd": 870.0,
+      "risk_usd": 40.0,
+      "dedup": "JN2-002:close",
+      "reason": "time",
+      "exit_price": 0.1443,
+      "pnl_usd": 26.59,
+      "pnl_pct": 2.66
     },
     {
+      "event_id": 20,
+      "ts": 1795305300,
+      "time": "2026-11-21 23:55 UTC",
       "strategy": "JN4",
       "symbol": "ADAUSDT",
       "signal_no": 2,
       "pos_id": "JN4-002",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 0.149,
-      "sl": 0.15584673999999998,
-      "tp": 0.12845978000000002,
-      "notional_usd": 870.0
+      "sl": 0.15584674,
+      "tp": 0.12845978,
+      "notional_usd": 870.0,
+      "risk_usd": 40.0,
+      "dedup": "JN4-002:close",
+      "reason": "time",
+      "exit_price": 0.1443,
+      "pnl_usd": 26.59,
+      "pnl_pct": 2.66
     }
   ],
-  "updated_at": "2026-11-21 23:45 UTC"
+  "next_event_id": 21,
+  "open_positions": [],
+  "updated_at": "2026-11-22 00:00 UTC"
 }
