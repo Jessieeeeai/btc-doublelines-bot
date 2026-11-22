@@ -2,58 +2,45 @@
  "started": true,
  "syms": {
   "BTC": {
-   "last_5m_ts": 1795337700,
+   "last_5m_ts": 1795338600,
    "hour_done_ts": 1795334400,
    "pend": null,
    "pos": {}
   },
   "ETH": {
-   "last_5m_ts": 1795337700,
+   "last_5m_ts": 1795338600,
    "hour_done_ts": 1795334400,
    "pend": null,
    "pos": {}
   },
   "SOL": {
-   "last_5m_ts": 1795337700,
+   "last_5m_ts": 1795338600,
    "hour_done_ts": 1795334400,
    "pend": null,
    "pos": {}
   },
   "BNB": {
-   "last_5m_ts": 1795337700,
+   "last_5m_ts": 1795338600,
    "hour_done_ts": 1795334400,
    "pend": null,
    "pos": {}
   },
   "XRP": {
-   "last_5m_ts": 1795337700,
+   "last_5m_ts": 1795338600,
    "hour_done_ts": 1795334400,
    "pend": null,
    "pos": {}
   },
   "DOGE": {
-   "last_5m_ts": 1795337700,
+   "last_5m_ts": 1795338600,
    "hour_done_ts": 1795334400,
    "pend": null,
    "pos": {}
   },
   "ADA": {
-   "last_5m_ts": 1795337700,
+   "last_5m_ts": 1795338600,
    "hour_done_ts": 1795334400,
-   "pend": {
-    "side": 1,
-    "sl": 0.13306007,
-    "x_ts": 1795478100,
-    "sma": 0.168315,
-    "k1": 0.1377,
-    "k2": 0.1331,
-    "eq": 0.13955,
-    "k3ext": 0.1407,
-    "lvl": 0.1421,
-    "run_ts": 1795323600,
-    "from_ts": 1795338000,
-    "btc": -1
-   },
+   "pend": null,
    "pos": {}
   }
  },
