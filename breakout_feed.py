@@ -6,9 +6,12 @@
 
 事件字段:
   event_id, ts, time, strategy(N-H1..N-H4, AMD), symbol, signal_no, pos_id, paper,
-  action: open_long | open_short | move_stop | close
+  action: open_long | open_short | move_stop | partial_close | close
   direction, entry_price, sl, tp(N-H3/N-H4 为 null=吊灯止损出场; AMD 为第三止盈, 另带 tp1/tp2/tp3/stop_after_tp1), notional_usd, risk_usd
   close 额外: reason(tp|sl|trail|time), exit_price, pnl_usd, pnl_pct(占每币本金 $1,000)
+  partial_close (只有 AMD): 某一档止盈到手、先出掉原始仓位的一部分。带 leg(第几档), exit_price,
+      close_fraction(这次出掉的占原始仓位, 0.3333) / close_fraction_text("1/3"), remaining_fraction(出完还剩多少),
+      pnl_usd_gross(这一份的毛利, 未扣成本)。AMD 的 close 也带 close_fraction (最后一次出掉的份额) 和 legs (三份各自的出场明细)。
 """
 import json, os
 from datetime import datetime, timezone
@@ -43,6 +46,18 @@ def _ev(code, sym, seq, action, ts, d, e, sl, tp, n, dedup, **extra):
     _buffer.append(ev)
 
 
+def _frac(k):
+    return round(k / 3.0, 4), f"{k}/3"
+
+
+def _partial(p, leg, px, ts, left_after):
+    """AMD 某一档止盈到手: 出掉原始仓位的 1/3。left_after = 出完之后还剩几份 (0~2)。"""
+    f, ft = _frac(1)
+    _ev("AMD", p["sym"], p["seq"], "partial_close", ts, p["d"], p["e"], p["sl"], None, p["n"], f"partial:{leg}",
+        reason="tp", leg=leg, exit_price=px, close_fraction=f, close_fraction_text=ft,
+        remaining_fraction=_frac(left_after)[0], pnl_usd_gross=round(p["n"] / 3.0 * (px - p["e"]) * p["d"] / p["e"], 2))
+
+
 def emit(kind, p):
     """kind/p 就是机器人 msgs 里的条目。永不抛异常。"""
     try:
@@ -55,14 +70,28 @@ def emit(kind, p):
             _ev("AMD", p["sym"], p["seq"], "open_long" if p["d"] == 1 else "open_short", p["ts"], p["d"], p["e"], p["sl"],
                 p["tg"][2], p["n"], "open", tp1=_r(p["tg"][0]), tp2=_r(p["tg"][1]), tp3=_r(p["tg"][2]), stop_after_tp1=_r(p["s1"]))
         elif kind == "tp5":
+            done = p.get("done", None)
+            for k, (leg, px) in enumerate(zip(p["which"], p["px"])):
+                left = (3 - done + len(p["which"]) - k - 1) if done is not None else None
+                _partial(p, leg, px, p["ts"], left if left is not None else 0)
             if p.get("first"):
                 _ev("AMD", p["sym"], p["seq"], "move_stop", p["ts"], p["d"], p["e"], p["sl"], None, p["n"], f"stop:{_r(p['sl'])}")
         elif kind == "bemove":
             _ev(p["code"], p["sym"], p["seq"], "move_stop", p["ts"], p["d"], p["e"], p["sl"], None, p["n"], f"stop:{_r(p['sl'])}")
         elif kind == "exit":
             reason = "trail" if (p["why"] == "sl" and p["sl"] != p["sl0"]) else p["why"]
+            extra = {}
+            if p["code"] == "AMD" and p.get("legs"):
+                legs = sorted(p["legs"], key=lambda g: (g[3], g[0]))
+                last = [g for g in legs if g[3] == legs[-1][3] and g[1] == legs[-1][1]]   # 最后一次一起出掉的那几份
+                early = [g for g in legs if g not in last]
+                for k, g in enumerate(early):      # 同一根里先到的止盈档 (没单独发过 tp5 的) 在这里补发; 已发过的靠 dedup 跳过
+                    _partial(p, g[0], g[1], g[3], 3 - k - 1)
+                f, ft = _frac(len(last))
+                extra = dict(close_fraction=f, close_fraction_text=ft, remaining_fraction=0.0,
+                             legs=[{"leg": g[0], "exit_price": _r(g[1]), "reason": g[2], "ts": g[3], "fraction": _frac(1)[0]} for g in legs])
             _ev(p["code"], p["sym"], p["seq"], "close", p["xts"], p["d"], p["e"], p["sl"], p["tp"], p["n"], "close",
-                reason=reason, exit_price=p["x"], pnl_usd=p["net_base"], pnl_pct=round(p["net_base"] / PRINCIPAL * 100, 2))
+                reason=reason, exit_price=p["x"], pnl_usd=p["net_base"], pnl_pct=round(p["net_base"] / PRINCIPAL * 100, 2), **extra)
     except Exception as e:
         print(f"  [feed] emit 失败({kind}): {e}")
 

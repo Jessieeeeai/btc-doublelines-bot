@@ -374,7 +374,7 @@ def amd_bar(st, ss, sym, pos, b, fresh, msgs):
                 pos["sl"] = pos["s1"]
             if any(pos["left"]):
                 msgs.append(("tp5", {"code": AMD, "sym": sym, "seq": pos["seq"], "d": d, "e": pos["e"], "sl": pos["sl"], "n": pos["n"],
-                                     "ts": ts, "which": new, "first": first, "px": [pos["tg"][i - 1] for i in new]}))
+                                     "ts": ts, "which": new, "first": first, "px": [pos["tg"][i - 1] for i in new], "done": pos["hit"]}))
             else:
                 last_why = "tp"
         if any(pos["left"]) and ts >= pos["x_ts"]:

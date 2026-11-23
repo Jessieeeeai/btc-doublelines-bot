@@ -31,12 +31,35 @@ https://raw.githubusercontent.com/Jessieeeeai/btc-doublelines-bot/main/breakout_
 | ts / time | 事件发生的 K 线时间戳（UTC 秒）/ 写入时间 |
 | strategy / symbol | 马代号 / 交易对（如 `BTCUSDT`） |
 | signal_no / pos_id | 该马的单号 / 持仓 ID（如 `N-H2-012`） |
-| action | `open_long` / `open_short` / `move_stop` / `close` |
+| action | `open_long` / `open_short` / `move_stop` / `partial_close`（只有 AMD）/ `close` |
 | direction / entry_price / sl / tp | 方向 / 进场价 / 止损 / 止盈（N-H4 的 tp 为 null） |
 | notional_usd / risk_usd | 名义仓位 / 打到止损的亏损额（固定 $40） |
 | close 附加 | reason（tp 止盈 / sl 止损 / trail 吊灯止损 / time 72 小时到时）、exit_price、pnl_usd、pnl_pct（占每币本金 $1,000 的百分比，已扣滑点和资金费） |
 
 `move_stop`：N-H3 / N-H4 的吊灯止损首次推过进场价（保本）时发一条；AMD 在第一止盈到手、止损上移时发一条。AMD 的 `close` 是整笔结束时发一条，pnl_usd 为三份合计。
+
+## AMD 的部分平仓（2026-11-22 起）
+AMD马每单分三份、每份占原始仓位 1/3，三档止盈各出一份：
+
+- 第一、第二止盈到手 → 各发一条 `partial_close`。
+- 最后剩下的仓位出场（第三止盈 / 止损 / 到时）→ 发 `close`。
+
+`partial_close` 字段：
+
+| 字段 | 说明 |
+|---|---|
+| pos_id / signal_no | 哪一单 |
+| leg | 第几档止盈（1 或 2） |
+| exit_price | 这一份的出场价 |
+| close_fraction / close_fraction_text | 这次出掉的占**原始仓位**的比例：`0.3333` / `"1/3"` |
+| remaining_fraction | 出完之后还剩原始仓位的多少（`0.6667` 或 `0.3333`） |
+| reason | 固定 `tp` |
+| pnl_usd_gross | 这一份的毛利（未扣滑点和资金费） |
+
+AMD 的 `close` 另带：`close_fraction` / `close_fraction_text`（最后这次出掉的份额，`1/3`、`2/3` 或 `3/3`）、`remaining_fraction`（0）、`legs`（三份各自的出场价、原因、时间）。`close.pnl_usd` 仍是整笔三份合计的净利，对账以它为准。
+
+同一单的事件顺序：`open` → `partial_close`(leg 1) → `move_stop` → `partial_close`(leg 2) → `close`。没到第一止盈就止损的单只有 `open` → `close`（close_fraction 为 3/3）。
+此前已结束的单没有补发 `partial_close`。
 
 ## 消费端要点
 1. 机器人每 15 分钟跑一轮，轮询 ≥1 分钟一次即可。
