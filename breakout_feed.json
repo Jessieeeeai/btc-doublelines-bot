@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-23 15:00 UTC",
-  "next_event_id": 172,
+  "updated_at": "2026-11-23 15:15 UTC",
+  "next_event_id": 175,
   "events": [
     {
       "ts": 1794542400,
@@ -3493,7 +3493,98 @@
       "pnl_usd": -40.73,
       "pnl_pct": -4.07,
       "event_id": 171
+    },
+    {
+      "ts": 1795446000,
+      "time": "2026-11-23 15:15 UTC",
+      "strategy": "N-H1",
+      "symbol": "XRPUSDT",
+      "signal_no": 19,
+      "pos_id": "N-H1-019",
+      "paper": true,
+      "action": "open_long",
+      "direction": "long",
+      "entry_price": 0.9915,
+      "sl": 0.93751866,
+      "tp": 1.0994627,
+      "notional_usd": 735.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H1-019:open",
+      "event_id": 172
+    },
+    {
+      "ts": 1795446000,
+      "time": "2026-11-23 15:15 UTC",
+      "strategy": "N-H1",
+      "symbol": "DOGEUSDT",
+      "signal_no": 20,
+      "pos_id": "N-H1-020",
+      "paper": true,
+      "action": "open_long",
+      "direction": "long",
+      "entry_price": 0.05897,
+      "sl": 0.055403374,
+      "tp": 0.066103252,
+      "notional_usd": 661.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H1-020:open",
+      "event_id": 173
+    },
+    {
+      "ts": 1795446000,
+      "time": "2026-11-23 15:15 UTC",
+      "strategy": "N-H1",
+      "symbol": "ADAUSDT",
+      "signal_no": 21,
+      "pos_id": "N-H1-021",
+      "paper": true,
+      "action": "open_long",
+      "direction": "long",
+      "entry_price": 0.1536,
+      "sl": 0.14505647,
+      "tp": 0.17068706,
+      "notional_usd": 719.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H1-021:open",
+      "event_id": 174
     }
   ],
-  "open_positions": []
+  "open_positions": [
+    {
+      "strategy": "N-H1",
+      "symbol": "XRPUSDT",
+      "signal_no": 19,
+      "pos_id": "N-H1-019",
+      "paper": true,
+      "direction": "long",
+      "entry_price": 0.9915,
+      "sl": 0.93751866,
+      "tp": 1.0994626800000002,
+      "notional_usd": 735.0
+    },
+    {
+      "strategy": "N-H1",
+      "symbol": "DOGEUSDT",
+      "signal_no": 20,
+      "pos_id": "N-H1-020",
+      "paper": true,
+      "direction": "long",
+      "entry_price": 0.05897,
+      "sl": 0.055403374,
+      "tp": 0.066103252,
+      "notional_usd": 661.0
+    },
+    {
+      "strategy": "N-H1",
+      "symbol": "ADAUSDT",
+      "signal_no": 21,
+      "pos_id": "N-H1-021",
+      "paper": true,
+      "direction": "long",
+      "entry_price": 0.1536,
+      "sl": 0.14505647000000002,
+      "tp": 0.17068705999999992,
+      "notional_usd": 719.0
+    }
+  ]
 }
