@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "updated_at": "2026-11-23 03:15 UTC",
-  "next_event_id": 329,
+  "updated_at": "2026-11-23 03:30 UTC",
+  "next_event_id": 331,
   "events": [
     {
       "ts": 1782982800,
@@ -6218,36 +6218,49 @@
       "dollar_pl": 427.11,
       "dedup": "C-073:close",
       "event_id": 328
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1795402800,
+      "time": "2026-11-23 03:30 UTC",
       "strategy": "B",
       "signal_no": 69,
       "pos_id": "B-069",
+      "action": "close",
       "direction": "short",
       "entry_price": 64440.8,
       "sl": 61888.82,
       "tp": 44024.93,
       "size_mult": 1.0,
       "r_dollar": 2551.98,
-      "stair_2r_locked": true,
-      "pyramid_entered": false,
-      "notional_usd": 10000
+      "notional_usd": 10000,
+      "reason": "lock",
+      "exit_price": 61888.82,
+      "result_r": 1.0,
+      "dollar_pl": 396.02,
+      "dedup": "B-069:close",
+      "event_id": 329
     },
     {
+      "ts": 1795402800,
+      "time": "2026-11-23 03:30 UTC",
       "strategy": "C",
       "signal_no": 72,
       "pos_id": "C-072",
+      "action": "close",
       "direction": "short",
       "entry_price": 64440.8,
       "sl": 61888.82,
       "tp": 44024.93,
       "size_mult": 0.7,
       "r_dollar": 2551.98,
-      "stair_2r_locked": true,
-      "pyramid_entered": true,
-      "notional_usd": 10000
+      "notional_usd": 10000,
+      "reason": "lock",
+      "exit_price": 61888.82,
+      "result_r": 0.7,
+      "dollar_pl": 277.21,
+      "dedup": "C-072:close",
+      "event_id": 330
     }
-  ]
+  ],
+  "open_positions": []
 }
