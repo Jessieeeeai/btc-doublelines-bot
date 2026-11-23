@@ -2,8 +2,8 @@
  "started": true,
  "syms": {
   "BTC": {
-   "last_5m_ts": 1795444800,
-   "hour_done_ts": 1795438800,
+   "last_5m_ts": 1795445700,
+   "hour_done_ts": 1795442400,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -13,8 +13,8 @@
    }
   },
   "ETH": {
-   "last_5m_ts": 1795444800,
-   "hour_done_ts": 1795438800,
+   "last_5m_ts": 1795445700,
+   "hour_done_ts": 1795442400,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -24,8 +24,8 @@
    }
   },
   "SOL": {
-   "last_5m_ts": 1795444800,
-   "hour_done_ts": 1795438800,
+   "last_5m_ts": 1795445700,
+   "hour_done_ts": 1795442400,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -41,8 +41,8 @@
    }
   },
   "BNB": {
-   "last_5m_ts": 1795444800,
-   "hour_done_ts": 1795438800,
+   "last_5m_ts": 1795445700,
+   "hour_done_ts": 1795442400,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -52,9 +52,22 @@
    }
   },
   "XRP": {
-   "last_5m_ts": 1795444800,
-   "hour_done_ts": 1795438800,
-   "pend": null,
+   "last_5m_ts": 1795445700,
+   "hour_done_ts": 1795442400,
+   "pend": {
+    "side": 1,
+    "sl": 0.93751866,
+    "from_ts": 1795446000,
+    "atr": 0.014592857142857145,
+    "horses": [
+     "N-H1"
+    ],
+    "skipped": {
+     "N-H2": "逆BTC大势",
+     "N-H3": "逆BTC大势",
+     "N-H4": "逆BTC大势"
+    }
+   },
    "pos": {},
    "pend5": null,
    "amd": {
@@ -63,9 +76,22 @@
    }
   },
   "DOGE": {
-   "last_5m_ts": 1795444800,
-   "hour_done_ts": 1795438800,
-   "pend": null,
+   "last_5m_ts": 1795445700,
+   "hour_done_ts": 1795442400,
+   "pend": {
+    "side": 1,
+    "sl": 0.055403374,
+    "from_ts": 1795446000,
+    "atr": 0.0007992857142857142,
+    "horses": [
+     "N-H1"
+    ],
+    "skipped": {
+     "N-H2": "逆BTC大势",
+     "N-H3": "逆BTC大势",
+     "N-H4": "逆BTC大势"
+    }
+   },
    "pos": {},
    "pend5": null,
    "amd": {
@@ -74,9 +100,22 @@
    }
   },
   "ADA": {
-   "last_5m_ts": 1795444800,
-   "hour_done_ts": 1795438800,
-   "pend": null,
+   "last_5m_ts": 1795445700,
+   "hour_done_ts": 1795442400,
+   "pend": {
+    "side": 1,
+    "sl": 0.14505647000000002,
+    "from_ts": 1795446000,
+    "atr": 0.002107142857142855,
+    "horses": [
+     "N-H1"
+    ],
+    "skipped": {
+     "N-H2": "逆BTC大势",
+     "N-H3": "逆BTC大势",
+     "N-H4": "逆BTC大势"
+    }
+   },
    "pos": {},
    "pend5": null,
    "amd": {
@@ -85,8 +124,8 @@
    }
   },
   "HYPE": {
-   "last_5m_ts": 1795444800,
-   "hour_done_ts": 1795438800,
+   "last_5m_ts": 1795445700,
+   "hour_done_ts": 1795442400,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -2683,7 +2722,7 @@
   "N-H4": 15,
   "AMD": 28
  },
- "n_sig": 23,
+ "n_sig": 26,
  "n_amd": 31,
  "lineup_v2": true,
  "lineup_v3": true,
