@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-23 20:00 UTC",
-  "next_event_id": 4,
+  "updated_at": "2026-11-23 20:15 UTC",
+  "next_event_id": 5,
   "events": [
     {
       "ts": 1794931200,
@@ -68,9 +68,45 @@
       "pnl_pct": 0.61,
       "event_id": 3,
       "master_event_id": 86
+    },
+    {
+      "ts": 1795464000,
+      "time": "2026-11-23 20:15 UTC",
+      "strategy": "AMD",
+      "symbol": "BTCUSDT",
+      "signal_no": 29,
+      "pos_id": "AMD-029",
+      "paper": true,
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 61233.0,
+      "sl": 64589.371,
+      "tp": 32295.0,
+      "notional_usd": 730.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-029:open",
+      "tp1": 57876.629,
+      "tp2": 45205.0,
+      "tp3": 32295.0,
+      "stop_after_tp1": 61904.274,
+      "event_id": 4,
+      "master_event_id": 175
     }
   ],
-  "open_positions": [],
+  "open_positions": [
+    {
+      "strategy": "AMD",
+      "symbol": "BTCUSDT",
+      "signal_no": 29,
+      "pos_id": "AMD-029",
+      "paper": true,
+      "direction": "short",
+      "entry_price": 61233.0,
+      "sl": 64589.371,
+      "tp": null,
+      "notional_usd": 730.0
+    }
+  ],
   "strategy": "AMD",
   "symbol": "BTCUSDT"
 }
