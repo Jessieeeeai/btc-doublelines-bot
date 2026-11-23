@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-23 20:30 UTC",
-  "next_event_id": 179,
+  "updated_at": "2026-11-23 20:45 UTC",
+  "next_event_id": 180,
   "events": [
     {
       "ts": 1794542400,
@@ -3635,6 +3635,28 @@
       "tp3": 0.4012,
       "stop_after_tp1": 0.95984154,
       "event_id": 178
+    },
+    {
+      "ts": 1795466100,
+      "time": "2026-11-23 20:45 UTC",
+      "strategy": "N-H1",
+      "symbol": "XRPUSDT",
+      "signal_no": 19,
+      "pos_id": "N-H1-019",
+      "paper": true,
+      "action": "close",
+      "direction": "long",
+      "entry_price": 0.9915,
+      "sl": 0.93751866,
+      "tp": 1.0994627,
+      "notional_usd": 735.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H1-019:close",
+      "reason": "sl",
+      "exit_price": 0.93751866,
+      "pnl_usd": -40.37,
+      "pnl_pct": -4.04,
+      "event_id": 179
     }
   ],
   "open_positions": [
@@ -3673,18 +3695,6 @@
       "sl": 587.366157,
       "tp": null,
       "notional_usd": 792.0
-    },
-    {
-      "strategy": "N-H1",
-      "symbol": "XRPUSDT",
-      "signal_no": 19,
-      "pos_id": "N-H1-019",
-      "paper": true,
-      "direction": "long",
-      "entry_price": 0.9915,
-      "sl": 0.93751866,
-      "tp": 1.0994626800000002,
-      "notional_usd": 735.0
     },
     {
       "strategy": "AMD",
