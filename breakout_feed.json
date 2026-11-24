@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-24 03:00 UTC",
-  "next_event_id": 181,
+  "updated_at": "2026-11-24 03:15 UTC",
+  "next_event_id": 182,
   "events": [
     {
       "ts": 1794542400,
@@ -3679,6 +3679,28 @@
       "tp3": 19.36,
       "stop_after_tp1": 73.272708,
       "event_id": 180
+    },
+    {
+      "ts": 1795489500,
+      "time": "2026-11-24 03:15 UTC",
+      "strategy": "N-H1",
+      "symbol": "DOGEUSDT",
+      "signal_no": 20,
+      "pos_id": "N-H1-020",
+      "paper": true,
+      "action": "close",
+      "direction": "long",
+      "entry_price": 0.05897,
+      "sl": 0.055403374,
+      "tp": 0.066103252,
+      "notional_usd": 661.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H1-020:close",
+      "reason": "sl",
+      "exit_price": 0.055403374,
+      "pnl_usd": -40.34,
+      "pnl_pct": -4.03,
+      "event_id": 181
     }
   ],
   "open_positions": [
@@ -3741,18 +3763,6 @@
       "sl": 1.02600771,
       "tp": null,
       "notional_usd": 456.0
-    },
-    {
-      "strategy": "N-H1",
-      "symbol": "DOGEUSDT",
-      "signal_no": 20,
-      "pos_id": "N-H1-020",
-      "paper": true,
-      "direction": "long",
-      "entry_price": 0.05897,
-      "sl": 0.055403374,
-      "tp": 0.066103252,
-      "notional_usd": 661.0
     },
     {
       "strategy": "N-H1",
