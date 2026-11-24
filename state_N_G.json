@@ -1,17 +1,17 @@
 {
   "started": true,
-  "last_5m_ts": 1795499100,
-  "hour_done_ts": 1795492800,
+  "last_5m_ts": 1795540200,
+  "hour_done_ts": 1795536000,
   "active": [],
   "pend": null,
   "position": {
     "seq": 24,
     "d": -1,
     "e": 61487.94,
-    "sl": 62021.9,
+    "sl": 61903.0,
     "sl0": 64081.94,
     "D0": 2594.0,
-    "pk": 59427.9,
+    "pk": 59309.0,
     "n": 474.0,
     "ts": 1795455900,
     "trailed": true,
@@ -459,8 +459,8 @@
     }
   ],
   "seq": 24,
-  "n_pat": 107,
-  "n_gate_fail": 42,
+  "n_pat": 109,
+  "n_gate_fail": 44,
   "n_no_break": 0,
   "n_no_pullback": 1,
   "block_until": 1795392000
