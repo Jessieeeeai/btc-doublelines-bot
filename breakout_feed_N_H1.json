@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-24 10:45 UTC",
-  "next_event_id": 42,
+  "updated_at": "2026-11-24 11:00 UTC",
+  "next_event_id": 43,
   "events": [
     {
       "ts": 1794542400,
@@ -862,21 +862,31 @@
       "pnl_pct": -4.03,
       "event_id": 41,
       "master_event_id": 181
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1795517400,
+      "time": "2026-11-24 11:00 UTC",
       "strategy": "N-H1",
       "symbol": "ADAUSDT",
       "signal_no": 21,
       "pos_id": "N-H1-021",
       "paper": true,
+      "action": "close",
       "direction": "long",
       "entry_price": 0.1536,
-      "sl": 0.14505647000000002,
-      "tp": 0.17068705999999992,
-      "notional_usd": 719.0
+      "sl": 0.14505647,
+      "tp": 0.17068706,
+      "notional_usd": 719.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H1-021:close",
+      "reason": "sl",
+      "exit_price": 0.14505647,
+      "pnl_usd": -40.46,
+      "pnl_pct": -4.05,
+      "event_id": 42,
+      "master_event_id": 183
     }
   ],
+  "open_positions": [],
   "strategy": "N-H1"
 }
