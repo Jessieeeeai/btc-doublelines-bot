@@ -3,8 +3,41 @@
   "paper": true,
   "strategy": "JN3",
   "symbol": "BTCUSDT",
-  "events": [],
-  "next_event_id": 1,
-  "open_positions": [],
-  "updated_at": "2026-11-24 02:00 UTC"
+  "events": [
+    {
+      "event_id": 1,
+      "ts": 1795485600,
+      "time": "2026-11-24 02:00 UTC",
+      "strategy": "JN3",
+      "symbol": "BTCUSDT",
+      "signal_no": 3,
+      "pos_id": "JN3-003",
+      "paper": true,
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 61062.3,
+      "sl": 64589.371,
+      "tp": null,
+      "notional_usd": 692.0,
+      "risk_usd": 40.0,
+      "dedup": "JN3-003:open",
+      "master_event_id": 23
+    }
+  ],
+  "next_event_id": 2,
+  "open_positions": [
+    {
+      "strategy": "JN3",
+      "symbol": "BTCUSDT",
+      "signal_no": 3,
+      "pos_id": "JN3-003",
+      "paper": true,
+      "direction": "short",
+      "entry_price": 61062.3,
+      "sl": 64589.371,
+      "tp": null,
+      "notional_usd": 692.0
+    }
+  ],
+  "updated_at": "2026-11-24 02:15 UTC"
 }
