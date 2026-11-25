@@ -2,8 +2,8 @@
   "schema": 1,
   "paper": true,
   "strategy": "N-E",
-  "next_event_id": 304,
-  "updated_at": "2026-11-24 23:45 UTC",
+  "next_event_id": 305,
+  "updated_at": "2026-11-25 00:00 UTC",
   "events": [
     {
       "ts": 1787158800,
@@ -2642,22 +2642,30 @@
       "dedup": "N-E-047:stop:59938.25",
       "event_id": 303,
       "master_event_id": 1787
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1795561200,
+      "time": "2026-11-25 00:00 UTC",
       "strategy": "N-E",
       "signal_no": 47,
       "pos_id": "N-E-047",
       "paper": true,
+      "action": "close",
       "direction": "long",
       "entry_price": 59777.07,
-      "sl": 59938.25,
+      "sl": null,
       "tp": null,
       "L": 97.9,
       "neck_lo": 59654.7,
       "neck_hi": 59752.6,
-      "notional_usd": 16282.0
+      "notional_usd": 16282.0,
+      "reason": "trail",
+      "exit_price": 59938.25,
+      "pnl_usd": 43.9,
+      "dedup": "N-E-047:close",
+      "event_id": 304,
+      "master_event_id": 1788
     }
-  ]
+  ],
+  "open_positions": []
 }
