@@ -22,22 +22,32 @@
       "risk_usd": 40.0,
       "dedup": "JN4-003:open",
       "master_event_id": 24
-    }
-  ],
-  "next_event_id": 2,
-  "open_positions": [
+    },
     {
+      "event_id": 2,
+      "ts": 1795650900,
+      "time": "2026-11-25 23:55 UTC",
       "strategy": "JN4",
       "symbol": "BTCUSDT",
       "signal_no": 3,
       "pos_id": "JN4-003",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 61062.3,
       "sl": 64589.371,
-      "tp": 50481.087000000014,
-      "notional_usd": 692.0
+      "tp": 50481.087,
+      "notional_usd": 692.0,
+      "risk_usd": 40.0,
+      "dedup": "JN4-003:close",
+      "reason": "time",
+      "exit_price": 60432.7,
+      "pnl_usd": 6.47,
+      "pnl_pct": 0.65,
+      "master_event_id": 38
     }
   ],
-  "updated_at": "2026-11-25 23:45 UTC"
+  "next_event_id": 3,
+  "open_positions": [],
+  "updated_at": "2026-11-26 00:00 UTC"
 }
