@@ -2,8 +2,8 @@
  "started": true,
  "syms": {
   "BTC": {
-   "last_5m_ts": 1795761600,
-   "hour_done_ts": 1795755600,
+   "last_5m_ts": 1795762500,
+   "hour_done_ts": 1795759200,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -13,8 +13,8 @@
    }
   },
   "ETH": {
-   "last_5m_ts": 1795761600,
-   "hour_done_ts": 1795755600,
+   "last_5m_ts": 1795762500,
+   "hour_done_ts": 1795759200,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -24,8 +24,8 @@
    }
   },
   "SOL": {
-   "last_5m_ts": 1795761600,
-   "hour_done_ts": 1795755600,
+   "last_5m_ts": 1795762500,
+   "hour_done_ts": 1795759200,
    "pend": null,
    "pos": {
     "AMD": {
@@ -68,8 +68,8 @@
    }
   },
   "BNB": {
-   "last_5m_ts": 1795761600,
-   "hour_done_ts": 1795755600,
+   "last_5m_ts": 1795762500,
+   "hour_done_ts": 1795759200,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -79,9 +79,22 @@
    }
   },
   "XRP": {
-   "last_5m_ts": 1795761600,
-   "hour_done_ts": 1795755600,
-   "pend": null,
+   "last_5m_ts": 1795762500,
+   "hour_done_ts": 1795759200,
+   "pend": {
+    "side": 1,
+    "sl": 0.9589122400000001,
+    "from_ts": 1795762800,
+    "atr": 0.0067428571428571294,
+    "horses": [
+     "N-H1",
+     "N-H4"
+    ],
+    "skipped": {
+     "N-H2": "非美东7-13点",
+     "N-H3": "7日涨幅排第4"
+    }
+   },
    "pos": {
     "AMD": {
      "seq": 32,
@@ -123,8 +136,8 @@
    }
   },
   "DOGE": {
-   "last_5m_ts": 1795761600,
-   "hour_done_ts": 1795755600,
+   "last_5m_ts": 1795762500,
+   "hour_done_ts": 1795759200,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -134,8 +147,8 @@
    }
   },
   "ADA": {
-   "last_5m_ts": 1795761600,
-   "hour_done_ts": 1795755600,
+   "last_5m_ts": 1795762500,
+   "hour_done_ts": 1795759200,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -145,8 +158,8 @@
    }
   },
   "HYPE": {
-   "last_5m_ts": 1795761600,
-   "hour_done_ts": 1795755600,
+   "last_5m_ts": 1795762500,
+   "hour_done_ts": 1795759200,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -3018,7 +3031,7 @@
   "N-H4": 15,
   "AMD": 34
  },
- "n_sig": 26,
+ "n_sig": 27,
  "n_amd": 39,
  "lineup_v2": true,
  "lineup_v3": true,
