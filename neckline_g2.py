@@ -19,6 +19,7 @@
 同一根 5m 里先进场又到止损 → 按止损算; 同一根里止损和止盈都碰到 → 按止损算
 
 独立文件 / 独立 state (state_N_G_v2.json) / 独立 workflow, 不碰其它马。消息格式按《赛马机器人_消息SOP》。
+TokenBeep 订阅文件: twoline_feed_{N_G1,N_G2}_{币}.json (schema 1, 与 breakout_feed 同规范), 每次运行更新。
 """
 import os, sys, json, time, io
 import urllib.request
@@ -269,6 +270,95 @@ def advance(st, sym, m5, msgs):
                             slot["active"].append(dict(s))
 
 
+# ===== TokenBeep 订阅文件 (与 breakout_feed 同规范: schema 1, 每马每币一个文件) =====
+# 每次运行都从 state 重建候选事件, 用 dedup 去重后追加 → 幂等; 文件丢了也能补回来。
+
+FEED_SCHEMA, FEED_MAX = 1, 1000
+
+
+def _fr(x):
+    return None if x is None else float(f"{x:.8g}")
+
+
+def _now_str():
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+
+
+def feed_path(code, sym):
+    return f"twoline_feed_{code.replace('-', '_')}_{sym}.json"
+
+
+def _pid(code, seq):
+    return f"{code}-{seq:03d}"
+
+
+def _feed_ev(code, t, action, ts, dedup, **extra):
+    ev = {"ts": ts, "time": _now_str(), "strategy": code, "symbol": f"{t['sym']}USDT", "signal_no": t["seq"],
+          "pos_id": _pid(code, t["seq"]), "paper": True, "action": action,
+          "direction": "long" if t["d"] == 1 else "short", "entry_price": _fr(t["e"]), "sl": _fr(t["sl"]), "tp": _fr(t["tp"]),
+          "notional_usd": round(t["n"]), "risk_usd": RISK_USD, "dedup": f"{_pid(code, t['seq'])}:{dedup}"}
+    ev.update(extra)
+    return ev
+
+
+def _feed_load(path):
+    blank = {"schema": FEED_SCHEMA, "paper": True, "updated_at": None, "next_event_id": 1, "events": [], "open_positions": []}
+    if not os.path.exists(path):
+        return blank
+    try:
+        with open(path) as f:
+            d = json.load(f)
+        d["next_event_id"] = (d["events"][-1]["event_id"] + 1) if d.get("events") else max(1, int(d.get("next_event_id") or 1))
+        return d
+    except Exception:
+        return blank
+
+
+def write_feeds(st):
+    """返回新增事件数。永不抛异常 (订阅文件出问题不能影响机器人本身)。"""
+    added = 0
+    try:
+        floors = st.setdefault("feed_floor", {})
+        for h in HORSES:
+            code = h["code"]
+            for sym in SYMS:
+                path = feed_path(code, sym)
+                feed = _feed_load(path)
+                seen = {e.get("dedup") for e in feed["events"]}
+                floor = floors.get(path, 0)
+                cand = []
+                for t in st["horses"][code]["trades"]:
+                    if t["sym"] != sym:
+                        continue
+                    cand.append(_feed_ev(code, t, "open_long" if t["d"] == 1 else "open_short", t["ts"], "open"))
+                    cand.append(_feed_ev(code, t, "close", t["xts"], "close", reason=t["why"], exit_price=_fr(t["x"]),
+                                         pnl_usd=t["net_base"], pnl_pct=round(t["net_base"] / PRINCIPAL_USD * 100, 2)))
+                pos = (st["syms"].get(sym) or {}).get("slots", {}).get(code, {}).get("pos")
+                if pos:
+                    cand.append(_feed_ev(code, pos, "open_long" if pos["d"] == 1 else "open_short", pos["ts"], "open"))
+                cand.sort(key=lambda e: (e["signal_no"], e["action"] == "close"))
+                for ev in cand:
+                    if ev["dedup"] in seen or ev["ts"] <= floor:
+                        continue
+                    ev["event_id"] = feed["next_event_id"]; feed["next_event_id"] += 1
+                    feed["events"].append(ev); seen.add(ev["dedup"]); added += 1
+                if len(feed["events"]) > FEED_MAX:
+                    feed["events"] = feed["events"][-FEED_MAX:]
+                    floors[path] = feed["events"][0]["ts"]
+                snap = []
+                if pos:
+                    snap.append({"strategy": code, "symbol": f"{sym}USDT", "signal_no": pos["seq"], "pos_id": _pid(code, pos["seq"]),
+                                 "paper": True, "direction": "long" if pos["d"] == 1 else "short", "entry_price": _fr(pos["e"]),
+                                 "sl": _fr(pos["sl"]), "tp": _fr(pos["tp"]), "notional_usd": round(pos["n"])})
+                out = {"schema": FEED_SCHEMA, "paper": True, "updated_at": _now_str(), "next_event_id": feed["next_event_id"],
+                       "events": feed["events"], "open_positions": snap, "strategy": code, "symbol": f"{sym}USDT"}
+                with open(path, "w") as f:
+                    json.dump(out, f, indent=2, ensure_ascii=False)
+    except Exception as e:
+        print(f"  [feed] 写订阅文件失败: {e}")
+    return added
+
+
 # ===== 消息 (SOP) =====
 
 def hstats(st, code):
@@ -395,6 +485,9 @@ def main():
         if not prices:
             print("首次运行没拿到任何行情, 不启动"); sys.exit(1)
         st["started"] = True
+    n_feed = write_feeds(st)
+    if n_feed:
+        print(f"[feed] 新增 {n_feed} 条事件")
     save_state(st)
     if first:
         for h in HORSES:
