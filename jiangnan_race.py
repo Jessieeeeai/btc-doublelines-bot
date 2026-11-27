@@ -14,7 +14,7 @@
   顺 BTC 大势 = BTC 1h 收盘在自己 200 均线(EMA)上方只做多, 下方只做空; 工作日按美东时间算
 记账: 5m 真实路径, 同一根里止损止盈都碰到按止损; 基准口径 (滑点 0.04% + 资金费 0.01%/8h) 与
       保守口径 (滑点 0.08% + 止损再滑 0.05% + 资金费) 并列。每匹马账户 $7,000 (7 币 x $1,000)。
-参数与回测 (research/round_ict/k4.py + run28.py) 一致, 不要调。state: state_JN.json; 订阅源: jiangnan_feed.json (四匹七币总表) + jiangnan_feed_JN1_BTC.json ... (TokenBeep 用, 每匹马只含 BTC)。
+参数与回测 (research/round_ict/k4.py + run28.py) 一致, 不要调。state: state_JN.json; 订阅源: jiangnan_feed.json (四匹七币总表) + jiangnan_feed_{马}_{币}.json (TokenBeep 用, 单马单币; 1h 收盘即发开仓)。
 """
 import os, sys, json, time
 import urllib.request
@@ -35,7 +35,7 @@ RR, BUF, SMA_N = 3.0, 0.0003, 20
 RISK_USD, NOTIONAL_CAP, PRINCIPAL_USD = 40.0, 25000.0, 1000.0
 ACCOUNT_USD = PRINCIPAL_USD * len(SYMS)
 SLIP_BASE, SLIP_CONS, STOP_SLIP_CONS, FUND_8H = 0.0004, 0.0008, 0.0005, 0.0001
-TB_SYM = "BTC"          # TokenBeep 只接 BTC (用户 2026-11-12 定): jiangnan_feed_JN1_BTC.json ... 各接一个量化机器人
+TB_SYMS = ["BTC", "SOL", "DOGE", "ADA", "XRP"]   # TokenBeep 一个机器人只能绑一个币: jiangnan_feed_{马}_{币}.json 各接一个量化机器人 (2026-11-27 起加 SOL/DOGE/ADA/XRP)
 PAPER_MARK = "\n🧪 <i>纸面验证 · 实盘记账口径 — 非实盘指令</i>"
 
 
@@ -228,23 +228,27 @@ def process_5m(st, ss, sym, b, msgs):
         ss["pend"] = None
         px, d, sl = b["open"], p["side"], p["sl"]
         dist = (px - sl) * d
+        pre = "horses" in p                           # 1h 收盘时已定好哪几匹做 (并已在订阅源发了开仓)
         if dist > 0 and ts < p["from_ts"] + H and ts < p["x_ts"]:    # 开盘已在止损外 / 数据断档超 1 小时 → 放弃
-            opened, skipped = [], {}
-            for code in HORSES:
+            opened, skipped = [], dict(p.get("skipped0", {}))
+            for code in (p["horses"] if pre else HORSES):
                 if code in ss["pos"]:
                     skipped[code] = "已有持仓"; continue
-                ok, why = eligible(code, d, px, ts, p)
-                if not ok:
-                    skipped[code] = why; continue
+                if not pre:
+                    ok, why = eligible(code, d, px, ts, p)
+                    if not ok:
+                        skipped[code] = why; continue
+                    st["seq"][code] += 1
                 tr = CFG[code]["trail"]
-                st["seq"][code] += 1
-                ss["pos"][code] = {"seq": st["seq"][code], "d": d, "e": px, "sl": sl, "sl0": sl,
+                ss["pos"][code] = {"seq": p["seqs"][code] if pre else st["seq"][code], "d": d, "e": px, "sl": sl, "sl0": sl,
                                    "tp": None if tr else px + d * RR * dist, "dist": dist, "trail": tr, "armed": False,
                                    "n": round(min(RISK_USD / (dist / px), NOTIONAL_CAP), 0), "ts": ts, "x_ts": p["x_ts"], "pk": px}
                 opened.append(code); fresh.add(code)
             if opened:
                 msgs.append(("entry", {"sym": sym, "d": d, "e": px, "sl": sl, "ts": ts, "dist": dist, "horses": opened,
                                        "skipped": skipped, "pos": {c: dict(ss["pos"][c]) for c in opened}, "k": p}))
+        elif pre and p["horses"]:                     # 订阅源已发开仓但实际没进成 → 发一条撤销平仓, 两边对齐
+            msgs.append(("cancel", {"sym": sym, "d": d, "e": px, "sl": sl, "ts": ts, "horses": p["horses"], "seqs": p["seqs"]}))
     for code in list(ss["pos"]):
         pos = ss["pos"][code]; d = pos["d"]; fr = code in fresh
         if pos["trail"] and pos["armed"]:             # 跟踪止损: 用上一根为止的最高(低)点, 只紧不松
@@ -271,13 +275,32 @@ def process_5m(st, ss, sym, b, msgs):
                 pos["armed"] = True
 
 
-def hour_close(st, ss, sym, HB, idx, h, feats):
+def hour_close(st, ss, sym, HB, idx, h, feats, msgs):
     if h in idx:
         s = k_signal(HB, idx, h)
         if s:
             st["n_sig"] += 1
             s.update(from_ts=h + H, btc=feats.btc(h))
+            # 2026-11-27: 1h 一收盘就定好哪几匹做 (用这根 1h 的收盘价判断顺不顺日线20均), 订阅源立刻发开仓, 不等下一根 5m 收完。
+            # TokenBeep 按"平台收到信号那一刻的价格"算战绩, 早发 10-15 分钟。纸面记账仍按下一根 5m 开盘价。
+            px0, d = HB[idx[h]]["close"], s["side"]
+            dist0 = (px0 - s["sl"]) * d
+            horses, seqs, skipped, pre = [], {}, {}, {}
+            if dist0 > 0:
+                for code in HORSES:
+                    if code in ss["pos"]:
+                        skipped[code] = "已有持仓"; continue
+                    ok, why = eligible(code, d, px0, h + H, s)
+                    if not ok:
+                        skipped[code] = why; continue
+                    st["seq"][code] += 1
+                    horses.append(code); seqs[code] = st["seq"][code]
+                    pre[code] = {"seq": seqs[code], "tp": None if CFG[code]["trail"] else px0 + d * RR * dist0,
+                                 "n": round(min(RISK_USD / (dist0 / px0), NOTIONAL_CAP), 0)}
+            s.update(horses=horses, seqs=seqs, skipped0=skipped)
             ss["pend"] = s
+            if horses:
+                msgs.append(("presig", {"sym": sym, "d": d, "e": px0, "sl": s["sl"], "ts": h + H, "horses": horses, "pos": pre}))
     ss["hour_done_ts"] = h
 
 
@@ -290,13 +313,13 @@ def run(HB, M5, st, sym, msgs, feats):
         hour = b["ts"] // H * H
         h = ss["hour_done_ts"] + H
         while h < hour:
-            if h in idx: hour_close(st, ss, sym, HB, idx, h, feats)
+            if h in idx: hour_close(st, ss, sym, HB, idx, h, feats, msgs)
             else: ss["hour_done_ts"] = h
             h += H
         process_5m(st, ss, sym, b, msgs)
         ss["last_5m_ts"] = b["ts"]
         if b["ts"] % H == H - 300 and hour in idx and hour > ss["hour_done_ts"]:
-            hour_close(st, ss, sym, HB, idx, hour, feats)
+            hour_close(st, ss, sym, HB, idx, hour, feats, msgs)
 
 
 # ===== 订阅源 (机器可读, 与 breakout_feed.json 同规范) =====
@@ -321,7 +344,15 @@ def feed_flush(st, msgs):
                  "notional_usd": n, "risk_usd": RISK_USD, "dedup": dd}
             x.update(extra); feed["events"].append(x); feed["next_event_id"] += 1; added.append(x)
         for kind, p in msgs:
-            if kind == "entry":
+            if kind == "presig":
+                for c in p["horses"]:
+                    q = p["pos"][c]
+                    ev(c, p["sym"], q["seq"], "open_long" if p["d"] == 1 else "open_short", p["ts"], p["d"], p["e"], p["sl"], q["tp"], q["n"], "open")
+            elif kind == "cancel":
+                for c in p["horses"]:
+                    ev(c, p["sym"], p["seqs"][c], "close", p["ts"], p["d"], p["e"], p["sl"], None, 0, "close",
+                       reason="cancel", exit_price=r(p["e"]), pnl_usd=0.0, pnl_pct=0.0)
+            elif kind == "entry":
                 for c in p["horses"]:
                     pos = p["pos"][c]
                     ev(c, p["sym"], pos["seq"], "open_long" if p["d"] == 1 else "open_short", p["ts"], p["d"], p["e"], p["sl"], pos["tp"], pos["n"], "open")
@@ -338,25 +369,26 @@ def feed_flush(st, msgs):
         feed["updated_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
         with open(FEED_FILE, "w") as f:
             json.dump(feed, f, indent=2, ensure_ascii=False)
-        # TokenBeep 的量化机器人一个只能绑一个币: 每匹马另写一份只含 TB_SYM 的单马文件 (各自连续编号, 文件内无断档)
+        # TokenBeep 的量化机器人一个只能绑一个币: 每匹马每个币另写一份单马单币文件 (各自连续编号, 文件内无断档)
         for code in HORSES:
-            sp = f"jiangnan_feed_{code}_{TB_SYM}.json"
-            sub = {"schema": 1, "paper": True, "strategy": code, "symbol": f"{TB_SYM}USDT", "events": [], "next_event_id": 1}
-            if os.path.exists(sp):
-                with open(sp) as f:
-                    sub = json.load(f)
-            sub["next_event_id"] = (sub["events"][-1]["event_id"] + 1) if sub["events"] else 1
-            sseen = {e["dedup"] for e in sub["events"]}
-            for x in added:
-                if x["strategy"] != code or x["symbol"] != f"{TB_SYM}USDT" or x["dedup"] in sseen:
-                    continue
-                e2 = dict(x); e2["master_event_id"] = x["event_id"]; e2["event_id"] = sub["next_event_id"]
-                sub["next_event_id"] += 1; sub["events"].append(e2)
-            sub["events"] = sub["events"][-1000:]
-            sub["open_positions"] = [p for p in feed["open_positions"] if p["strategy"] == code and p["symbol"] == f"{TB_SYM}USDT"]
-            sub["updated_at"] = feed["updated_at"]
-            with open(sp, "w") as f:
-                json.dump(sub, f, indent=2, ensure_ascii=False)
+            for tsym in TB_SYMS:
+                sp = f"jiangnan_feed_{code}_{tsym}.json"
+                sub = {"schema": 1, "paper": True, "strategy": code, "symbol": f"{tsym}USDT", "events": [], "next_event_id": 1}
+                if os.path.exists(sp):
+                    with open(sp) as f:
+                        sub = json.load(f)
+                sub["next_event_id"] = (sub["events"][-1]["event_id"] + 1) if sub["events"] else 1
+                sseen = {e["dedup"] for e in sub["events"]}
+                for x in added:
+                    if x["strategy"] != code or x["symbol"] != f"{tsym}USDT" or x["dedup"] in sseen:
+                        continue
+                    e2 = dict(x); e2["master_event_id"] = x["event_id"]; e2["event_id"] = sub["next_event_id"]
+                    sub["next_event_id"] += 1; sub["events"].append(e2)
+                sub["events"] = sub["events"][-1000:]
+                sub["open_positions"] = [p for p in feed["open_positions"] if p["strategy"] == code and p["symbol"] == f"{tsym}USDT"]
+                sub["updated_at"] = feed["updated_at"]
+                with open(sp, "w") as f:
+                    json.dump(sub, f, indent=2, ensure_ascii=False)
     except Exception as e:
         print(f"  [feed] 失败: {e}")
 
