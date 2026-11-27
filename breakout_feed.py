@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 FEED_FILE = "breakout_feed.json"
 SCHEMA, MAX_EVENTS, PRINCIPAL = 1, 1000, 1000.0
 CODES = ["N-H1", "N-H2", "N-H3", "N-H4", "AMD"]
-TB_SYMS = ["BTC", "ETH", "SOL"]   # 接入 TokenBeep 量化机器人的币 (每马每币一个文件)
+TB_SYMS = ["BTC", "ETH", "SOL", "ADA"]   # 接入 TokenBeep 量化机器人的币 (每马每币一个文件)
 _buffer = []
 
 
