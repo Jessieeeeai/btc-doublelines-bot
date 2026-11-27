@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "paper": true,
+  "updated_at": "2026-11-27 22:22 UTC",
+  "next_event_id": 3,
+  "events": [
+    {
+      "ts": 1795237200,
+      "time": "2026-11-21 05:15 UTC",
+      "strategy": "N-H3",
+      "symbol": "ADAUSDT",
+      "signal_no": 6,
+      "pos_id": "N-H3-006",
+      "paper": true,
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 0.1355,
+      "sl": 0.14214263,
+      "tp": null,
+      "notional_usd": 816.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H3-006:open",
+      "event_id": 1,
+      "master_event_id": 152
+    },
+    {
+      "ts": 1795264500,
+      "time": "2026-11-21 12:41 UTC",
+      "strategy": "N-H3",
+      "symbol": "ADAUSDT",
+      "signal_no": 6,
+      "pos_id": "N-H3-006",
+      "paper": true,
+      "action": "close",
+      "direction": "short",
+      "entry_price": 0.1355,
+      "sl": 0.14214263,
+      "tp": null,
+      "notional_usd": 816.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H3-006:close",
+      "reason": "sl",
+      "exit_price": 0.14214263,
+      "pnl_usd": -40.4,
+      "pnl_pct": -4.04,
+      "event_id": 2,
+      "master_event_id": 166
+    }
+  ],
+  "open_positions": [],
+  "strategy": "N-H3",
+  "symbol": "ADAUSDT"
+}
