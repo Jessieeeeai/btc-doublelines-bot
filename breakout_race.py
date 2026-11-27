@@ -51,7 +51,8 @@ PAPER_MARK = "\n🧪 <i>纸面验证 · 实盘记账口径 — 非实盘指令</
 
 # ===== 行情 (OKX 永续公共接口, 只取已收盘) =====
 
-def fetch_okx(sym, bar, pages=1):
+def fetch_okx(sym, bar, pages=1, live=None):
+    """只返回已收盘的 K 线; 传 live=[] 时, 把还没收盘的那根 (只有 open 是定下来的) 另外放进 live。"""
     bars, after = {}, None
     for _ in range(pages):
         url = f"https://www.okx.com/api/v5/market/candles?instId={sym}-USDT-SWAP&bar={bar}&limit=300" + (f"&after={after}" if after else "")
@@ -62,6 +63,8 @@ def fetch_okx(sym, bar, pages=1):
             break
         for it in data:
             if len(it) >= 9 and str(it[8]) != "1":
+                if live is not None:
+                    live.append({"ts": int(it[0]) // 1000, "open": float(it[1])})
                 continue
             bars[int(it[0]) // 1000] = {"ts": int(it[0]) // 1000, "open": float(it[1]), "high": float(it[2]),
                                         "low": float(it[3]), "close": float(it[4])}
@@ -235,8 +238,10 @@ def close_pos(st, ss, sym, code, px, ts, why, msgs):
     msgs.append(("exit", t))
 
 
-def process_5m(st, ss, sym, b, msgs):
-    ts = b["ts"]
+def fill_pending(st, ss, sym, ts, px_open, msgs):
+    """待进场的信号按 ts 这根 5m 的开盘价成交。开盘价一出来就是定的, 所以这根还没收盘时也可以先成交、先发信号
+    (main 里用正在走的那根调用); 这根的止损/止盈等它收盘后在 process_5m 里照常处理。返回这次新开的马。"""
+    b = {"open": px_open}
     p = ss["pend"]
     fresh = set()
     if p and ts >= p["from_ts"]:
@@ -271,6 +276,12 @@ def process_5m(st, ss, sym, b, msgs):
                               "g": 0.0, "hold": 0.0, "stopped": 0.0, "legs": [], "box": [p5.get("lo"), p5.get("hi")] if p5.get("lo") else None}
             fresh.add(AMD)
             msgs.append(("entry5", dict(ss["pos"][AMD], sym=sym, dist=dist)))
+    return fresh
+
+
+def process_5m(st, ss, sym, b, msgs):
+    ts = b["ts"]
+    fresh = fill_pending(st, ss, sym, ts, b["open"], msgs) | {c for c, q in ss["pos"].items() if q["ts"] == ts}
     for code in list(ss["pos"]):
         pos = ss["pos"][code]; d = pos["d"]; fr = code in fresh
         if code == AMD:
@@ -535,11 +546,12 @@ def main():
 
     st = load_state()
     first = not st["started"]
-    HBS, M5S = {}, {}
+    HBS, M5S, LIVE = {}, {}, {}
     for sym in ALL_SYMS:
         try:
             HBS[sym] = fetch_okx(sym, "1H", pages=3 if sym == "BTC" else 1)
-            M5S[sym] = fetch_okx(sym, "5m")
+            LIVE[sym] = []
+            M5S[sym] = fetch_okx(sym, "5m", live=LIVE[sym])
         except Exception as e:
             print(f"{sym} 行情失败: {e}"); HBS.pop(sym, None)
     ok = [s for s in ALL_SYMS if len(HBS.get(s, [])) >= 200 and len(M5S.get(s, [])) >= 24]
@@ -554,6 +566,10 @@ def main():
             ss["hour_done_ts"] = last // H * H if last % H == H - 300 else last // H * H - H
             continue
         run(HBS[sym], M5S[sym], st, sym, msgs, feats)
+        ss, lv = st["syms"][sym], LIVE.get(sym)
+        if lv and (ss["pend"] or ss.get("pend5")) and max(x["ts"] for x in lv) == ss["last_5m_ts"] + 300:
+            nb = max(lv, key=lambda x: x["ts"])          # 正在走的那根 5m: 信号刚出, 不等它收盘, 按它的开盘价先进场先发信号
+            fill_pending(st, ss, sym, nb["ts"], nb["open"], msgs)
     if first:
         st["started"] = True
         save_state(st); breakout_feed.flush(st)
