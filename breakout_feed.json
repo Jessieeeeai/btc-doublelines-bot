@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-27 02:15 UTC",
-  "next_event_id": 193,
+  "updated_at": "2026-11-27 02:30 UTC",
+  "next_event_id": 194,
   "events": [
     {
       "ts": 1794542400,
@@ -3965,6 +3965,54 @@
         }
       ],
       "event_id": 192
+    },
+    {
+      "ts": 1795746300,
+      "time": "2026-11-27 02:30 UTC",
+      "strategy": "AMD",
+      "symbol": "BNBUSDT",
+      "signal_no": 31,
+      "pos_id": "AMD-031",
+      "paper": true,
+      "action": "close",
+      "direction": "short",
+      "entry_price": 559.14,
+      "sl": 564.78523,
+      "tp": null,
+      "notional_usd": 792.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-031:close",
+      "reason": "trail",
+      "exit_price": 564.78523,
+      "pnl_usd": 7.03,
+      "pnl_pct": 0.7,
+      "close_fraction": 0.6667,
+      "close_fraction_text": "2/3",
+      "remaining_fraction": 0.0,
+      "legs": [
+        {
+          "leg": 1,
+          "exit_price": 530.91384,
+          "reason": "tp",
+          "ts": 1795617000,
+          "fraction": 0.3333
+        },
+        {
+          "leg": 2,
+          "exit_price": 564.78523,
+          "reason": "sl",
+          "ts": 1795746300,
+          "fraction": 0.3333
+        },
+        {
+          "leg": 3,
+          "exit_price": 564.78523,
+          "reason": "sl",
+          "ts": 1795746300,
+          "fraction": 0.3333
+        }
+      ],
+      "event_id": 193
     }
   ],
   "open_positions": [
@@ -4003,18 +4051,6 @@
       "sl": 78.483538,
       "tp": null,
       "notional_usd": 442.0
-    },
-    {
-      "strategy": "AMD",
-      "symbol": "BNBUSDT",
-      "signal_no": 31,
-      "pos_id": "AMD-031",
-      "paper": true,
-      "direction": "short",
-      "entry_price": 559.14,
-      "sl": 564.7852314,
-      "tp": null,
-      "notional_usd": 792.0
     },
     {
       "strategy": "AMD",
