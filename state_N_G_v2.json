@@ -1,0 +1,137 @@
+{
+ "version": 2,
+ "started": true,
+ "syms": {
+  "BTC": {
+   "last_5m_ts": 1795821600,
+   "slots": {
+    "N-G1": {
+     "active": [],
+     "pend": null,
+     "pos": null,
+     "block": 0
+    },
+    "N-G2": {
+     "active": [],
+     "pend": null,
+     "pos": null,
+     "block": 0
+    }
+   }
+  },
+  "ETH": {
+   "last_5m_ts": 1795821600,
+   "slots": {
+    "N-G1": {
+     "active": [],
+     "pend": null,
+     "pos": null,
+     "block": 0
+    },
+    "N-G2": {
+     "active": [],
+     "pend": null,
+     "pos": null,
+     "block": 0
+    }
+   }
+  },
+  "SOL": {
+   "last_5m_ts": 1795821600,
+   "slots": {
+    "N-G1": {
+     "active": [],
+     "pend": null,
+     "pos": null,
+     "block": 0
+    },
+    "N-G2": {
+     "active": [],
+     "pend": null,
+     "pos": null,
+     "block": 0
+    }
+   }
+  },
+  "BNB": {
+   "last_5m_ts": 1795821600,
+   "slots": {
+    "N-G1": {
+     "active": [],
+     "pend": null,
+     "pos": null,
+     "block": 0
+    },
+    "N-G2": {
+     "active": [],
+     "pend": null,
+     "pos": null,
+     "block": 0
+    }
+   }
+  },
+  "XRP": {
+   "last_5m_ts": 1795821600,
+   "slots": {
+    "N-G1": {
+     "active": [],
+     "pend": null,
+     "pos": null,
+     "block": 0
+    },
+    "N-G2": {
+     "active": [],
+     "pend": null,
+     "pos": null,
+     "block": 0
+    }
+   }
+  },
+  "DOGE": {
+   "last_5m_ts": 1795821600,
+   "slots": {
+    "N-G1": {
+     "active": [],
+     "pend": null,
+     "pos": null,
+     "block": 0
+    },
+    "N-G2": {
+     "active": [],
+     "pend": null,
+     "pos": null,
+     "block": 0
+    }
+   }
+  },
+  "ADA": {
+   "last_5m_ts": 1795821600,
+   "slots": {
+    "N-G1": {
+     "active": [],
+     "pend": null,
+     "pos": null,
+     "block": 0
+    },
+    "N-G2": {
+     "active": [],
+     "pend": null,
+     "pos": null,
+     "block": 0
+    }
+   }
+  }
+ },
+ "horses": {
+  "N-G1": {
+   "seq": 0,
+   "trades": []
+  },
+  "N-G2": {
+   "seq": 0,
+   "trades": []
+  }
+ },
+ "n_pat": 0,
+ "notices": []
+}
