@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-27 07:00 UTC",
-  "next_event_id": 43,
+  "updated_at": "2026-11-27 07:15 UTC",
+  "next_event_id": 44,
   "events": [
     {
       "ts": 1794542400,
@@ -885,8 +885,40 @@
       "pnl_pct": -4.05,
       "event_id": 42,
       "master_event_id": 183
+    },
+    {
+      "ts": 1795762800,
+      "time": "2026-11-27 07:15 UTC",
+      "strategy": "N-H1",
+      "symbol": "XRPUSDT",
+      "signal_no": 22,
+      "pos_id": "N-H1-022",
+      "paper": true,
+      "action": "open_long",
+      "direction": "long",
+      "entry_price": 0.9719,
+      "sl": 0.95891224,
+      "tp": 0.99787552,
+      "notional_usd": 2993.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H1-022:open",
+      "event_id": 43,
+      "master_event_id": 196
     }
   ],
-  "open_positions": [],
+  "open_positions": [
+    {
+      "strategy": "N-H1",
+      "symbol": "XRPUSDT",
+      "signal_no": 22,
+      "pos_id": "N-H1-022",
+      "paper": true,
+      "direction": "long",
+      "entry_price": 0.9719,
+      "sl": 0.9589122400000001,
+      "tp": 0.9978755199999998,
+      "notional_usd": 2993.0
+    }
+  ],
   "strategy": "N-H1"
 }
