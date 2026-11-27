@@ -2,8 +2,8 @@
  "started": true,
  "syms": {
   "BTC": {
-   "last_5m_ts": 1795765200,
-   "hour_done_ts": 1795759200,
+   "last_5m_ts": 1795766100,
+   "hour_done_ts": 1795762800,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -13,8 +13,8 @@
    }
   },
   "ETH": {
-   "last_5m_ts": 1795765200,
-   "hour_done_ts": 1795759200,
+   "last_5m_ts": 1795766100,
+   "hour_done_ts": 1795762800,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -24,8 +24,8 @@
    }
   },
   "SOL": {
-   "last_5m_ts": 1795765200,
-   "hour_done_ts": 1795759200,
+   "last_5m_ts": 1795766100,
+   "hour_done_ts": 1795762800,
    "pend": null,
    "pos": {
     "AMD": {
@@ -68,8 +68,8 @@
    }
   },
   "BNB": {
-   "last_5m_ts": 1795765200,
-   "hour_done_ts": 1795759200,
+   "last_5m_ts": 1795766100,
+   "hour_done_ts": 1795762800,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -79,8 +79,8 @@
    }
   },
   "XRP": {
-   "last_5m_ts": 1795765200,
-   "hour_done_ts": 1795759200,
+   "last_5m_ts": 1795766100,
+   "hour_done_ts": 1795762800,
    "pend": null,
    "pos": {
     "AMD": {
@@ -125,7 +125,7 @@
      "n": 2993.0,
      "ts": 1795762800,
      "x_ts": 1796022000,
-     "pk": 0.9798,
+     "pk": 0.9805,
      "ch": null
     },
     "N-H4": {
@@ -138,7 +138,7 @@
      "n": 2993.0,
      "ts": 1795762800,
      "x_ts": 1796022000,
-     "pk": 0.9798,
+     "pk": 0.9805,
      "ch": 0.026971428571428518
     }
    },
@@ -149,8 +149,8 @@
    }
   },
   "DOGE": {
-   "last_5m_ts": 1795765200,
-   "hour_done_ts": 1795759200,
+   "last_5m_ts": 1795766100,
+   "hour_done_ts": 1795762800,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -160,8 +160,8 @@
    }
   },
   "ADA": {
-   "last_5m_ts": 1795765200,
-   "hour_done_ts": 1795759200,
+   "last_5m_ts": 1795766100,
+   "hour_done_ts": 1795762800,
    "pend": null,
    "pos": {},
    "pend5": null,
@@ -171,8 +171,8 @@
    }
   },
   "HYPE": {
-   "last_5m_ts": 1795765200,
-   "hour_done_ts": 1795759200,
+   "last_5m_ts": 1795766100,
+   "hour_done_ts": 1795762800,
    "pend": null,
    "pos": {},
    "pend5": null,
