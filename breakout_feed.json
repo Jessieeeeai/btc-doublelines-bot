@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-27 14:30 UTC",
-  "next_event_id": 198,
+  "updated_at": "2026-11-27 14:45 UTC",
+  "next_event_id": 200,
   "events": [
     {
       "ts": 1794542400,
@@ -4145,6 +4145,50 @@
       "risk_usd": 40.0,
       "dedup": "N-H4-016:open",
       "event_id": 197
+    },
+    {
+      "ts": 1795789800,
+      "time": "2026-11-27 14:45 UTC",
+      "strategy": "N-H1",
+      "symbol": "XRPUSDT",
+      "signal_no": 22,
+      "pos_id": "N-H1-022",
+      "paper": true,
+      "action": "close",
+      "direction": "long",
+      "entry_price": 0.9719,
+      "sl": 0.95891224,
+      "tp": 0.99787552,
+      "notional_usd": 2993.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H1-022:close",
+      "reason": "sl",
+      "exit_price": 0.95891224,
+      "pnl_usd": -41.48,
+      "pnl_pct": -4.15,
+      "event_id": 198
+    },
+    {
+      "ts": 1795789800,
+      "time": "2026-11-27 14:45 UTC",
+      "strategy": "N-H4",
+      "symbol": "XRPUSDT",
+      "signal_no": 16,
+      "pos_id": "N-H4-016",
+      "paper": true,
+      "action": "close",
+      "direction": "long",
+      "entry_price": 0.9719,
+      "sl": 0.95992857,
+      "tp": null,
+      "notional_usd": 2993.0,
+      "risk_usd": 40.0,
+      "dedup": "N-H4-016:close",
+      "reason": "trail",
+      "exit_price": 0.95992857,
+      "pnl_usd": -38.35,
+      "pnl_pct": -3.84,
+      "event_id": 199
     }
   ],
   "open_positions": [
@@ -4171,30 +4215,6 @@
       "sl": 1.02600771,
       "tp": null,
       "notional_usd": 456.0
-    },
-    {
-      "strategy": "N-H1",
-      "symbol": "XRPUSDT",
-      "signal_no": 22,
-      "pos_id": "N-H1-022",
-      "paper": true,
-      "direction": "long",
-      "entry_price": 0.9719,
-      "sl": 0.9589122400000001,
-      "tp": 0.9978755199999998,
-      "notional_usd": 2993.0
-    },
-    {
-      "strategy": "N-H4",
-      "symbol": "XRPUSDT",
-      "signal_no": 16,
-      "pos_id": "N-H4-016",
-      "paper": true,
-      "direction": "long",
-      "entry_price": 0.9719,
-      "sl": 0.9599285714285715,
-      "tp": null,
-      "notional_usd": 2993.0
     }
   ]
 }
