@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-27 05:30 UTC",
-  "next_event_id": 7,
+  "updated_at": "2026-11-27 05:45 UTC",
+  "next_event_id": 8,
   "events": [
     {
       "ts": 1794931200,
@@ -136,22 +136,58 @@
       "dedup": "AMD-029:stop:61904.274",
       "event_id": 6,
       "master_event_id": 187
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1795757400,
+      "time": "2026-11-27 05:45 UTC",
       "strategy": "AMD",
       "symbol": "BTCUSDT",
       "signal_no": 29,
       "pos_id": "AMD-029",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 61233.0,
-      "sl": 61904.2742,
+      "sl": 61904.274,
       "tp": null,
-      "notional_usd": 730.0
+      "notional_usd": 730.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-029:close",
+      "reason": "trail",
+      "exit_price": 61904.274,
+      "pnl_usd": 7.08,
+      "pnl_pct": 0.71,
+      "close_fraction": 0.6667,
+      "close_fraction_text": "2/3",
+      "remaining_fraction": 0.0,
+      "legs": [
+        {
+          "leg": 1,
+          "exit_price": 57876.629,
+          "reason": "tp",
+          "ts": 1795617000,
+          "fraction": 0.3333
+        },
+        {
+          "leg": 2,
+          "exit_price": 61904.274,
+          "reason": "sl",
+          "ts": 1795757400,
+          "fraction": 0.3333
+        },
+        {
+          "leg": 3,
+          "exit_price": 61904.274,
+          "reason": "sl",
+          "ts": 1795757400,
+          "fraction": 0.3333
+        }
+      ],
+      "event_id": 7,
+      "master_event_id": 194
     }
   ],
+  "open_positions": [],
   "strategy": "AMD",
   "symbol": "BTCUSDT"
 }

@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-27 05:30 UTC",
-  "next_event_id": 14,
+  "updated_at": "2026-11-27 05:45 UTC",
+  "next_event_id": 15,
   "events": [
     {
       "ts": 1794931200,
@@ -293,22 +293,58 @@
       "dedup": "AMD-030:stop:1753.7807",
       "event_id": 13,
       "master_event_id": 189
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1795757400,
+      "time": "2026-11-27 05:45 UTC",
       "strategy": "AMD",
       "symbol": "ETHUSDT",
       "signal_no": 30,
       "pos_id": "AMD-030",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 1730.84,
-      "sl": 1753.7806994,
+      "sl": 1753.7807,
       "tp": null,
-      "notional_usd": 604.0
+      "notional_usd": 604.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-030:close",
+      "reason": "trail",
+      "exit_price": 1753.7807,
+      "pnl_usd": 7.25,
+      "pnl_pct": 0.73,
+      "close_fraction": 0.6667,
+      "close_fraction_text": "2/3",
+      "remaining_fraction": 0.0,
+      "legs": [
+        {
+          "leg": 1,
+          "exit_price": 1616.1365,
+          "reason": "tp",
+          "ts": 1795617600,
+          "fraction": 0.3333
+        },
+        {
+          "leg": 2,
+          "exit_price": 1753.7807,
+          "reason": "sl",
+          "ts": 1795757400,
+          "fraction": 0.3333
+        },
+        {
+          "leg": 3,
+          "exit_price": 1753.7807,
+          "reason": "sl",
+          "ts": 1795757400,
+          "fraction": 0.3333
+        }
+      ],
+      "event_id": 14,
+      "master_event_id": 195
     }
   ],
+  "open_positions": [],
   "strategy": "AMD",
   "symbol": "ETHUSDT"
 }
