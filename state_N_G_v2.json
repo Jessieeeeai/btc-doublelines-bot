@@ -3,7 +3,7 @@
  "started": true,
  "syms": {
   "BTC": {
-   "last_5m_ts": 1795822800,
+   "last_5m_ts": 1795823700,
    "slots": {
     "N-G1": {
      "active": [],
@@ -20,16 +20,40 @@
    }
   },
   "ETH": {
-   "last_5m_ts": 1795822800,
+   "last_5m_ts": 1795823700,
    "slots": {
     "N-G1": {
-     "active": [],
+     "active": [
+      {
+       "side": 1,
+       "L": 5.980000000000018,
+       "hi": 1662.95,
+       "lo": 1651.26,
+       "neck": 1662.95,
+       "ext": 1651.26,
+       "sig_ts": 1795820400,
+       "h_from": 1795824000,
+       "h_until": 1795834800
+      }
+     ],
      "pend": null,
      "pos": null,
      "block": 0
     },
     "N-G2": {
-     "active": [],
+     "active": [
+      {
+       "side": 1,
+       "L": 5.980000000000018,
+       "hi": 1662.95,
+       "lo": 1651.26,
+       "neck": 1662.95,
+       "ext": 1651.26,
+       "sig_ts": 1795820400,
+       "h_from": 1795824000,
+       "h_until": 1795834800
+      }
+     ],
      "pend": null,
      "pos": null,
      "block": 0
@@ -37,7 +61,7 @@
    }
   },
   "SOL": {
-   "last_5m_ts": 1795822800,
+   "last_5m_ts": 1795823700,
    "slots": {
     "N-G1": {
      "active": [],
@@ -54,7 +78,7 @@
    }
   },
   "BNB": {
-   "last_5m_ts": 1795822800,
+   "last_5m_ts": 1795823700,
    "slots": {
     "N-G1": {
      "active": [],
@@ -71,7 +95,7 @@
    }
   },
   "XRP": {
-   "last_5m_ts": 1795822800,
+   "last_5m_ts": 1795823700,
    "slots": {
     "N-G1": {
      "active": [],
@@ -88,7 +112,7 @@
    }
   },
   "DOGE": {
-   "last_5m_ts": 1795822800,
+   "last_5m_ts": 1795823700,
    "slots": {
     "N-G1": {
      "active": [],
@@ -105,7 +129,7 @@
    }
   },
   "ADA": {
-   "last_5m_ts": 1795822800,
+   "last_5m_ts": 1795823700,
    "slots": {
     "N-G1": {
      "active": [],
@@ -132,7 +156,7 @@
    "trades": []
   }
  },
- "n_pat": 0,
+ "n_pat": 1,
  "notices": [],
  "feed_floor": {}
 }
