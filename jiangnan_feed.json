@@ -984,6 +984,55 @@
     }
   ],
   "next_event_id": 51,
-  "open_positions": [],
-  "updated_at": "2026-11-28 03:00 UTC"
+  "open_positions": [
+    {
+      "strategy": "JN1",
+      "symbol": "ADAUSDT",
+      "signal_no": 6,
+      "pos_id": "JN1-006",
+      "paper": true,
+      "direction": "short",
+      "entry_price": 0.1477,
+      "sl": 0.15384614,
+      "tp": null,
+      "notional_usd": 961.0
+    },
+    {
+      "strategy": "JN2",
+      "symbol": "ADAUSDT",
+      "signal_no": 6,
+      "pos_id": "JN2-006",
+      "paper": true,
+      "direction": "short",
+      "entry_price": 0.1477,
+      "sl": 0.15384614,
+      "tp": 0.12926158000000001,
+      "notional_usd": 961.0
+    },
+    {
+      "strategy": "JN3",
+      "symbol": "ADAUSDT",
+      "signal_no": 6,
+      "pos_id": "JN3-006",
+      "paper": true,
+      "direction": "short",
+      "entry_price": 0.1477,
+      "sl": 0.15384614,
+      "tp": null,
+      "notional_usd": 961.0
+    },
+    {
+      "strategy": "JN4",
+      "symbol": "ADAUSDT",
+      "signal_no": 6,
+      "pos_id": "JN4-006",
+      "paper": true,
+      "direction": "short",
+      "entry_price": 0.1477,
+      "sl": 0.15384614,
+      "tp": 0.12926158000000001,
+      "notional_usd": 961.0
+    }
+  ],
+  "updated_at": "2026-11-28 03:15 UTC"
 }
