@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-28 11:45 UTC",
-  "next_event_id": 20,
+  "updated_at": "2026-11-28 12:00 UTC",
+  "next_event_id": 21,
   "events": [
     {
       "ts": 1794542400,
@@ -479,9 +479,45 @@
       ],
       "event_id": 19,
       "master_event_id": 201
+    },
+    {
+      "ts": 1795867200,
+      "time": "2026-11-28 12:00 UTC",
+      "strategy": "AMD",
+      "symbol": "ADAUSDT",
+      "signal_no": 36,
+      "pos_id": "AMD-036",
+      "paper": true,
+      "action": "open_long",
+      "direction": "long",
+      "entry_price": 0.1461,
+      "sl": 0.14475656,
+      "tp": 0.1898,
+      "notional_usd": 4350.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-036:open",
+      "tp1": 0.14744344,
+      "tp2": 0.1718,
+      "tp3": 0.1898,
+      "stop_after_tp1": 0.14583131,
+      "event_id": 20,
+      "master_event_id": 202
     }
   ],
-  "open_positions": [],
+  "open_positions": [
+    {
+      "strategy": "AMD",
+      "symbol": "ADAUSDT",
+      "signal_no": 36,
+      "pos_id": "AMD-036",
+      "paper": true,
+      "direction": "long",
+      "entry_price": 0.1461,
+      "sl": 0.14475656,
+      "tp": null,
+      "notional_usd": 4350.0
+    }
+  ],
   "strategy": "AMD",
   "symbol": "ADAUSDT"
 }
