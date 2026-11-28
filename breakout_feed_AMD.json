@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-28 10:45 UTC",
-  "next_event_id": 89,
+  "updated_at": "2026-11-28 11:00 UTC",
+  "next_event_id": 90,
   "events": [
     {
       "ts": 1794542400,
@@ -2075,6 +2075,55 @@
       "stop_after_tp1": 0.14597129,
       "event_id": 88,
       "master_event_id": 200
+    },
+    {
+      "ts": 1795862700,
+      "time": "2026-11-28 11:00 UTC",
+      "strategy": "AMD",
+      "symbol": "ADAUSDT",
+      "signal_no": 35,
+      "pos_id": "AMD-035",
+      "paper": true,
+      "action": "close",
+      "direction": "long",
+      "entry_price": 0.1462,
+      "sl": 0.14505647,
+      "tp": null,
+      "notional_usd": 5114.0,
+      "risk_usd": 40.0,
+      "dedup": "AMD-035:close",
+      "reason": "sl",
+      "exit_price": 0.14505647,
+      "pnl_usd": -42.22,
+      "pnl_pct": -4.22,
+      "close_fraction": 1.0,
+      "close_fraction_text": "3/3",
+      "remaining_fraction": 0.0,
+      "legs": [
+        {
+          "leg": 1,
+          "exit_price": 0.14505647,
+          "reason": "sl",
+          "ts": 1795862700,
+          "fraction": 0.3333
+        },
+        {
+          "leg": 2,
+          "exit_price": 0.14505647,
+          "reason": "sl",
+          "ts": 1795862700,
+          "fraction": 0.3333
+        },
+        {
+          "leg": 3,
+          "exit_price": 0.14505647,
+          "reason": "sl",
+          "ts": 1795862700,
+          "fraction": 0.3333
+        }
+      ],
+      "event_id": 89,
+      "master_event_id": 201
     }
   ],
   "open_positions": [
@@ -2101,18 +2150,6 @@
       "sl": 1.02600771,
       "tp": null,
       "notional_usd": 456.0
-    },
-    {
-      "strategy": "AMD",
-      "symbol": "ADAUSDT",
-      "signal_no": 35,
-      "pos_id": "AMD-035",
-      "paper": true,
-      "direction": "long",
-      "entry_price": 0.1462,
-      "sl": 0.14505647000000002,
-      "tp": null,
-      "notional_usd": 5114.0
     }
   ],
   "strategy": "AMD"
