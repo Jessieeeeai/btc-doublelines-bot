@@ -1,10 +1,42 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-28 05:00 UTC",
-  "next_event_id": 1,
-  "events": [],
-  "open_positions": [],
+  "updated_at": "2026-11-28 05:15 UTC",
+  "next_event_id": 2,
+  "events": [
+    {
+      "ts": 1795842300,
+      "time": "2026-11-28 05:15 UTC",
+      "strategy": "N-G1",
+      "symbol": "BTCUSDT",
+      "signal_no": 5,
+      "pos_id": "N-G1-005",
+      "paper": true,
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 59807.5,
+      "sl": 60256.06,
+      "tp": 58910.38,
+      "notional_usd": 2667,
+      "risk_usd": 20.0,
+      "dedup": "N-G1-005:open",
+      "event_id": 1
+    }
+  ],
+  "open_positions": [
+    {
+      "strategy": "N-G1",
+      "symbol": "BTCUSDT",
+      "signal_no": 5,
+      "pos_id": "N-G1-005",
+      "paper": true,
+      "direction": "short",
+      "entry_price": 59807.5,
+      "sl": 60256.06,
+      "tp": 58910.38,
+      "notional_usd": 2667
+    }
+  ],
   "strategy": "N-G1",
   "symbol": "BTCUSDT"
 }
