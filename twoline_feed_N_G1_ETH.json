@@ -1,10 +1,42 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-28 00:00 UTC",
-  "next_event_id": 1,
-  "events": [],
-  "open_positions": [],
+  "updated_at": "2026-11-28 00:15 UTC",
+  "next_event_id": 2,
+  "events": [
+    {
+      "ts": 1795824000,
+      "time": "2026-11-28 00:15 UTC",
+      "strategy": "N-G1",
+      "symbol": "ETHUSDT",
+      "signal_no": 1,
+      "pos_id": "N-G1-001",
+      "paper": true,
+      "action": "open_long",
+      "direction": "long",
+      "entry_price": 1662.95,
+      "sl": 1650.064,
+      "tp": 1688.722,
+      "notional_usd": 2581,
+      "risk_usd": 20.0,
+      "dedup": "N-G1-001:open",
+      "event_id": 1
+    }
+  ],
+  "open_positions": [
+    {
+      "strategy": "N-G1",
+      "symbol": "ETHUSDT",
+      "signal_no": 1,
+      "pos_id": "N-G1-001",
+      "paper": true,
+      "direction": "long",
+      "entry_price": 1662.95,
+      "sl": 1650.064,
+      "tp": 1688.722,
+      "notional_usd": 2581
+    }
+  ],
   "strategy": "N-G1",
   "symbol": "ETHUSDT"
 }
