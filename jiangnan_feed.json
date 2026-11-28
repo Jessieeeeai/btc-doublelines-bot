@@ -981,9 +981,45 @@
       "notional_usd": 961.0,
       "risk_usd": 40.0,
       "dedup": "JN4-006:open"
+    },
+    {
+      "event_id": 51,
+      "ts": 1795842000,
+      "time": "2026-11-28 05:00 UTC",
+      "strategy": "JN1",
+      "symbol": "ETHUSDT",
+      "signal_no": 7,
+      "pos_id": "JN1-007",
+      "paper": true,
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 1662.3,
+      "sl": 1755.5165,
+      "tp": null,
+      "notional_usd": 713.0,
+      "risk_usd": 40.0,
+      "dedup": "JN1-007:open"
+    },
+    {
+      "event_id": 52,
+      "ts": 1795842000,
+      "time": "2026-11-28 05:00 UTC",
+      "strategy": "JN2",
+      "symbol": "ETHUSDT",
+      "signal_no": 7,
+      "pos_id": "JN2-007",
+      "paper": true,
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 1662.3,
+      "sl": 1755.5165,
+      "tp": 1382.6505,
+      "notional_usd": 713.0,
+      "risk_usd": 40.0,
+      "dedup": "JN2-007:open"
     }
   ],
-  "next_event_id": 51,
+  "next_event_id": 53,
   "open_positions": [
     {
       "strategy": "JN1",
@@ -1034,5 +1070,5 @@
       "notional_usd": 961.0
     }
   ],
-  "updated_at": "2026-11-28 04:45 UTC"
+  "updated_at": "2026-11-28 05:00 UTC"
 }
