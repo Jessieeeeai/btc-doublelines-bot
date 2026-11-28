@@ -1,10 +1,42 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-28 03:00 UTC",
-  "next_event_id": 1,
-  "events": [],
-  "open_positions": [],
+  "updated_at": "2026-11-28 03:15 UTC",
+  "next_event_id": 2,
+  "events": [
+    {
+      "ts": 1795834800,
+      "time": "2026-11-28 03:15 UTC",
+      "strategy": "N-G1",
+      "symbol": "DOGEUSDT",
+      "signal_no": 2,
+      "pos_id": "N-G1-002",
+      "paper": true,
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 0.05761,
+      "sl": 0.058122,
+      "tp": 0.056586,
+      "notional_usd": 2250,
+      "risk_usd": 20.0,
+      "dedup": "N-G1-002:open",
+      "event_id": 1
+    }
+  ],
+  "open_positions": [
+    {
+      "strategy": "N-G1",
+      "symbol": "DOGEUSDT",
+      "signal_no": 2,
+      "pos_id": "N-G1-002",
+      "paper": true,
+      "direction": "short",
+      "entry_price": 0.05761,
+      "sl": 0.058122,
+      "tp": 0.056586,
+      "notional_usd": 2250
+    }
+  ],
   "strategy": "N-G1",
   "symbol": "DOGEUSDT"
 }
