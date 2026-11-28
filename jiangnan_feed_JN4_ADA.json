@@ -3,8 +3,28 @@
   "paper": true,
   "strategy": "JN4",
   "symbol": "ADAUSDT",
-  "events": [],
-  "next_event_id": 1,
+  "events": [
+    {
+      "event_id": 1,
+      "ts": 1795834800,
+      "time": "2026-11-28 03:00 UTC",
+      "strategy": "JN4",
+      "symbol": "ADAUSDT",
+      "signal_no": 6,
+      "pos_id": "JN4-006",
+      "paper": true,
+      "action": "open_short",
+      "direction": "short",
+      "entry_price": 0.1477,
+      "sl": 0.15384614,
+      "tp": 0.12926158,
+      "notional_usd": 961.0,
+      "risk_usd": 40.0,
+      "dedup": "JN4-006:open",
+      "master_event_id": 50
+    }
+  ],
+  "next_event_id": 2,
   "open_positions": [],
-  "updated_at": "2026-11-28 02:45 UTC"
+  "updated_at": "2026-11-28 03:00 UTC"
 }
