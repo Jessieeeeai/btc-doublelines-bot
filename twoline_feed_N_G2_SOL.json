@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-28 10:45 UTC",
-  "next_event_id": 2,
+  "updated_at": "2026-11-28 11:00 UTC",
+  "next_event_id": 3,
   "events": [
     {
       "ts": 1795835400,
@@ -21,22 +21,31 @@
       "risk_usd": 20.0,
       "dedup": "N-G2-002:open",
       "event_id": 1
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1795862700,
+      "time": "2026-11-28 11:00 UTC",
       "strategy": "N-G2",
       "symbol": "SOLUSDT",
       "signal_no": 2,
       "pos_id": "N-G2-002",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 71.766,
       "sl": 72.336,
       "tp": 70.626,
-      "notional_usd": 2518
+      "notional_usd": 2518,
+      "risk_usd": 20.0,
+      "dedup": "N-G2-002:close",
+      "reason": "tp",
+      "exit_price": 70.626,
+      "pnl_usd": 38.75,
+      "pnl_pct": 7.75,
+      "event_id": 2
     }
   ],
+  "open_positions": [],
   "strategy": "N-G2",
   "symbol": "SOLUSDT"
 }
