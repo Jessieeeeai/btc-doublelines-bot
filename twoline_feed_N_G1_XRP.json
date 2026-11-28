@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "paper": true,
-  "updated_at": "2026-11-28 13:45 UTC",
-  "next_event_id": 2,
+  "updated_at": "2026-11-28 14:00 UTC",
+  "next_event_id": 3,
   "events": [
     {
       "ts": 1795836000,
@@ -21,22 +21,31 @@
       "risk_usd": 20.0,
       "dedup": "N-G1-004:open",
       "event_id": 1
-    }
-  ],
-  "open_positions": [
+    },
     {
+      "ts": 1795873500,
+      "time": "2026-11-28 14:00 UTC",
       "strategy": "N-G1",
       "symbol": "XRPUSDT",
       "signal_no": 4,
       "pos_id": "N-G1-004",
       "paper": true,
+      "action": "close",
       "direction": "short",
       "entry_price": 0.9479,
       "sl": 0.95552,
       "tp": 0.93266,
-      "notional_usd": 2488
+      "notional_usd": 2488,
+      "risk_usd": 20.0,
+      "dedup": "N-G1-004:close",
+      "reason": "tp",
+      "exit_price": 0.93266,
+      "pnl_usd": 38.68,
+      "pnl_pct": 7.74,
+      "event_id": 2
     }
   ],
+  "open_positions": [],
   "strategy": "N-G1",
   "symbol": "XRPUSDT"
 }
